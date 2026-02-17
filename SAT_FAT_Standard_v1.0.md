@@ -44,7 +44,7 @@ This standard covers three testing phases:
 | **Prerequisite Checks** | Before FAT/SAT | Factory or site | Point-to-point wiring verification, insulation testing, power-up checks. These are construction verification, not system testing. |
 | **FAT** | After panel/system assembly, before shipment | Factory/shop | Complete system test — same procedure as SAT. Deviations from SAT (e.g., simulated field devices) documented and justified. |
 | **SAT** | After installation, before process introduction | Site | Complete system test — same procedure as FAT, executed with actual field devices and site conditions. |
-| **Proof Test** | Periodically during operation | Site | Verify SIS functionality has not degraded; detect dangerous undetected failures |
+| **Proof Test** | Periodically during operation | Site | Exercise SIF to confirm it still functions correctly; reveals whether DU failures have occurred |
 
 This standard applies to:
 
@@ -69,7 +69,7 @@ This standard does **not** define:
 
 **The drawing is the source of truth for what to test.** Every test step verifies something shown on a drawing --- a device, a wire, a logic function, a signal path.
 
-**The FMEA is the source of truth for what failure modes to cover.** For safety systems, the FMEA identifies which failure modes must be detected during proof testing and which diagnostic functions must be verified during FAT/SAT.
+**The FMEA is the source of truth for what failure modes to cover.** For safety systems, the FMEA identifies which failure modes are detectable (DD) and which are not (DU). DD failures have a detection method and a system reaction — these are tested during FAT/SAT using the fault injection sequence. DU failures have no detection and no reaction — these are addressed by proof testing, which exercises the safety function to confirm it still works.
 
 **Every fault test follows the same sequence.** Establish normal operation, induce the fault, verify the system reaction, confirm the system will not reset while the fault is present, restore the fault, confirm the system does not auto-restart, reset the fault, and verify controlled recovery. This sequence verifies the complete fault lifecycle: detection, reaction, persistence, reset lockout, and recovery.
 
@@ -106,7 +106,7 @@ Principles:
 | **Site Acceptance Test (SAT)** | Formal testing performed at the installation site after field wiring is complete, verifying end-to-end functionality including actual field devices, field wiring, and environmental conditions. |
 | **Loop Check** | Verification per IEC 62382 that a signal path is continuous from field device through wiring, junction boxes, terminal strips, and I/O modules to the logic solver and/or HMI --- and back to final elements where applicable. |
 | **Functional Test** | Verification that a system performs its intended control function correctly, including logic execution, alarm generation, and output response. Used for non-safety systems. |
-| **Proof Test** | Periodic test performed during operation to detect dangerous undetected (DU) failures in a safety instrumented function. Required by IEC 61511 clause 16. |
+| **Proof Test** | Periodic exercise of a safety instrumented function during operation to confirm it still works. Reveals whether dangerous undetected (DU) failures have occurred by exercising the function and observing the response. Required by IEC 61511 clause 16. |
 | **Partial Stroke Test (PST)** | A proof test technique for on/off valves where the valve is moved a fraction of its full stroke (typically 10--20%) to verify mechanical freedom without interrupting the process. Provides partial proof test coverage. |
 | **Bypass** | A deliberate, documented override of a safety function, typically to allow testing or maintenance. The safety function is defeated while the bypass is active. |
 | **Override** | A manual command that forces an output or input to a specific state, regardless of the logic solver's computed output. |
@@ -115,7 +115,7 @@ Principles:
 | **End-to-End Test** | A test that exercises the complete safety function chain: sensor input through logic solver through final element actuation. During SAT, this uses actual field devices. |
 | **Partial Proof Test** | A proof test that covers only a subset of the possible failure modes for a device or subsystem. Provides a proof test coverage factor less than 100%. |
 | **Comprehensive Proof Test** | A proof test that covers all (or nearly all) possible failure modes for a device or subsystem. Typically requires device removal or full shutdown. Provides proof test coverage approaching 100%. |
-| **Proof Test Coverage (PTC)** | The fraction of dangerous undetected failures that a given proof test procedure can detect, expressed as a percentage. Feeds directly into PFDavg calculations. |
+| **Proof Test Coverage (PTC)** | The fraction of potential DU failure modes that a given proof test procedure can exercise, expressed as a percentage. A higher PTC means the proof test exercises more of the possible ways the function could silently fail. Feeds directly into PFDavg calculations. |
 | **Test Interval (TI)** | The time between successive proof tests for a safety instrumented function. Determined by the SIL target and PFDavg calculation in the FMEA. |
 
 ---
@@ -574,17 +574,18 @@ For each alarm and indication point shown on the drawings:
 | HMI display value | Apply known input | HMI reads correct value with correct engineering units |
 | HMI indication color | Trigger each state (normal, alarm, trip, bypassed) | Correct color per HMI style guide |
 
-#### 6.4.7 Failure Mode Injection (Key DU Failures from FMEA)
+#### 6.4.7 Failure Mode Injection (Detectable Failures from FMEA)
 
-For each dangerous undetected failure mode identified in FMEA 201.1, inject the failure and verify the system response:
+For each detectable failure mode identified in the FMEA, inject the failure and verify that the system detects it and reacts correctly. Each failure mode injection follows the standard 10-step fault sequence (§6.4.2).
 
-| FMEA Failure Mode | Injection Method | Expected Response |
-|-------------------|------------------|-------------------|
-| Sensor open circuit | Disconnect field wiring at transmitter | Fault alarm, channel marked bad, remaining channels continue voting |
-| Sensor stuck high | Fix 4-20 mA signal at high value | High alarm, trip if voting logic satisfied |
-| Sensor stuck low | Fix 4-20 mA signal at low value | Low alarm, channel marked suspect |
-| Logic solver output fail | Disconnect output wiring | Final element goes to safe state (de-energize to trip) |
-| Final element stuck | Block valve mechanically (test only) | Partial stroke test detects restricted movement |
+**Important:** Only failure modes that have a detection method and a defined system reaction can be tested during FAT/SAT. Dangerous undetected (DU) failures have no detection and no reaction by definition — they cannot be tested using the fault injection sequence. DU failures are addressed by proof testing, which exercises the safety function to confirm it has not failed (see Section 7).
+
+| FMEA Failure Mode | Classification | Injection Method | Expected Detection | Expected Reaction |
+|-------------------|:-:|------------------|-------------------|-------------------|
+| Sensor open circuit | DD | Disconnect field wiring at transmitter | Fault alarm, channel marked bad | Remaining channels continue voting |
+| Sensor stuck high | DD | Fix 4-20 mA signal at high value | High alarm | Trip if voting logic satisfied |
+| Sensor stuck low | DD | Fix 4-20 mA signal at low value | Low alarm, channel marked suspect | Operator action / degraded voting |
+| Logic solver output fail | DD | Disconnect output wiring | Output state change detected | Final element goes to safe state (de-energize to trip) |
 
 #### 6.4.8 Voting Logic Verification (for 2oo3 Systems)
 
@@ -974,15 +975,19 @@ For reference and completeness, the full truth table that SAT 201 verifies:
 
 ### 7.1 Purpose
 
-Proof testing is the periodic testing of a safety instrumented function during operation to detect dangerous undetected (DU) failures that have accumulated since the last test. This is required by IEC 61511 clause 16.
+Proof testing is the periodic exercise of a safety instrumented function during operation to confirm that the function still works. This is required by IEC 61511 clause 16.
+
+A dangerous undetected (DU) failure has no detection method and no system reaction — by definition, the system does not know it has failed. The only way to discover whether a DU failure has occurred is to exercise the safety function and observe whether it responds correctly. This is what a proof test does.
 
 The purpose of proof testing is to confirm that:
 
-- The SIF will function on demand (i.e., no hidden failures exist)
-- The assumed PFDavg in the FMEA remains valid
+- The SIF will function on demand — the function is exercised and the correct response is observed
+- The assumed PFDavg in the FMEA remains valid — the proof test interval has not been exceeded
 - The SIF continues to meet its SIL target
 
-Without proof testing, dangerous undetected failures accumulate over time, increasing the probability of failure on demand until the SIL target can no longer be met.
+If the safety function does not respond correctly during a proof test, a DU failure has been revealed. The system must be taken out of service or placed under compensating measures until the failure is corrected.
+
+Without proof testing, DU failures accumulate silently over time, increasing the probability of failure on demand until the SIL target can no longer be met.
 
 ### 7.2 Proof Test Interval Determination
 
@@ -1013,7 +1018,7 @@ The proof test interval for each SIF is documented in:
 
 ### 7.3 Proof Test Coverage
 
-Not all failure modes can be detected by a given proof test procedure. Proof test coverage (PTC) is the fraction of dangerous undetected failures that the proof test can reveal.
+Proof test coverage (PTC) is the fraction of potential DU failure modes that a given proof test procedure can exercise. A proof test cannot detect a DU failure directly (there is no detection mechanism). Instead, it exercises the safety function in a way that would reveal whether a DU failure has occurred — if the function does not respond correctly, a failure is present.
 
 | Coverage Level | PTC Range | Typical Method | Impact |
 |----------------|-----------|---------------|--------|
@@ -1021,11 +1026,11 @@ Not all failure modes can be detected by a given proof test procedure. Proof tes
 | **Partial** | 60--90% | Functional test in situ, partial stroke test, electronic diagnostics | Moderate confidence; can be done during operation |
 | **Minimal** | < 60% | Visual inspection, basic electronic check | Low confidence; requires more frequent testing or compensating measures |
 
-The proof test coverage for each failure mode is documented in the FMEA. The proof test procedure must achieve at least the PTC assumed in the PFDavg calculation.
+The proof test coverage for each failure mode is documented in the FMEA. The proof test procedure must exercise the safety function thoroughly enough to achieve at least the PTC assumed in the PFDavg calculation.
 
 ### 7.4 Proof Test Procedure Format
 
-Proof test procedures are derived from the SAT test steps but simplified for operational use. They include only the steps necessary to verify SIF functionality and detect DU failures.
+Proof test procedures are derived from the SAT test steps but simplified for operational use. They include only the steps necessary to exercise the safety function and confirm it responds correctly.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -1256,23 +1261,23 @@ PT-    Bypass          Verify bypass register     Bypass       [ ]
 
 ### 7.8 FMEA Failure Mode to Proof Test Action Mapping
 
-This table maps failure modes from FMEA 201.1 to the proof test steps that detect them, including the proof test coverage factor achieved by PT-201:
+This table maps failure modes from FMEA 201.1 to the proof test steps that exercise them. For DU failures, the proof test exercises the function in a way that would reveal the failure if it has occurred. For DD failures, no proof test action is needed — the system detects these automatically during operation.
 
-| FMEA Ref | Failure Mode | Component | DU/DD | PT-201 Test Step | Detection Method | PTC |
-|----------|-------------|-----------|-------|-----------------|-----------------|-----|
-| FMEA 201.1-01 | Sensor drift (high) | +300-B301.x | DU | PT-201-002/007/011 | Calibration check against test pressure | 95% |
-| FMEA 201.1-02 | Sensor drift (low) | +300-B301.x | DU | PT-201-002/007/011 | Calibration check against test pressure | 95% |
-| FMEA 201.1-03 | Sensor stuck at last value | +300-B301.x | DU | PT-201-002/007/011 | Apply varying pressure, verify output tracks | 90% |
-| FMEA 201.1-04 | Sensor open circuit | +300-B301.x | DD | N/A (detected by diagnostics) | Automatic diagnostic detection | N/A |
-| FMEA 201.1-05 | Logic solver input fail | Logic solver | DU | PT-201-003/008/012 | Verify logic solver recognizes trip signal | 85% |
-| FMEA 201.1-06 | Logic solver voting fail | Logic solver | DU | PT-201-003/008/012 | Individual channel trip verification | 80% |
-| FMEA 201.1-07 | Safety relay coil open | +200-K201.1 | DU | PT-201-015 | Coil resistance measurement | 90% |
-| FMEA 201.1-08 | Safety relay contact weld | +200-K201.1 | DU | PT-201-029 (SAT) / full trip test at turnaround | Full trip test with valve closure verification | 95% |
-| FMEA 201.1-09 | Valve stem seized | Shutdown valve | DU | PT-201-014 | Partial stroke test | 60% |
+| FMEA Ref | Failure Mode | Component | DU/DD | PT-201 Test Step | How Proof Test Reveals Failure | PTC |
+|----------|-------------|-----------|:---:|-----------------|-------------------------------|:---:|
+| FMEA 201.1-01 | Sensor drift (high) | +300-B301.x | DU | PT-201-002/007/011 | Apply known test pressure; reading deviates from expected | 95% |
+| FMEA 201.1-02 | Sensor drift (low) | +300-B301.x | DU | PT-201-002/007/011 | Apply known test pressure; reading deviates from expected | 95% |
+| FMEA 201.1-03 | Sensor stuck at last value | +300-B301.x | DU | PT-201-002/007/011 | Apply varying pressure; output does not track | 90% |
+| FMEA 201.1-04 | Sensor open circuit | +300-B301.x | DD | N/A | Detected automatically by diagnostics during operation | N/A |
+| FMEA 201.1-05 | Logic solver input fail | Logic solver | DU | PT-201-003/008/012 | Inject trip signal; logic solver does not respond | 85% |
+| FMEA 201.1-06 | Logic solver voting fail | Logic solver | DU | PT-201-003/008/012 | Trip individual channels; voting result incorrect | 80% |
+| FMEA 201.1-07 | Safety relay coil open | +200-K201.1 | DU | PT-201-015 | Measure coil resistance; open circuit found | 90% |
+| FMEA 201.1-08 | Safety relay contact weld | +200-K201.1 | DU | Full trip test at turnaround | De-energize relay; contacts do not open | 95% |
+| FMEA 201.1-09 | Valve stem seized | Shutdown valve | DU | PT-201-014 | Partial stroke test; valve does not move or moves slowly | 60% |
 | FMEA 201.1-10 | Valve seat leakage | Shutdown valve | DU | Not covered by PST | Requires full closure and leak test at turnaround | 0% (PST) |
-| FMEA 201.1-11 | Solenoid valve failure | Shutdown valve | DU | PT-201-014 | PST exercises solenoid | 70% |
+| FMEA 201.1-11 | Solenoid valve failure | Shutdown valve | DU | PT-201-014 | PST commands solenoid; valve does not respond | 70% |
 
-**Note:** Failure modes with 0% PTC from routine proof testing must be covered by comprehensive testing during turnarounds or by compensating measures documented in the FMEA.
+**Note:** Failure modes with 0% PTC from routine proof testing must be exercised during comprehensive turnaround testing or addressed by compensating measures documented in the FMEA.
 
 ---
 
@@ -1417,7 +1422,7 @@ The Hazard Analysis Standard v1.0 provides:
 
 The FMEA Standard v1.0 provides:
 
-- **Failure modes to test:** Each DU failure mode in the FMEA is a candidate for fault injection testing during SAT and proof testing
+- **Failure modes to test:** Each detectable (DD) failure mode in the FMEA is a candidate for fault injection testing during FAT/SAT. DU failure modes are addressed by proof testing, which exercises the safety function to confirm it still works.
 - **Diagnostic coverage assumptions:** FAT verifies that diagnostics detect the failure modes claimed as DD in the FMEA
 - **Proof test coverage factors:** The FMEA assumes specific PTC values; the proof test procedure must achieve at least these values
 - **Proof test interval:** The TI used in PFDavg calculation is the maximum allowable interval between proof tests
