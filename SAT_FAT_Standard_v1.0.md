@@ -71,9 +71,11 @@ This standard does **not** define:
 
 **The FMEA is the source of truth for what failure modes to cover.** For safety systems, the FMEA identifies which failure modes must be detected during proof testing and which diagnostic functions must be verified during FAT/SAT.
 
+**Every fault test follows the same sequence.** Establish normal operation, induce the fault, verify the system reaction, confirm the system will not reset while the fault is present, restore the fault, confirm the system does not auto-restart, reset the fault, and verify controlled recovery. This sequence verifies the complete fault lifecycle: detection, reaction, persistence, reset lockout, and recovery.
+
 Principles:
 
-- **FAT = SAT.** Same procedure, same acceptance criteria. The only permitted differences are physical constraints of the factory environment (e.g., no actual field devices), and these are documented deviations, not reduced scope.
+- **FAT = SAT.** Same procedure, same acceptance criteria. The only permitted differences are physical constraints of the factory environment (e.g., no actual field devices), and these are documented deviations, not reduced scope. FAT does not satisfy any SAT requirements — SAT is always executed in its entirety.
 - **Construction checks are prerequisites, not test steps.** Continuity, megger, power-up are completed before FAT begins. They appear on the prerequisite checklist, not in the test procedure.
 - Test procedures are derived from drawings and FMEAs, not invented independently.
 - Test step numbering traces directly to drawing sheet numbers for immediate cross-reference.
@@ -185,8 +187,8 @@ Where a SAT test step cannot be performed during FAT (typically because field de
 
 This means:
 - The FAT step numbering matches the SAT step numbering (FAT 201-020 tests the same thing as SAT 201-020)
-- Any step that passes at FAT does not need re-execution at SAT unless the system was modified after FAT
-- Any step marked as a FAT deviation is mandatory during SAT
+- FAT does not satisfy any SAT requirements — SAT is always executed in its entirety regardless of FAT results
+- FAT results serve as early detection of issues and provide confidence before shipment, but they do not reduce the SAT scope
 
 ### 5.2 Prerequisite Checks (Not Part of FAT)
 
@@ -270,7 +272,7 @@ For each test step, the FAT records one of three results:
 
 | Result | Meaning | Action |
 |--------|---------|--------|
-| **PASS** | Step executed and met acceptance criteria | No re-test required at SAT (unless system modified) |
+| **PASS** | Step executed and met acceptance criteria | Provides early confidence. Step is still executed at SAT. |
 | **FAIL** | Step executed and did not meet acceptance criteria | Correct issue, re-test at FAT. If unresolved, document on punch list. |
 | **DEVIATION** | Step could not be executed due to factory constraints | Document justification. Step is mandatory at SAT. |
 
@@ -446,13 +448,9 @@ SAT must be completed **before** process fluids are introduced (before commissio
 
 ### 6.3 SAT Scope
 
-SAT is the definitive system test. The SAT procedure defines the complete verification scope for the safety instrumented system. FAT executes the same procedure with documented deviations where factory conditions prevent full execution (see Section 5).
+SAT is the definitive system test and is always executed in its entirety. FAT results do not satisfy any SAT requirements. Every SAT test step is executed and must pass regardless of FAT outcome.
 
-At SAT, all steps are executed without deviation. Any steps that were marked as deviations during FAT shall be fully executed and verified at SAT. Steps that passed at FAT do not require re-execution unless:
-
-- The system was modified, repaired, or reassembled after FAT
-- Transportation or installation may have affected the verified condition
-- The SAT authority requires re-verification
+The purpose of FAT is early detection of issues before shipment — it provides confidence and reduces rework at site, but it does not reduce SAT scope. The SAT stands on its own as complete, independent verification of the installed system.
 
 | Category | SAT Verification |
 |----------|-----------------|
@@ -478,36 +476,69 @@ For each instrument loop shown on the drawings, verify:
 | Signal injection at field device | Apply known stimulus at the field device (e.g., pressure at transmitter) | Logic solver reads correct value within specified accuracy |
 | Signal return to field | Command output from logic solver, verify final element responds | Final element moves to commanded state |
 
-#### 6.4.2 End-to-End Functional Test with Actual Field Devices
+#### 6.4.2 Standard Fault Test Sequence
 
-| Test | Method | Acceptance Criteria |
-|------|--------|-------------------|
-| Normal operating condition | Apply normal process-range signal to each sensor | System in normal state, no alarms |
-| Trip condition | Apply trip-level stimulus to sensors per voting logic | System trips, final element goes to safe state |
-| Alarm verification | Apply alarm-level stimulus | Correct alarm activates at HMI and local panel |
-| Reset function | Clear trip condition, attempt reset | System resets only when all conditions are clear and manual reset is actuated |
-
-#### 6.4.3 Safety Function Trip Test (Full Chain)
-
-For each SIF, execute the full chain: sensor detection through logic solver evaluation through final element actuation.
+Every FMEA failure mode test and safety function test follows the same 10-step sequence. This sequence verifies the complete fault lifecycle: detection, reaction, persistence, reset lockout, and recovery. Each step must pass before proceeding to the next.
 
 ```
-FULL CHAIN TRIP TEST
+STANDARD FAULT TEST SEQUENCE
 
-    Field Device              Logic Solver              Final Element
-    ┌──────────┐             ┌──────────────┐          ┌──────────────┐
-    │ Apply    │  ── wire ── │  Receives    │ ── wire──│  Valve       │
-    │ pressure │  ── path ── │  signal,     │ ── path──│  moves to    │
-    │ at       │             │  evaluates   │          │  safe state  │
-    │ sensor   │             │  2oo3 vote   │          │  (closed)    │
-    └──────────┘             └──────────────┘          └──────────────┘
-         │                         │                         │
-    ┌──────────┐             ┌──────────────┐          ┌──────────────┐
-    │ Record   │             │ Record logic │          │ Record valve │
-    │ applied  │             │ response     │          │ stroke time  │
-    │ pressure │             │ time         │          │ and position │
-    └──────────┘             └──────────────┘          └──────────────┘
+    ┌─────────────────────────────────────────────────────────────┐
+    │  Step 1: ESTABLISH NORMAL                                   │
+    │  Machine running, normal operation, no faults               │
+    ├─────────────────────────────────────────────────────────────┤
+    │  Step 2: INDUCE FAULT                                       │
+    │  Inject the specific failure mode under test                │
+    ├─────────────────────────────────────────────────────────────┤
+    │  Step 3: VERIFY SYSTEM REACTION                             │
+    │  Confirm correct response (stop, warning, de-energize, etc.)│
+    ├─────────────────────────────────────────────────────────────┤
+    │  Step 4: ATTEMPT FAULT RESET (fault still present)          │
+    │  Actuate reset while fault condition persists               │
+    ├─────────────────────────────────────────────────────────────┤
+    │  Step 5: VERIFY RESET REFUSED                               │
+    │  System reaction persists. No motion. Reset has no effect.  │
+    ├─────────────────────────────────────────────────────────────┤
+    │  Step 6: RESTORE FAULT CONDITION                            │
+    │  Remove the injected fault (reconnect wire, restore signal) │
+    ├─────────────────────────────────────────────────────────────┤
+    │  Step 7: VERIFY NO AUTO-RESTART                             │
+    │  Machine does not restart. Fault does not auto-clear.       │
+    │  No motion observed.                                        │
+    ├─────────────────────────────────────────────────────────────┤
+    │  Step 8: ATTEMPT FAULT RESET (fault restored)               │
+    │  Actuate reset now that fault condition is cleared           │
+    ├─────────────────────────────────────────────────────────────┤
+    │  Step 9: VERIFY RESET ACCEPTED                              │
+    │  Fault clears. Machine does not initiate motion on its own. │
+    ├─────────────────────────────────────────────────────────────┤
+    │  Step 10: RETURN TO NORMAL                                  │
+    │  Machine returned to normal operating state.                │
+    │  Motion is allowed. No faults present.                      │
+    └─────────────────────────────────────────────────────────────┘
 ```
+
+| Step | Action | Acceptance Criteria |
+|:----:|--------|-------------------|
+| 1 | Establish normal operating state — machine running, no faults, no alarms | System in normal operation. All indications normal. |
+| 2 | Induce the specific fault under test (e.g., disconnect transmitter, simulate over-range, open safety circuit) | Fault is physically injected as defined in the test step. |
+| 3 | Verify system reaction matches the expected response (e.g., machine stop, alarm, de-energize output, valve closes) | Correct system reaction observed. Final element in safe state (if applicable). |
+| 4 | Attempt fault reset while fault condition is still present | Reset is actuated per normal procedure. |
+| 5 | Verify that the system **does not reset**. System reaction persists. No motion is observed. | Reset refused. Machine remains stopped. No motion. Fault indication persists. |
+| 6 | Restore the fault condition — remove the injected fault (reconnect wire, restore signal, etc.) | Fault source is physically corrected. |
+| 7 | Verify that the machine **does not restart** and the fault **does not auto-clear**. No motion is observed. | No auto-restart. No auto-reset. Machine remains stopped. No motion. |
+| 8 | Attempt fault reset now that the fault condition has been cleared | Reset is actuated per normal procedure. |
+| 9 | Verify that the fault clears. Verify that the machine **does not** initiate motion on its own. | Fault clears. No automatic motion. Machine ready for restart. |
+| 10 | Return the machine to normal operating state. Verify motion is allowed and no faults are present. | Normal operation restored. Motion permitted. No faults. No alarms. |
+
+**Critical requirements of this sequence:**
+- Steps 4-5 verify **reset lockout** — the system must not allow reset while the fault persists
+- Steps 6-7 verify **no auto-restart** — removing the fault does not restart the machine
+- Steps 8-9 verify **controlled recovery** — the system resets only on deliberate operator action and does not initiate motion without a separate start command
+- The sequence must be executed in order; each step depends on the previous step's result
+- If any step fails, the test stops. The failure is documented and the system must be corrected before re-test.
+
+This sequence applies to every fault test in FAT, SAT, and proof testing. For each FMEA failure mode under test, the specific fault injection method (Step 2) and expected system reaction (Step 3) are defined in the test worksheet.
 
 #### 6.4.4 Bypass and Override Function Verification
 
@@ -689,36 +720,61 @@ SAT    +300-B301.3     Apply 0% / 50% / 100%     Readings     [ ]
 201-   Loop 3          pressure, verify logic     within
 013                    solver reads correctly     +/- 0.5%
 
-END-TO-END FUNCTIONAL TEST
+END-TO-END FUNCTIONAL TEST (Standard 10-Step Fault Sequence per §6.4.2)
 ─────────────────────────────────────────────────────────────────────
-SAT    Full system     Apply normal operating     System in    [ ]
-201-                   pressure to all 3          normal
-014                    transmitters               state, no
-                                                  alarms
+Step   Seq   Description                        Expected         Pass/
+                                                 Result           Fail
+─────────────────────────────────────────────────────────────────────
 
-SAT    +300-B301.1     Slowly ramp B301.1 to     High alarm   [ ]
-201-   high alarm      high alarm setpoint        activates
-015                                               at correct
-                                                  setpoint
+  2oo3 Trip Test --- Overpressure (FMEA 201.1)
+  Fault injection: Apply trip pressure to B301.1 and B301.2
 
-SAT    Full system     Apply trip pressure to     TRIP: valve  [ ]
-201-   2oo3 trip       B301.1 and B301.2          closes,
-016                    (2oo3 satisfied)           K201.1
-                                                  de-energized
+SAT     1    Apply normal operating pressure    System in        [ ]
+201-         to all 3 transmitters. Verify      normal state,
+014          system running, no faults.         no alarms.
 
-SAT    Full system     Verify shutdown valve      Valve fully  [ ]
-201-   valve response  reaches fully closed       closed,
-017                    position                   position
-                                                  switch
-                                                  confirms
+SAT     2    Apply trip pressure to B301.1      Trip pressure    [ ]
+201-         and B301.2 (2oo3 satisfied).       applied to
+015                                             2 of 3 channels.
 
-SAT    Full system     Remove trip condition      System does  [ ]
-201-   reset test      from both transmitters,    NOT auto-
-018                    verify no auto-reset       reset
+SAT     3    Verify system reaction: valve      TRIP: K201.1     [ ]
+201-         closes, relay de-energizes,        de-energized,
+016          trip alarm activates.              valve fully
+                                               closed, trip
+                                               alarm active.
 
-SAT    Full system     Actuate manual reset       System       [ ]
-201-   manual reset    button/command             resets to
-019                                               normal
+SAT     4    Attempt fault reset while trip     Reset actuated.  [ ]
+201-         pressure still applied to
+017          B301.1 and B301.2.
+
+SAT     5    Verify system does NOT reset.      System remains   [ ]
+201-         Valve remains closed.              tripped. Valve
+018          No motion observed.                closed. No
+                                               motion.
+
+SAT     6    Remove trip condition — restore    Trip pressure    [ ]
+201-         normal pressure to B301.1 and      removed from
+019          B301.2.                            both channels.
+
+SAT     7    Verify system does NOT             No auto-         [ ]
+201-         auto-restart. Valve remains        restart. Valve
+020          closed. Fault does not             closed. Trip
+             auto-clear. No motion.             indication
+                                               persists.
+
+SAT     8    Attempt fault reset now that       Reset actuated.  [ ]
+201-         trip pressure is cleared.
+021
+
+SAT     9    Verify fault clears. Verify        Fault clears.    [ ]
+201-         machine does NOT initiate          No automatic
+022          motion on its own.                 motion. System
+                                               ready for
+                                               restart.
+
+SAT    10    Return to normal operating         Normal           [ ]
+201-         state. Verify motion is            operation.
+023          allowed and no faults present.     No faults.
 
 RESPONSE TIME MEASUREMENT (ACTUAL)
 ─────────────────────────────────────────────────────────────────────
@@ -759,30 +815,105 @@ SAT    Bypass          Remove bypass              Protection   [ ]
 026                                               indication
                                                   clears
 
-FAILURE MODE INJECTION (per FMEA 201.1)
+FAILURE MODE INJECTION (per FMEA 201.1, Standard 10-Step Sequence per §6.4.2)
 ─────────────────────────────────────────────────────────────────────
-SAT    +300-B301.1     Disconnect field wiring    Fault alarm  [ ]
-201-   open circuit    at B301.1 terminals        for Ch 1;
-027                                               remaining
-                                                  channels
-                                                  continue
-                                                  voting (now
-                                                  1oo2)
 
-SAT    +300-B301.1     Reconnect B301.1, verify  System       [ ]
-201-   recovery        system recovers to         returns to
-028                    normal 2oo3 voting         2oo3 voting
+  Open Circuit — Channel 1 (+300-B301.1)
+  Fault injection: Disconnect field wiring at B301.1 terminals
 
-SAT    +200-K201.1     Simulate relay coil        Valve goes   [ ]
-201-   relay fail      failure (disconnect coil   to safe
-029                    supply)                    state
-                                                  (de-energize
-                                                  to trip)
+SAT     1    System running normally, all 3      Normal state,   [ ]
+201-         channels reading normal pressure.   no faults.
+027
+
+SAT     2    Disconnect field wiring at          Wiring          [ ]
+201-         B301.1 terminals (open circuit).    disconnected.
+028
+
+SAT     3    Verify system reaction: Ch 1        Fault alarm     [ ]
+201-         fault alarm, remaining channels     for Ch 1.
+029          continue voting (now 1oo2).         1oo2 voting
+                                                active.
+
+SAT     4    Attempt fault reset while           Reset           [ ]
+201-         B301.1 is still disconnected.       actuated.
+030
+
+SAT     5    Verify system does NOT clear        Ch 1 fault      [ ]
+201-         the channel fault. 1oo2 degraded    persists.
+031          voting persists.                    No change.
+
+SAT     6    Reconnect field wiring at           Wiring          [ ]
+201-         B301.1 terminals.                   reconnected.
+032
+
+SAT     7    Verify system does NOT              No auto-        [ ]
+201-         auto-clear fault. Degraded          clear. Fault
+033          voting persists. Ch 1 does not      persists.
+             automatically rejoin voting.
+
+SAT     8    Attempt fault reset.                Reset           [ ]
+201-                                             actuated.
+034
+
+SAT     9    Verify fault clears. Verify         Fault clears.   [ ]
+201-         system returns to 2oo3 voting.      2oo3 voting
+035          No automatic motion.                restored.
+
+SAT    10    Verify normal operating state.      Normal          [ ]
+201-         All 3 channels active, no faults.   operation.
+036                                              No faults.
+
+  Safety Relay Coil Failure (+200-K201.1)
+  Fault injection: Disconnect relay coil supply
+
+SAT     1    System running normally, no         Normal state,   [ ]
+201-         faults.                             no faults.
+037
+
+SAT     2    Disconnect K201.1 coil supply       Coil supply     [ ]
+201-         (simulate relay coil failure).      disconnected.
+038
+
+SAT     3    Verify system reaction: valve       Valve closed    [ ]
+201-         goes to safe state (de-energize     (safe state).
+039          to trip). Trip alarm active.        Trip alarm
+                                                active.
+
+SAT     4    Attempt fault reset while coil      Reset           [ ]
+201-         supply is still disconnected.       actuated.
+040
+
+SAT     5    Verify system does NOT reset.       Trip persists.  [ ]
+201-         Valve remains closed. No motion.    Valve closed.
+041                                              No motion.
+
+SAT     6    Reconnect K201.1 coil supply.       Coil supply     [ ]
+201-                                             reconnected.
+042
+
+SAT     7    Verify system does NOT auto-        No auto-        [ ]
+201-         restart. Valve remains closed.      restart. Valve
+043          No motion.                          closed.
+                                                No motion.
+
+SAT     8    Attempt fault reset.                Reset           [ ]
+201-                                             actuated.
+044
+
+SAT     9    Verify fault clears. Verify         Fault clears.   [ ]
+201-         machine does NOT initiate           No automatic
+045          motion on its own.                  motion.
+
+SAT    10    Return to normal operating          Normal          [ ]
+201-         state. Verify no faults.            operation.
+046                                              No faults.
 ```
 
 ### 6.7 SAT for 2oo3 Voting Systems --- Specific Test Methodology
 
 For 2oo3 voting architectures (such as the Overpressure Protection system SF-PRES-001), the following specific test methodology shall be applied. This verifies the voting logic truth table exhaustively.
+
+All tests that result in a system trip follow the standard 10-step fault sequence (§6.4.2). The step numbers below identify the test case; each test case executes the full 10-step sequence internally.
 
 #### 6.7.1 Single Channel Trip Tests
 
@@ -790,35 +921,35 @@ Test each channel individually to confirm that a single channel trip does NOT ca
 
 | Test | Ch 1 (B301.1) | Ch 2 (B301.2) | Ch 3 (B301.3) | Expected Output | Expected Alarm |
 |------|:---:|:---:|:---:|---------|---------|
-| SAT 201-030 | TRIP | Normal | Normal | NO TRIP | Channel 1 high alarm, discrepancy alarm |
-| SAT 201-031 | Normal | TRIP | Normal | NO TRIP | Channel 2 high alarm, discrepancy alarm |
-| SAT 201-032 | Normal | Normal | TRIP | NO TRIP | Channel 3 high alarm, discrepancy alarm |
+| SAT 201-047 | TRIP | Normal | Normal | NO TRIP | Channel 1 high alarm, discrepancy alarm |
+| SAT 201-048 | Normal | TRIP | Normal | NO TRIP | Channel 2 high alarm, discrepancy alarm |
+| SAT 201-049 | Normal | Normal | TRIP | NO TRIP | Channel 3 high alarm, discrepancy alarm |
 
-#### 6.7.2 Dual Channel Trip Tests
+#### 6.7.2 Dual Channel Trip Tests (10-Step Sequence)
 
-Test each pair of channels to confirm that any two channels tripping DOES cause a system trip (correct 2oo3 behavior):
-
-| Test | Ch 1 (B301.1) | Ch 2 (B301.2) | Ch 3 (B301.3) | Expected Output | Expected Alarm |
-|------|:---:|:---:|:---:|---------|---------|
-| SAT 201-033 | TRIP | TRIP | Normal | **TRIP** | System trip alarm, valve closed |
-| SAT 201-034 | TRIP | Normal | TRIP | **TRIP** | System trip alarm, valve closed |
-| SAT 201-035 | Normal | TRIP | TRIP | **TRIP** | System trip alarm, valve closed |
-
-#### 6.7.3 All Channels Trip Test
+Test each pair of channels to confirm that any two channels tripping DOES cause a system trip (correct 2oo3 behavior). Each test follows the full 10-step fault sequence:
 
 | Test | Ch 1 (B301.1) | Ch 2 (B301.2) | Ch 3 (B301.3) | Expected Output | Expected Alarm |
 |------|:---:|:---:|:---:|---------|---------|
-| SAT 201-036 | TRIP | TRIP | TRIP | **TRIP** | System trip alarm, valve closed |
+| SAT 201-050 | TRIP | TRIP | Normal | **TRIP** | System trip alarm, valve closed |
+| SAT 201-051 | TRIP | Normal | TRIP | **TRIP** | System trip alarm, valve closed |
+| SAT 201-052 | Normal | TRIP | TRIP | **TRIP** | System trip alarm, valve closed |
 
-#### 6.7.4 Single Channel Fail-Safe Verification
+#### 6.7.3 All Channels Trip Test (10-Step Sequence)
 
-Verify that a single channel failure is handled safely and does not prevent the remaining channels from tripping the system:
+| Test | Ch 1 (B301.1) | Ch 2 (B301.2) | Ch 3 (B301.3) | Expected Output | Expected Alarm |
+|------|:---:|:---:|:---:|---------|---------|
+| SAT 201-053 | TRIP | TRIP | TRIP | **TRIP** | System trip alarm, valve closed |
+
+#### 6.7.4 Single Channel Fail-Safe Verification (10-Step Sequence)
+
+Verify that a single channel failure is handled safely and does not prevent the remaining channels from tripping the system. Each test follows the full 10-step fault sequence:
 
 | Test | Failure | Remaining Channels | Action | Expected |
 |------|---------|-------------------|--------|----------|
-| SAT 201-037 | B301.1 open circuit | B301.2 + B301.3 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
-| SAT 201-038 | B301.2 open circuit | B301.1 + B301.3 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
-| SAT 201-039 | B301.3 open circuit | B301.1 + B301.2 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
+| SAT 201-054 | B301.1 open circuit | B301.2 + B301.3 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
+| SAT 201-055 | B301.2 open circuit | B301.1 + B301.3 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
+| SAT 201-056 | B301.3 open circuit | B301.1 + B301.2 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
 
 #### 6.7.5 Voting Logic Complete Truth Table
 
@@ -827,13 +958,13 @@ For reference and completeness, the full truth table that SAT 201 verifies:
 | Ch 1 | Ch 2 | Ch 3 | Votes | 2oo3 Output | Test Step |
 |:---:|:---:|:---:|:---:|:---:|---------|
 | 0 | 0 | 0 | 0 | No Trip | SAT 201-014 |
-| 1 | 0 | 0 | 1 | No Trip | SAT 201-030 |
-| 0 | 1 | 0 | 1 | No Trip | SAT 201-031 |
-| 0 | 0 | 1 | 1 | No Trip | SAT 201-032 |
-| 1 | 1 | 0 | 2 | **Trip** | SAT 201-033 |
-| 1 | 0 | 1 | 2 | **Trip** | SAT 201-034 |
-| 0 | 1 | 1 | 2 | **Trip** | SAT 201-035 |
-| 1 | 1 | 1 | 3 | **Trip** | SAT 201-036 |
+| 1 | 0 | 0 | 1 | No Trip | SAT 201-047 |
+| 0 | 1 | 0 | 1 | No Trip | SAT 201-048 |
+| 0 | 0 | 1 | 1 | No Trip | SAT 201-049 |
+| 1 | 1 | 0 | 2 | **Trip** | SAT 201-050 |
+| 1 | 0 | 1 | 2 | **Trip** | SAT 201-051 |
+| 0 | 1 | 1 | 2 | **Trip** | SAT 201-052 |
+| 1 | 1 | 1 | 3 | **Trip** | SAT 201-053 |
 
 (0 = Normal, 1 = Trip)
 
