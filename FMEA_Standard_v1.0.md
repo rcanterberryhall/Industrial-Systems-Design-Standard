@@ -7,7 +7,7 @@
 **Status:** Draft
 **Scope:** FMEA methodology for both safety instrumented systems (SIL verification) and non-safety control systems (reliability and availability analysis). Uses detection-point organization: failure modes are grouped by how they present to the monitoring system, with root cause decomposition to individual devices. Aligned to the sheet-based numbering conventions of the Industrial Systems Drawing Standard v1.1.
 
----
+---1
 
 ## Table of Contents
 
@@ -180,7 +180,26 @@ Additional principles:
 - `FMEA 235.1` — Failures as seen by the control on Sheet 235 (non-safety: VFD reliability)
 - `FMEA 150.1` — Failures as seen by the utility control on Sheet 150 (non-safety: HVAC reliability)
 
-### 4.2 One FMEA per Function per Detection Sheet
+### 4.2 FMEA Item Numbering
+
+**Format:** `[DeviceCode].[FailureSequence]`
+
+Each FMEA worksheet row is identified by the device tag (without the `+Location-` prefix) followed by a sequential failure mode number. The device tag is already self-documenting per the Drawing Standard, so the FMEA item number inherits that traceability.
+
+| Component | Description | Example |
+|-----------|-------------|---------|
+| `[DeviceCode]` | Device type + sheet + sequence from the Drawing Standard tag | B301.1, A201.1, K201.1 |
+| `.[FailureSequence]` | Sequential failure mode number for that device | .1, .2, .3 |
+
+**Examples:**
+
+- `B301.1.3` — Third failure mode of pressure transmitter B301.1 (fixed output / mid-range)
+- `A201.1.6` — Sixth failure mode of safety PLC A201.1 (output stuck ON)
+- `K201.1.3` — Third failure mode of safety relay K201.1 (contact weld)
+
+For identical redundant devices (e.g., B301.1 / B301.2 / B301.3 in a 2oo3 group), the failure sequence numbers correspond across devices: `.1` is always the same failure mode for each transmitter. This allows compact cross-references like `B301.x.3` to mean "fixed output failure mode for all three transmitters."
+
+### 4.3 One FMEA per Function per Detection Sheet
 
 A single detection sheet may serve multiple independent functions. Each function receives its own FMEA:
 
@@ -196,7 +215,7 @@ Sheet 235 VFD control:
   Feed Pump Motor Control → FMEA 235.1
 ```
 
-### 4.3 Detection-Point Organization
+### 4.4 Detection-Point Organization
 
 The FMEA is organized around **how failures present to the monitoring system**, not around individual devices. This naturally handles the fact that safety functions span multiple sheets:
 
@@ -229,7 +248,7 @@ FMEA 201.1 — Detection-Point View
 
 Device tags from other sheets (+300-B301.1, CBL-301-01) are captured as **root causes** within each failure presentation. The physical device traceability is preserved without creating redundant FMEA entries.
 
-### 4.4 FMEA Scope Definition
+### 4.5 FMEA Scope Definition
 
 The FMEA scope section lists all sheets and devices whose failures are observed at this detection point:
 
@@ -553,7 +572,7 @@ Approved By:      [Name]                    Date: [Date]
 
 | Column | Content | Units/Format |
 |--------|---------|-------------|
-| Item # | Sequential line number | 1, 2, 3... |
+| Item # | Device tag + failure sequence: `[DeviceTag].[Seq]` | B301.1.1, A201.1.3, K201.1.2 |
 | Subsystem | Sensor / Logic Solver / Final Element | Text |
 | Device Tag | Per Drawing Standard | +300-B301.1 |
 | Device Description | Per drawing description field | Pressure Transmitter #1 |
@@ -588,13 +607,13 @@ The failure rate split per manufacturer safety manual:
 
 | Item | Device Tag | Device Description | Failure Mode | lambda (per hr) | S/D/NE | Detection Method | DC% | lambda_SD | lambda_SU | lambda_DD | lambda_DU | Effect on SF | Severity | Data Source |
 |------|------------|-------------------|-------------|-----------------|--------|-----------------|-----|-----------|-----------|-----------|-----------|-------------|----------|-------------|
-| 1 | +300-B301.1 | Pressure Transmitter #1 | Drift high (above setpoint) | 4.08E-07 | S | Input comparison (2oo3 voting deviation) | 90% | 3.67E-07 | 4.08E-08 | — | — | Spurious trip contribution (1 of 3 channels high); 2oo3 prevents single-channel spurious trip | Negligible | Mfr Safety Manual |
-| 2 | +300-B301.1 | Pressure Transmitter #1 | Drift low (below setpoint) | 4.08E-07 | D | Input comparison (2oo3 voting deviation) | 90% | — | — | 3.67E-07 | 4.08E-08 | One channel reads low; does not trip on demand. 2oo3 degraded to 2oo2. | Marginal | Mfr Safety Manual |
-| 3 | +300-B301.1 | Pressure Transmitter #1 | Fixed output (mid-range, within normal band) | 6.80E-07 | D | Input comparison (2oo3 voting deviation) | 60% | — | — | 4.08E-07 | 2.72E-07 | One channel stuck; may not trip on demand. 2oo3 degraded to 2oo2. | Marginal | Mfr Safety Manual |
-| 4 | +300-B301.1 | Pressure Transmitter #1 | Loss of signal (< 3.6 mA) | 5.10E-07 | S | Input range check (under-range detection) | 99% | 5.05E-07 | 5.10E-09 | — | — | Signal loss detected; channel flagged invalid. De-energize-to-trip: loss treated as safe. | Negligible | Mfr Safety Manual |
-| 5 | +300-B301.1 | Pressure Transmitter #1 | Sensor element failure (zero shift) | 5.44E-07 | D | Input comparison (2oo3 voting deviation) | 60% | — | — | 3.26E-07 | 2.18E-07 | Sensor reads incorrect value; may not trip. 2oo3 degraded to 2oo2. | Marginal | Mfr Safety Manual |
-| 6 | +300-B301.1 | Pressure Transmitter #1 | Electronics failure (output saturates high, > 21 mA) | 5.10E-07 | S | Input range check (over-range detection) | 99% | 5.05E-07 | 5.10E-09 | — | — | Output high; appears as overpressure. 2oo3 prevents single-channel spurious trip. | Negligible | Mfr Safety Manual |
-| 7 | +300-B301.1 | Pressure Transmitter #1 | Electronics failure (output saturates low) | 3.40E-07 | D | Input range check (under-range detection) | 90% | — | — | 3.06E-07 | 3.40E-08 | Output low; does not trip. 2oo3 degraded to 2oo2. | Marginal | Mfr Safety Manual |
+| B301.1.1 | +300-B301.1 | Pressure Transmitter #1 | Drift high (above setpoint) | 4.08E-07 | S | Input comparison (2oo3 voting deviation) | 90% | 3.67E-07 | 4.08E-08 | — | — | Spurious trip contribution (1 of 3 channels high); 2oo3 prevents single-channel spurious trip | Negligible | Mfr Safety Manual |
+| B301.1.2 | +300-B301.1 | Pressure Transmitter #1 | Drift low (below setpoint) | 4.08E-07 | D | Input comparison (2oo3 voting deviation) | 90% | — | — | 3.67E-07 | 4.08E-08 | One channel reads low; does not trip on demand. 2oo3 degraded to 2oo2. | Marginal | Mfr Safety Manual |
+| B301.1.3 | +300-B301.1 | Pressure Transmitter #1 | Fixed output (mid-range, within normal band) | 6.80E-07 | D | Input comparison (2oo3 voting deviation) | 60% | — | — | 4.08E-07 | 2.72E-07 | One channel stuck; may not trip on demand. 2oo3 degraded to 2oo2. | Marginal | Mfr Safety Manual |
+| B301.1.4 | +300-B301.1 | Pressure Transmitter #1 | Loss of signal (< 3.6 mA) | 5.10E-07 | S | Input range check (under-range detection) | 99% | 5.05E-07 | 5.10E-09 | — | — | Signal loss detected; channel flagged invalid. De-energize-to-trip: loss treated as safe. | Negligible | Mfr Safety Manual |
+| B301.1.5 | +300-B301.1 | Pressure Transmitter #1 | Sensor element failure (zero shift) | 5.44E-07 | D | Input comparison (2oo3 voting deviation) | 60% | — | — | 3.26E-07 | 2.18E-07 | Sensor reads incorrect value; may not trip. 2oo3 degraded to 2oo2. | Marginal | Mfr Safety Manual |
+| B301.1.6 | +300-B301.1 | Pressure Transmitter #1 | Electronics failure (output saturates high, > 21 mA) | 5.10E-07 | S | Input range check (over-range detection) | 99% | 5.05E-07 | 5.10E-09 | — | — | Output high; appears as overpressure. 2oo3 prevents single-channel spurious trip. | Negligible | Mfr Safety Manual |
+| B301.1.7 | +300-B301.1 | Pressure Transmitter #1 | Electronics failure (output saturates low) | 3.40E-07 | D | Input range check (under-range detection) | 90% | — | — | 3.06E-07 | 3.40E-08 | Output low; does not trip. 2oo3 degraded to 2oo2. | Marginal | Mfr Safety Manual |
 
 **Transmitter #1 summary totals:**
 
@@ -616,7 +635,7 @@ SFF = 2.84E-06 / 3.40E-06
 SFF = 0.834 (83.4%)
 ```
 
-Transmitters B301.2 and B301.3 are identical type and model; the same failure mode analysis applies with the same rates. Items 8-14 (B301.2) and 15-21 (B301.3) would repeat the above table with updated item numbers and device tags.
+Transmitters B301.2 and B301.3 are identical type and model; the same failure mode analysis applies with the same rates. Items B301.2.1–B301.2.7 and B301.3.1–B301.3.7 repeat the above table with updated device tags.
 
 #### 7.2.2 Logic Solver Subsystem — Safety PLC (1oo1)
 
@@ -625,15 +644,15 @@ Total safety-relevant failure rate: lambda_total = 1.50E-06 per hour.
 
 | Item | Device Tag | Device Description | Failure Mode | lambda (per hr) | S/D/NE | Detection Method | DC% | lambda_SD | lambda_SU | lambda_DD | lambda_DU | Effect on SF | Severity | Data Source |
 |------|------------|-------------------|-------------|-----------------|--------|-----------------|-----|-----------|-----------|-----------|-----------|-------------|----------|-------------|
-| 22 | Sheet 201 Logic | Safety PLC — AI Module | Input reads high (all 3 channels) | 7.50E-08 | S | Self-test, cross-channel comparison | 99% | 7.43E-08 | 7.50E-10 | — | — | All inputs read high; 2oo3 trips; spurious trip | Marginal | Mfr Safety Manual |
-| 23 | Sheet 201 Logic | Safety PLC — AI Module | Input reads low (single channel) | 7.50E-08 | D | Self-test, range monitoring | 95% | — | — | 7.13E-08 | 3.75E-09 | One input reads low; does not trip. Voting degraded. | Marginal | Mfr Safety Manual |
-| 24 | Sheet 201 Logic | Safety PLC — AI Module | Input stuck at last value | 1.50E-07 | D | Heartbeat monitoring, deviation check | 60% | — | — | 9.00E-08 | 6.00E-08 | Input frozen; may not detect pressure rise. | Marginal | Mfr Safety Manual |
-| 25 | Sheet 201 Logic | Safety PLC — CPU | CPU stops / halts | 3.00E-07 | S | Independent watchdog (separate time base) | 99% | 2.97E-07 | 3.00E-09 | — | — | Watchdog trips; outputs de-energize (safe state) | Negligible | Mfr Safety Manual |
-| 26 | Sheet 201 Logic | Safety PLC — CPU | CPU logic corruption | 1.50E-07 | D | Program flow monitoring, CRC checks | 90% | — | — | 1.35E-07 | 1.50E-08 | Incorrect computation; may not trip correctly | Critical | Mfr Safety Manual |
-| 27 | Sheet 201 Logic | Safety PLC — DO Module | Output stuck ON (energized) | 2.25E-07 | D | Output readback monitoring | 90% | — | — | 2.03E-07 | 2.25E-08 | Cannot de-energize relay; safety function fails | Critical | Mfr Safety Manual |
-| 28 | Sheet 201 Logic | Safety PLC — DO Module | Output stuck OFF (de-energized) | 2.25E-07 | S | Output readback monitoring | 90% | 2.03E-07 | 2.25E-08 | — | — | Output off; relay de-energizes; spurious trip | Marginal | Mfr Safety Manual |
-| 29 | Sheet 201 Logic | Safety PLC — Power Supply | Loss of internal power | 1.50E-07 | S | Power supply monitoring | 99% | 1.49E-07 | 1.50E-09 | — | — | PLC loses power; outputs de-energize; spurious trip | Marginal | Mfr Safety Manual |
-| 30 | Sheet 201 Logic | Safety PLC — Communication | Internal bus failure | 1.50E-07 | D | Communication timeout monitoring | 95% | — | — | 1.43E-07 | 7.50E-09 | Voting cannot execute; response depends on failsafe config | Marginal | Mfr Safety Manual |
+| A201.1.1 | +200-A201.1 | Safety PLC — AI Module | Input reads high (all 3 channels) | 7.50E-08 | S | Self-test, cross-channel comparison | 99% | 7.43E-08 | 7.50E-10 | — | — | All inputs read high; 2oo3 trips; spurious trip | Marginal | Mfr Safety Manual |
+| A201.1.2 | +200-A201.1 | Safety PLC — AI Module | Input reads low (single channel) | 7.50E-08 | D | Self-test, range monitoring | 95% | — | — | 7.13E-08 | 3.75E-09 | One input reads low; does not trip. Voting degraded. | Marginal | Mfr Safety Manual |
+| A201.1.3 | +200-A201.1 | Safety PLC — AI Module | Input stuck at last value | 1.50E-07 | D | Heartbeat monitoring, deviation check | 60% | — | — | 9.00E-08 | 6.00E-08 | Input frozen; may not detect pressure rise. | Marginal | Mfr Safety Manual |
+| A201.1.4 | +200-A201.1 | Safety PLC — CPU | CPU stops / halts | 3.00E-07 | S | Independent watchdog (separate time base) | 99% | 2.97E-07 | 3.00E-09 | — | — | Watchdog trips; outputs de-energize (safe state) | Negligible | Mfr Safety Manual |
+| A201.1.5 | +200-A201.1 | Safety PLC — CPU | CPU logic corruption | 1.50E-07 | D | Program flow monitoring, CRC checks | 90% | — | — | 1.35E-07 | 1.50E-08 | Incorrect computation; may not trip correctly | Critical | Mfr Safety Manual |
+| A201.1.6 | +200-A201.1 | Safety PLC — DO Module | Output stuck ON (energized) | 2.25E-07 | D | Output readback monitoring | 90% | — | — | 2.03E-07 | 2.25E-08 | Cannot de-energize relay; safety function fails | Critical | Mfr Safety Manual |
+| A201.1.7 | +200-A201.1 | Safety PLC — DO Module | Output stuck OFF (de-energized) | 2.25E-07 | S | Output readback monitoring | 90% | 2.03E-07 | 2.25E-08 | — | — | Output off; relay de-energizes; spurious trip | Marginal | Mfr Safety Manual |
+| A201.1.8 | +200-A201.1 | Safety PLC — Power Supply | Loss of internal power | 1.50E-07 | S | Power supply monitoring | 99% | 1.49E-07 | 1.50E-09 | — | — | PLC loses power; outputs de-energize; spurious trip | Marginal | Mfr Safety Manual |
+| A201.1.9 | +200-A201.1 | Safety PLC — Communication | Internal bus failure | 1.50E-07 | D | Communication timeout monitoring | 95% | — | — | 1.43E-07 | 7.50E-09 | Voting cannot execute; response depends on failsafe config | Marginal | Mfr Safety Manual |
 
 **Logic Solver summary totals:**
 
@@ -662,12 +681,12 @@ Total failure rate: lambda_total = 5.00E-07 per hour.
 
 | Item | Device Tag | Device Description | Failure Mode | lambda (per hr) | S/D/NE | Detection Method | DC% | lambda_SD | lambda_SU | lambda_DD | lambda_DU | Effect on SF | Severity | Data Source |
 |------|------------|-------------------|-------------|-----------------|--------|-----------------|-----|-----------|-----------|-----------|-----------|-------------|----------|-------------|
-| 31 | +200-K201.1 | Safety Relay | Coil open circuit | 1.00E-07 | S | Coil current monitoring | 90% | 9.00E-08 | 1.00E-08 | — | — | Relay de-energizes; valve closes; spurious trip | Marginal | Mfr Safety Manual |
-| 32 | +200-K201.1 | Safety Relay | Coil short circuit | 5.00E-08 | S | Coil current monitoring / fuse blow | 90% | 4.50E-08 | 5.00E-09 | — | — | Fuse blows or overcurrent; relay de-energizes; spurious trip | Marginal | Mfr Safety Manual |
-| 33 | +200-K201.1 | Safety Relay | Contact weld (N.O. power contact) | 1.50E-07 | D | Force-guided contact feedback | 90% | — | — | 1.35E-07 | 1.50E-08 | Contact stuck closed; relay cannot de-energize valve; safety function fails | Critical | Mfr Safety Manual |
-| 34 | +200-K201.1 | Safety Relay | Contact fail open (N.O. power contact) | 5.00E-08 | S | Output monitoring / valve position feedback | 90% | 4.50E-08 | 5.00E-09 | — | — | Contact open; valve closes; spurious trip | Marginal | Mfr Safety Manual |
-| 35 | +200-K201.1 | Safety Relay | Contact high resistance | 5.00E-08 | D | None (gradual degradation) | 0% | — | — | 0.00E+00 | 5.00E-08 | Increased resistance may prevent valve operation at reduced voltage | Marginal | Engineering Est. |
-| 36 | +200-K201.1 | Safety Relay | Mechanical binding (armature stuck energized) | 1.00E-07 | D | Force-guided contact feedback | 90% | — | — | 9.00E-08 | 1.00E-08 | Relay cannot de-energize; safety function fails | Critical | Mfr Safety Manual |
+| K201.1.1 | +200-K201.1 | Safety Relay | Coil open circuit | 1.00E-07 | S | Coil current monitoring | 90% | 9.00E-08 | 1.00E-08 | — | — | Relay de-energizes; valve closes; spurious trip | Marginal | Mfr Safety Manual |
+| K201.1.2 | +200-K201.1 | Safety Relay | Coil short circuit | 5.00E-08 | S | Coil current monitoring / fuse blow | 90% | 4.50E-08 | 5.00E-09 | — | — | Fuse blows or overcurrent; relay de-energizes; spurious trip | Marginal | Mfr Safety Manual |
+| K201.1.3 | +200-K201.1 | Safety Relay | Contact weld (N.O. power contact) | 1.50E-07 | D | Force-guided contact feedback | 90% | — | — | 1.35E-07 | 1.50E-08 | Contact stuck closed; relay cannot de-energize valve; safety function fails | Critical | Mfr Safety Manual |
+| K201.1.4 | +200-K201.1 | Safety Relay | Contact fail open (N.O. power contact) | 5.00E-08 | S | Output monitoring / valve position feedback | 90% | 4.50E-08 | 5.00E-09 | — | — | Contact open; valve closes; spurious trip | Marginal | Mfr Safety Manual |
+| K201.1.5 | +200-K201.1 | Safety Relay | Contact high resistance | 5.00E-08 | D | None (gradual degradation) | 0% | — | — | 0.00E+00 | 5.00E-08 | Increased resistance may prevent valve operation at reduced voltage | Marginal | Engineering Est. |
+| K201.1.6 | +200-K201.1 | Safety Relay | Mechanical binding (armature stuck energized) | 1.00E-07 | D | Force-guided contact feedback | 90% | — | — | 9.00E-08 | 1.00E-08 | Relay cannot de-energize; safety function fails | Critical | Mfr Safety Manual |
 
 **Final Element summary totals:**
 
@@ -927,8 +946,8 @@ IEC 61511-1 allows prior use justification for proven-in-use devices in the proc
 **Revised Final Element with enhanced diagnostics (Option B):**
 
 If contact weld DC is increased from 90% to 99% (enhanced feedback monitoring):
-- Item 33 revised: lambda_DD = 1.49E-07, lambda_DU = 1.50E-09
-- Contact high resistance (Item 35): add monitoring, DC = 60%: lambda_DD = 3.00E-08, lambda_DU = 2.00E-08
+- K201.1.3 revised: lambda_DD = 1.49E-07, lambda_DU = 1.50E-09
+- Contact high resistance (K201.1.5): add monitoring, DC = 60%: lambda_DD = 3.00E-08, lambda_DU = 2.00E-08
 
 Revised totals:
 ```
@@ -1108,38 +1127,38 @@ The FMEA identifies what can fail; the proof test defines how to find those fail
 
 | FMEA Item | Failure Mode | Proof Test Action | Pass Criteria | Partial/Comprehensive |
 |-----------|-------------|-------------------|---------------|----------------------|
-| 1,8,15 | Drift high | Apply known pressure at multiple points across range; verify output within tolerance | Output within +/-0.5% of applied pressure at each test point | Comprehensive |
-| 2,9,16 | Drift low | Apply known pressure at multiple points across range; verify output within tolerance | Output within +/-0.5% of applied pressure at each test point | Comprehensive |
-| 3,10,17 | Fixed output | Apply pressure step change; verify output responds | Output tracks applied pressure within response time specification | Comprehensive |
-| 4,11,18 | Loss of signal | Disconnect transmitter; verify logic solver detects fault and alarms | Fault alarm within diagnostic cycle time | Partial |
-| 5,12,19 | Sensor element failure | Apply known pressure; verify accuracy at zero, mid-range, and full-scale | Zero within +/-0.1%, span within +/-0.5% | Comprehensive |
-| 6,13,20 | Electronics failure (high) | Verify over-range detection; check transmitter diagnostics | Transmitter internal diagnostics report no faults | Partial |
-| 7,14,21 | Electronics failure (low) | Verify under-range detection; apply pressure and confirm response | Transmitter responds to applied pressure | Comprehensive |
+| B301.x.1 | Drift high | Apply known pressure at multiple points across range; verify output within tolerance | Output within +/-0.5% of applied pressure at each test point | Comprehensive |
+| B301.x.2 | Drift low | Apply known pressure at multiple points across range; verify output within tolerance | Output within +/-0.5% of applied pressure at each test point | Comprehensive |
+| B301.x.3 | Fixed output | Apply pressure step change; verify output responds | Output tracks applied pressure within response time specification | Comprehensive |
+| B301.x.4 | Loss of signal | Disconnect transmitter; verify logic solver detects fault and alarms | Fault alarm within diagnostic cycle time | Partial |
+| B301.x.5 | Sensor element failure | Apply known pressure; verify accuracy at zero, mid-range, and full-scale | Zero within +/-0.1%, span within +/-0.5% | Comprehensive |
+| B301.x.6 | Electronics failure (high) | Verify over-range detection; check transmitter diagnostics | Transmitter internal diagnostics report no faults | Partial |
+| B301.x.7 | Electronics failure (low) | Verify under-range detection; apply pressure and confirm response | Transmitter responds to applied pressure | Comprehensive |
 
 #### 10.5.2 Logic Solver Proof Test Actions (Safety PLC, Sheet 201)
 
 | FMEA Item | Failure Mode | Proof Test Action | Pass Criteria | Partial/Comprehensive |
 |-----------|-------------|-------------------|---------------|----------------------|
-| 22 | Input reads high | Apply simulated input; verify logic solver reads correct value | Displayed value within +/-0.25% of simulated input | Comprehensive |
-| 23 | Input reads low | Apply simulated input; verify logic solver reads correct value | Displayed value within +/-0.25% of simulated input | Comprehensive |
-| 24 | Input stuck | Apply step change to input; verify logic solver value updates | Value updates within one scan cycle | Comprehensive |
-| 25 | CPU stops | Verify watchdog function by monitoring diagnostic outputs | Watchdog test passes; diagnostic LED status normal | Partial |
-| 26 | Logic corruption | Inject simulated trip condition (2oo3); verify correct output response | Output de-energizes within specified response time | Comprehensive |
-| 27 | Output stuck ON | Command output OFF; verify output de-energizes | Output confirmed de-energized by readback | Comprehensive |
-| 28 | Output stuck OFF | Command output ON; verify output energizes | Output confirmed energized by readback | Partial |
-| 29 | Power supply failure | Verify power supply diagnostics; check voltage levels | Supply voltage within specification; diagnostics normal | Partial |
-| 30 | Communication failure | Verify communication status; check diagnostic counters | No communication errors; counters normal | Partial |
+| A201.1.1 | Input reads high | Apply simulated input; verify logic solver reads correct value | Displayed value within +/-0.25% of simulated input | Comprehensive |
+| A201.1.2 | Input reads low | Apply simulated input; verify logic solver reads correct value | Displayed value within +/-0.25% of simulated input | Comprehensive |
+| A201.1.3 | Input stuck | Apply step change to input; verify logic solver value updates | Value updates within one scan cycle | Comprehensive |
+| A201.1.4 | CPU stops | Verify watchdog function by monitoring diagnostic outputs | Watchdog test passes; diagnostic LED status normal | Partial |
+| A201.1.5 | Logic corruption | Inject simulated trip condition (2oo3); verify correct output response | Output de-energizes within specified response time | Comprehensive |
+| A201.1.6 | Output stuck ON | Command output OFF; verify output de-energizes | Output confirmed de-energized by readback | Comprehensive |
+| A201.1.7 | Output stuck OFF | Command output ON; verify output energizes | Output confirmed energized by readback | Partial |
+| A201.1.8 | Power supply failure | Verify power supply diagnostics; check voltage levels | Supply voltage within specification; diagnostics normal | Partial |
+| A201.1.9 | Communication failure | Verify communication status; check diagnostic counters | No communication errors; counters normal | Partial |
 
 #### 10.5.3 Final Element Proof Test Actions (Safety Relay +200-K201.1)
 
 | FMEA Item | Failure Mode | Proof Test Action | Pass Criteria | Partial/Comprehensive |
 |-----------|-------------|-------------------|---------------|----------------------|
-| 31 | Coil open circuit | De-energize relay; measure coil resistance | Coil resistance within manufacturer specification | Comprehensive |
-| 32 | Coil short circuit | Energize relay; measure coil current | Coil current within manufacturer specification | Comprehensive |
-| 33 | Contact weld (N.O.) | De-energize relay; verify all N.O. contacts open | Contact resistance > 10 MOhm when de-energized; force-guided feedback confirms open | Comprehensive |
-| 34 | Contact fail open | Energize relay; verify all N.O. contacts close | Contact resistance < 100 mOhm when energized; load circuit continuity confirmed | Comprehensive |
-| 35 | Contact high resistance | Energize relay; measure contact voltage drop under load | Voltage drop < 0.5V at rated current | Comprehensive |
-| 36 | Mechanical binding | Full cycle test: energize and de-energize multiple times; verify consistent operation | Relay operates within specified response time for 5 consecutive cycles | Comprehensive |
+| K201.1.1 | Coil open circuit | De-energize relay; measure coil resistance | Coil resistance within manufacturer specification | Comprehensive |
+| K201.1.2 | Coil short circuit | Energize relay; measure coil current | Coil current within manufacturer specification | Comprehensive |
+| K201.1.3 | Contact weld (N.O.) | De-energize relay; verify all N.O. contacts open | Contact resistance > 10 MOhm when de-energized; force-guided feedback confirms open | Comprehensive |
+| K201.1.4 | Contact fail open | Energize relay; verify all N.O. contacts close | Contact resistance < 100 mOhm when energized; load circuit continuity confirmed | Comprehensive |
+| K201.1.5 | Contact high resistance | Energize relay; measure contact voltage drop under load | Voltage drop < 0.5V at rated current | Comprehensive |
+| K201.1.6 | Mechanical binding | Full cycle test: energize and de-energize multiple times; verify consistent operation | Relay operates within specified response time for 5 consecutive cycles | Comprehensive |
 
 ### 10.6 End-to-End Trip Test
 
@@ -1306,17 +1325,17 @@ Every FMEA shall include a Coverage Analysis table as an appendix. The table lis
 
 | BOM Device Tag | Description | Parent Sheet | FMEA Entry | Failure Modes Analyzed | Covered? | Justification |
 |----------------|-------------|:------------:|------------|----------------------|----------|---------------|
-| +300-B301.1 | Pressure Transmitter #1 | 301 | Items 1.1–1.3 | Drift low, drift high, frozen, loss of signal | YES | — |
-| +300-B301.2 | Pressure Transmitter #2 | 301 | Items 2.1–2.3 | Drift low, drift high, frozen, loss of signal | YES | — |
-| +300-B301.3 | Pressure Transmitter #3 | 302 | Items 3.1–3.3 | Drift low, drift high, frozen, loss of signal | YES | — |
-| CBL-301-01 | Signal cable, B301.1 to +200 | — | Item 1.1 (root cause) | Open circuit, short circuit | YES | — |
-| CBL-301-02 | Signal cable, B301.2 to +200 | — | Item 2.1 (root cause) | Open circuit, short circuit | YES | — |
-| CBL-301-03 | Signal cable, B301.3 to +200 | — | Item 3.1 (root cause) | Open circuit, short circuit | YES | — |
-| +300-X315.1 | Field junction box terminal strip | 315 | — | — | EXCLUDED | Passive device; connection failures covered as root causes under "signal loss" modes (Items 1.1, 2.1, 3.1). Terminal strip failure presents identically to cable open circuit at the detection point. |
+| +300-B301.1 | Pressure Transmitter #1 | 301 | B301.1.1–B301.1.7 | Drift low, drift high, frozen, loss of signal, sensor fail, electronics fail | YES | — |
+| +300-B301.2 | Pressure Transmitter #2 | 301 | B301.2.1–B301.2.7 | Drift low, drift high, frozen, loss of signal, sensor fail, electronics fail | YES | — |
+| +300-B301.3 | Pressure Transmitter #3 | 301 | B301.3.1–B301.3.7 | Drift low, drift high, frozen, loss of signal, sensor fail, electronics fail | YES | — |
+| CBL-301-01 | Signal cable, B301.1 to +200 | — | B301.1.4 (root cause) | Open circuit, short circuit | YES | — |
+| CBL-301-02 | Signal cable, B301.2 to +200 | — | B301.2.4 (root cause) | Open circuit, short circuit | YES | — |
+| CBL-301-03 | Signal cable, B301.3 to +200 | — | B301.3.4 (root cause) | Open circuit, short circuit | YES | — |
+| +300-X315.1 | Field junction box terminal strip | 315 | — | — | EXCLUDED | Passive device; connection failures covered as root causes under "signal loss" modes (B301.1.4, B301.2.4, B301.3.4). Terminal strip failure presents identically to cable open circuit at the detection point. |
 | +200-X201.1 | Cabinet terminal strip | 201 | — | — | EXCLUDED | Same justification as +300-X315.1. |
-| Sheet 201 Logic | Safety PLC (AI, CPU, DO, PSU) | 201 | Items 4.1–4.5 | Input fail, CPU halt, output stuck, logic corruption, PSU fail | YES | — |
-| +200-K201.1 | Safety Relay | 201 | Items 5.1–5.3 | Coil fail, contact weld, mechanical binding | YES | — |
-| +200-F201.1 | Control fuse (relay circuit) | 201 | — | — | GAP | **Action: Add fuse failure modes.** Fuse open = safe (relay de-energizes). Fuse fails to clear on short = dangerous. Add as root cause under Item 5.x. |
+| +200-A201.1 | Safety PLC (AI, CPU, DO, PSU) | 201 | A201.1.1–A201.1.9 | Input fail, CPU halt, output stuck, logic corruption, PSU fail, comm fail | YES | — |
+| +200-K201.1 | Safety Relay | 201 | K201.1.1–K201.1.6 | Coil fail, contact weld, contact open, high resistance, mechanical binding | YES | — |
+| +200-F201.1 | Control fuse (relay circuit) | 201 | — | — | GAP | **Action: Add fuse failure modes.** Fuse open = safe (relay de-energizes). Fuse fails to clear on short = dangerous. Add as root cause under K201.1.x. |
 
 ### 12.5 Coverage Metrics
 
