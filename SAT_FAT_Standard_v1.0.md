@@ -41,8 +41,9 @@ This standard covers three testing phases:
 
 | Phase | When | Where | Purpose |
 |-------|------|-------|---------|
-| **FAT** | After panel/system assembly, before shipment | Factory/shop | Verify construction matches drawings; verify logic and wiring in controlled environment |
-| **SAT** | After installation, before process introduction | Site | Verify field installation, end-to-end functionality with actual field devices |
+| **Prerequisite Checks** | Before FAT/SAT | Factory or site | Point-to-point wiring verification, insulation testing, power-up checks. These are construction verification, not system testing. |
+| **FAT** | After panel/system assembly, before shipment | Factory/shop | Complete system test — same procedure as SAT. Deviations from SAT (e.g., simulated field devices) documented and justified. |
+| **SAT** | After installation, before process introduction | Site | Complete system test — same procedure as FAT, executed with actual field devices and site conditions. |
 | **Proof Test** | Periodically during operation | Site | Verify SIS functionality has not degraded; detect dangerous undetected failures |
 
 This standard applies to:
@@ -62,15 +63,20 @@ This standard does **not** define:
 
 ### 1.3 Design Philosophy
 
+**FAT and SAT are the same test.** The FAT procedure is the SAT procedure, executed in the factory. Any element of the SAT that cannot be performed during FAT must be documented and justified in the FAT deviation log. The goal is to discover every possible issue before the system leaves the shop.
+
+**Point-to-point wiring, insulation resistance, and power-up checks are prerequisite construction verifications — not part of FAT or SAT.** These checks confirm the system is built correctly and safe to energize. They are completed and signed off before FAT begins. FAT and SAT are system-level functional tests that assume construction verification is already complete.
+
 **The drawing is the source of truth for what to test.** Every test step verifies something shown on a drawing --- a device, a wire, a logic function, a signal path.
 
 **The FMEA is the source of truth for what failure modes to cover.** For safety systems, the FMEA identifies which failure modes must be detected during proof testing and which diagnostic functions must be verified during FAT/SAT.
 
 Principles:
 
+- **FAT = SAT.** Same procedure, same acceptance criteria. The only permitted differences are physical constraints of the factory environment (e.g., no actual field devices), and these are documented deviations, not reduced scope.
+- **Construction checks are prerequisites, not test steps.** Continuity, megger, power-up are completed before FAT begins. They appear on the prerequisite checklist, not in the test procedure.
 - Test procedures are derived from drawings and FMEAs, not invented independently.
 - Test step numbering traces directly to drawing sheet numbers for immediate cross-reference.
-- Test scope scales with safety criticality: non-safety systems receive functional testing; SIS receives full end-to-end testing including fault injection and response time measurement.
 - A test procedure is only as good as the drawing it references. If the drawing is incomplete, the test will be incomplete.
 - Test records provide objective evidence of SIS validation per IEC 61511 clause 12.
 
@@ -171,147 +177,125 @@ HA-PRES-001 ──► SF-PRES-001 ──► FMEA 201.1 ──► Sheet 201 ─�
 
 ## 5. FAT --- Factory Acceptance Testing
 
-### 5.1 Purpose and Timing
+### 5.1 Core Principle: FAT = SAT
 
-Factory acceptance testing verifies that a control panel or assembled system:
+**The FAT procedure is the SAT procedure.** FAT executes the same test steps, with the same acceptance criteria, as SAT. The factory test is a complete system test, not a reduced-scope construction check.
 
-- Is built according to the engineering drawings
-- Contains the correct components per the bill of materials
-- Has correct wiring per the wiring diagrams
-- Executes its control and safety logic correctly
-- Meets insulation and power quality requirements
+Where a SAT test step cannot be performed during FAT (typically because field devices are not physically present), the step is documented as a **FAT deviation** with justification. The deviation is carried forward to the SAT for completion.
 
-**Timing:** FAT is performed after panel assembly is complete and before the panel is shipped to site. FAT is conducted at the panel shop or system integrator's facility.
+This means:
+- The FAT step numbering matches the SAT step numbering (FAT 201-020 tests the same thing as SAT 201-020)
+- Any step that passes at FAT does not need re-execution at SAT unless the system was modified after FAT
+- Any step marked as a FAT deviation is mandatory during SAT
 
-**Key constraint:** Field devices are not present during FAT. Sensor inputs are simulated at input terminals. Final element outputs are verified at output terminals or with test loads.
+### 5.2 Prerequisite Checks (Not Part of FAT)
 
-### 5.2 FAT Prerequisites
+The following construction verification checks are completed **before** FAT begins. They are prerequisites, not test steps. They have their own sign-off and are not included in the FAT/SAT procedure.
 
-Before FAT can begin, the following must be complete and available:
+#### 5.2.1 Point-to-Point Wiring Verification
 
-| Prerequisite | Document/Evidence | Verification |
-|-------------|-------------------|--------------|
-| Engineering drawings issued for construction | Drawing set per Drawing Standard v1.1, stamped "Approved for Construction" | Drawing revision confirmed current |
-| FMEA complete and approved (safety systems) | FMEA document per FMEA Standard v1.0 | FMEA revision confirmed current |
-| Safety function specification available | SF-XXX-NNN from HA Standard | SF document revision confirmed |
-| Panel assembly complete | Panel builder's QC sign-off | Visual inspection confirms completion |
-| Test equipment calibrated | Calibration certificates for all test instruments | Certificates in date, traceable to national standard |
-| FAT procedure approved | This FAT document, reviewed and signed | Signatures on cover page |
-| Witness notification | Written notice to client/end-user/TUV as required | Notice sent with adequate lead time |
+| Check | Method | Acceptance Criteria |
+|-------|--------|-------------------|
+| Continuity | Ohmmeter on each wire, verify endpoints match drawing | < 1 ohm, correct endpoints per wire schedule |
+| Earth continuity | Low-resistance ohmmeter on PE conductors | < 0.1 ohm to earth bus |
+| Wire labels | Verify each wire label matches drawing wire number | All labels match Drawing Standard format |
 
-### 5.3 FAT Scope by Sheet Type
+#### 5.2.2 Insulation Resistance Testing
 
-#### 5.3.1 Control Panel Sheets (All)
+| Test | Method | Acceptance Criteria |
+|------|--------|-------------------|
+| Circuit to earth | 500V DC megger between each circuit and earth | > 1 M-ohm (or per applicable code) |
+| Circuit to circuit | 500V DC megger between adjacent circuits | > 1 M-ohm (or per applicable code) |
 
-All control panels receive the following FAT scope:
+#### 5.2.3 Power-Up Checks
 
-1. Visual and mechanical inspection
-2. Wiring verification against drawings
-3. Component verification against BOM
-4. Insulation resistance testing (megger)
-5. Power-up and voltage verification
-6. Functional test of control logic
+| Test | Method | Acceptance Criteria |
+|------|--------|-------------------|
+| Input voltage | Measure at main terminals | Within +/- 10% of rated voltage |
+| DC supply output | Measure at power supply output terminals | 24.0 +/- 1.0 V DC |
+| DC at last device | Measure at furthest device from supply | > 20.4 V DC (per device requirements) |
+| Current draw (no load) | Measure supply output current | Within expected range per design calc |
+| Ripple voltage | Oscilloscope on DC bus | < 200 mV peak-to-peak |
 
-#### 5.3.2 Safety System Sheets (Additional)
-
-Safety-rated panels receive all of the above, plus:
-
-7. SIF response time measurement
-8. Diagnostic function verification (per FMEA)
-9. Fault injection testing (per FMEA failure modes)
-10. Voting logic verification (for redundant architectures)
-11. Bypass and override function testing
-12. Safe state verification on power loss
-
-### 5.4 FAT Test Categories
-
-#### 5.4.1 Visual and Mechanical Inspection
+#### 5.2.4 Visual and Mechanical Inspection
 
 | Check | Acceptance Criteria | Reference |
 |-------|-------------------|-----------|
 | Panel dimensions and layout | Match panel layout drawing | General sheet 030-series |
 | Component mounting | Secure, correct orientation, accessible | UL 508A / IEC 61439 |
-| Labels and nameplates | Correct device tags per drawing standard | Device tags per Section 5 of Drawing Standard |
+| Labels and nameplates | Correct device tags per Drawing Standard | Device tags per Drawing Standard §5 |
 | Wire routing and bundling | Neat, separated by voltage class, secured | UL 508A / applicable code |
 | Terminal tightness | All terminals torqued to manufacturer spec | Torque values per component datasheet |
-| DIN rail mounting | Components secure, spacing per manufacturer | Manufacturer installation guide |
+| BOM verification | All components installed per BOM | BOM per Drawing Standard §10.5 |
 
-#### 5.4.2 Wiring Continuity and Insulation Resistance
+#### 5.2.5 Prerequisite Sign-Off
 
-| Test | Method | Acceptance Criteria |
-|------|--------|-------------------|
-| Point-to-point continuity | Ohmmeter on each wire, verify endpoints match drawing | < 1 ohm, correct endpoints per wire schedule |
-| Insulation resistance (megger) | 500V DC megger between each circuit and earth, between circuits | > 1 M-ohm (or per applicable code) |
-| Earth continuity | Low-resistance ohmmeter on PE conductors | < 0.1 ohm to earth bus |
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     PREREQUISITE CHECKS — SIGN-OFF                          │
+│                                                                             │
+│ System: [System Description]       Sheet(s): [Sheet Numbers]                │
+│                                                                             │
+│ [ ] Point-to-point wiring verification complete    Ref: ___________         │
+│ [ ] Insulation resistance testing complete         Ref: ___________         │
+│ [ ] Power-up checks complete                       Ref: ___________         │
+│ [ ] Visual and mechanical inspection complete      Ref: ___________         │
+│ [ ] BOM verification complete                      Ref: ___________         │
+│                                                                             │
+│ All prerequisites PASS. System is ready for FAT.                            │
+│                                                                             │
+│ Signed: ____________  Title: ____________  Date: _________                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
-#### 5.4.3 Power Supply Verification
+### 5.3 FAT Prerequisites
 
-| Test | Method | Acceptance Criteria |
-|------|--------|-------------------|
-| Input voltage | Measure at main terminals | Within +/- 10% of rated voltage |
-| 24V DC supply output | Measure at power supply output terminals | 24.0 +/- 1.0 V DC |
-| 24V DC at last device on rail | Measure at furthest device from supply | > 20.4 V DC (per device requirements) |
-| Current draw (no load) | Measure supply output current, no field wiring | Within expected range per design calc |
-| Ripple voltage | Oscilloscope on DC bus | < 200 mV peak-to-peak |
+Before FAT can begin, the following must be complete:
 
-#### 5.4.4 I/O Loop Simulation
+| Prerequisite | Document/Evidence | Verification |
+|-------------|-------------------|--------------|
+| Prerequisite checks complete and signed | Prerequisite sign-off sheet (§5.2.5) | All checks PASS |
+| Engineering drawings issued for construction | Drawing set per Drawing Standard v1.1 | Drawing revision confirmed current |
+| FMEA complete and approved (safety systems) | FMEA document per FMEA Standard v1.0 | FMEA revision confirmed current |
+| Safety function specification available | SF-XXX-NNN from HA Standard | SF document revision confirmed |
+| Test equipment calibrated | Calibration certificates for all test instruments | Certificates in date |
+| FAT procedure approved | This FAT document, reviewed and signed | Signatures on cover page |
+| Witness notification | Written notice to client/end-user/TUV | Notice sent with adequate lead time |
 
-For each input and output shown on the drawing:
+### 5.4 FAT Test Procedure
 
-| Test | Method | Acceptance Criteria |
-|------|--------|-------------------|
-| Analog input simulation | Inject 4-20 mA at input terminals, verify logic solver reads correct value | Within +/- 0.1% of injected signal |
-| Discrete input simulation | Apply/remove signal at input terminals, verify logic solver state change | Correct state, correct polarity |
-| Analog output verification | Command output from logic solver, measure at output terminals | Within +/- 0.1% of commanded signal |
-| Discrete output verification | Command output from logic solver, verify relay/transistor state | Correct state at output terminals |
+**The FAT test procedure is identical to the SAT test procedure (Section 6.4).** The FAT executes every SAT test step using the same acceptance criteria. Refer to Section 6.4 for the complete test procedure.
 
-#### 5.4.5 Logic Function Verification
+For each test step, the FAT records one of three results:
 
-Test the truth table for each logic function shown on the drawings. For safety systems, this includes:
+| Result | Meaning | Action |
+|--------|---------|--------|
+| **PASS** | Step executed and met acceptance criteria | No re-test required at SAT (unless system modified) |
+| **FAIL** | Step executed and did not meet acceptance criteria | Correct issue, re-test at FAT. If unresolved, document on punch list. |
+| **DEVIATION** | Step could not be executed due to factory constraints | Document justification. Step is mandatory at SAT. |
 
-- Normal operating condition (all inputs in normal range)
-- Single trip condition (one input at trip setpoint)
-- Multiple trip conditions (voting logic combinations)
-- Alarm setpoints (pre-trip warnings)
-- Reset logic (manual reset requirements)
-- Timing functions (delays, time-outs)
+### 5.5 FAT Deviation Log
 
-#### 5.4.6 Safety Function End-to-End Test (Simulated)
+Any SAT test step that cannot be performed during FAT shall be recorded in the FAT Deviation Log with justification:
 
-For each safety instrumented function, inject simulated trip conditions at the input terminals and verify:
+| Step ID | SAT Test Description | Reason for Deviation | Justification | SAT Mandatory? |
+|---------|---------------------|---------------------|---------------|:--------------:|
+| 201-010 | Signal injection at field transmitter +300-B301.1 | Field device not present at factory | Transmitter not installed until site. Simulated at panel input terminals (4-20 mA injection). | YES |
+| 201-011 | Signal injection at field transmitter +300-B301.2 | Field device not present at factory | Same as above. | YES |
+| 201-012 | Signal injection at field transmitter +300-B301.3 | Field device not present at factory | Same as above. | YES |
+| 201-025 | Valve stroke test (XV-201 full closure) | Valve not present at factory | Final element tested to relay output terminals only. Valve stroke verified at SAT. | YES |
+| 201-028 | Total response time (sensor to valve closed) | Field devices and valve not present | Logic solver response time measured at FAT. Full chain response time measured at SAT. | YES |
+| 201-030 | Environmental conditions verification | Factory ≠ site environment | Factory conditions controlled. Site EMI, temperature, vibration verified at SAT. | YES |
 
-- Correct output state (safe state) at output terminals
-- Correct alarm and indication activation
-- Correct status reporting to HMI/SCADA
-- Manual reset required before return to normal (if applicable)
+**Rules for deviations:**
+- Every deviation must have a specific justification — "not available" alone is insufficient; explain *why* it's not available and what was tested instead
+- Where a deviation exists, the FAT shall test as far along the signal path as physically possible (e.g., test to relay output terminals even if the valve isn't present)
+- All deviations are mandatory at SAT — no exceptions
+- If more than 30% of test steps are deviations, the FAT scope should be reconsidered (can more of the system be assembled in the factory?)
 
-#### 5.4.7 Response Time Measurement
+### 5.6 FAT Worksheet Format
 
-| Measurement | Method | Acceptance Criteria |
-|------------|--------|-------------------|
-| Logic solver response time | Inject trip signal at input, measure time to output state change using data logger or oscilloscope | Less than maximum allowable response time per safety function specification |
-| Total simulated response time | Input trip signal to output relay actuation | Less than allocated time budget minus field device response times |
-
-#### 5.4.8 Diagnostic Coverage Verification
-
-For each diagnostic function identified in the FMEA:
-
-- Verify the logic solver reports the correct diagnostic alarm when a fault condition is simulated
-- Confirm diagnostic coverage matches FMEA assumptions
-- Document actual diagnostic behavior for each testable failure mode
-
-#### 5.4.9 Alarm and Indication Verification
-
-| Check | Method | Acceptance Criteria |
-|-------|--------|-------------------|
-| Panel-mounted indicators | Trigger each alarm condition, verify correct lamp/LED activates | Correct color, correct label, correct state |
-| Audible alarms | Trigger alarm condition, verify horn/buzzer sounds | Audible at 1 meter from panel |
-| HMI alarm points (if HMI at FAT) | Trigger alarm, verify HMI displays correct text and priority | Matches alarm philosophy document |
-| First-out indication | Trigger multiple alarms in sequence, verify first-out is captured | First alarm clearly identified |
-
-### 5.5 FAT Worksheet Format
-
-Each FAT document shall use the following worksheet format:
+The FAT worksheet is identical to the SAT worksheet (Section 6.5) with one addition: a "Deviation" column.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -323,30 +307,37 @@ Each FAT document shall use the following worksheet format:
 │ Safety Function: [SF-XXX-NNN]      SIL: [X]        HA: [HA-XXX-NNN]       │
 │ FMEA: [FMEA Sheet.Seq]                                                     │
 │                                                                             │
+│ NOTE: This FAT procedure is the SAT procedure executed in the factory.     │
+│ Steps marked DEVIATION could not be performed and are mandatory at SAT.    │
+│                                                                             │
 │ Prepared by: ____________  Date: _________  Approved by: ____________      │
 │ Witness: ________________  Date: _________  Company: ________________      │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│                         PREREQUISITES CHECKLIST                             │
+│                         PREREQUISITES                                       │
 │                                                                             │
+│ [ ] Prerequisite checks complete and signed (ref: ____________)            │
 │ [ ] Drawings issued for construction (Rev: ____)                           │
 │ [ ] FMEA approved (Rev: ____)                                              │
-│ [ ] Panel assembly complete                                                │
 │ [ ] Test equipment calibrated (see attached certificates)                  │
 │ [ ] Witness notified                                                       │
 │                                                                             │
 │ Prerequisites verified by: ____________  Date: _________                   │
 ├──────┬───────────┬───────────┬──────────┬──────────┬───────┬───────────────┤
-│ Step │ Device/   │ Test      │ Expected │ Actual   │ Pass/ │ Initials/     │
-│  ID  │ Wire Ref  │ Action    │ Result   │ Result   │ Fail  │ Date          │
+│ Step │ Device/   │ Test      │ Expected │ Actual   │ Pass/ │ Deviation     │
+│  ID  │ Wire Ref  │ Action    │ Result   │ Result   │ Fail/ │ Justification │
+│      │           │           │          │          │ Dev.  │               │
 ├──────┼───────────┼───────────┼──────────┼──────────┼───────┼───────────────┤
 │      │           │           │          │          │       │               │
-│      │           │           │          │          │       │               │
 ├──────┴───────────┴───────────┴──────────┴──────────┴───────┴───────────────┤
-│                            SIGN-OFF                                         │
+│                            SUMMARY                                          │
+│                                                                             │
+│ Total steps: ____    PASS: ____    FAIL: ____    DEVIATION: ____           │
+│ Deviation rate: ____% (target: < 30%)                                      │
 │                                                                             │
 │ FAT result:  [ ] PASS   [ ] PASS WITH PUNCH LIST   [ ] FAIL               │
 │                                                                             │
-│ Deviations / Punch List Items: (attach separate sheet if needed)           │
+│ Punch List Items: (attach separate sheet if needed)                        │
+│ Deviation Log: (attach per Section 5.5)                                    │
 │                                                                             │
 │ Contractor: ____________  Date: _________                                  │
 │ Client:     ____________  Date: _________                                  │
@@ -354,187 +345,70 @@ Each FAT document shall use the following worksheet format:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 5.6 Worked Example: FAT 201 --- Overpressure Protection Panel
+### 5.7 Worked Example: FAT 201 --- Overpressure Protection Panel
 
 **System:** Overpressure Protection, Refinery Vessel XYZ
 **Safety Function:** SF-PRES-001 (SIL 3)
 **Architecture:** 2oo3 Pressure Voting, HFT=1
-**HA Reference:** HA-PRES-001
 **FMEA:** FMEA 201.1
-**Drawing Sheets:** 201 (control logic in +200), 301 (field devices in +300)
-**Devices under test (FAT scope --- panel +200 only):**
+**Drawing Sheets:** 201 (control logic in +200), 301/302 (field devices in +300)
 
-- +200-K201.1 --- Safety Relay, Valve Close Command
-- Input terminals for +300-B301.1, +300-B301.2, +300-B301.3 (Pressure Transmitters)
-- Output terminals for shutdown valve command
-- Associated terminal strips, fuses, indicators
+**FAT executes the same procedure as SAT 201 (Section 6.6).** The following is a summary showing only the steps that differ from SAT:
 
 ```
-FAT 201 --- Overpressure Protection Panel
-Project: Refinery Vessel XYZ          SIL: 3
-Safety Function: SF-PRES-001          HA: HA-PRES-001
-FMEA: 201.1                           Architecture: 2oo3, HFT=1
+FAT 201 --- Overpressure Protection
+(Executes SAT 201 procedure — see Section 6.6 for full test steps)
 
-VISUAL AND MECHANICAL INSPECTION
+STEPS EXECUTED IDENTICALLY TO SAT (PASS/FAIL recorded):
 ─────────────────────────────────────────────────────────────────────
-Step   Device/Wire     Test Action                Expected    Pass/
- ID    Reference                                  Result      Fail
+- I/O simulation (4-20 mA injection at panel terminals)
+- 2oo3 voting logic verification (all combinations)
+- Safe state on power loss
+- Logic solver response time measurement
+- Diagnostic coverage verification (open circuit, short, out-of-range)
+- Channel discrepancy alarm
+- Bypass and override functions
+- Reset logic
+- Alarm and indication verification
+
+STEPS RECORDED AS DEVIATIONS (mandatory at SAT):
 ─────────────────────────────────────────────────────────────────────
-FAT    Sheet 201       Verify panel layout         Matches     [ ]
-201-   general         matches drawing, all        drawing
-001                    components present per BOM
-
-FAT    +200-K201.1     Verify safety relay          Correct    [ ]
-201-                   installed, correct model     model per
-002                    per BOM, nameplate legible   BOM
-
-FAT    All terminal    Verify terminal tightness   All torqued [ ]
-201-   strips on       (calibrated torque driver)  to spec
-003    Sheet 201
-
-FAT    All labels      Verify device tags match    Tags match  [ ]
-201-   Sheet 201       drawing standard format     +200-XXXX
-004                    +[Location]-[Device]         format
-                       [Sheet].[Sequence]
-
-WIRING VERIFICATION
+Step   SAT Requirement          FAT Deviation              SAT
+ ID                             Justification              Req'd
 ─────────────────────────────────────────────────────────────────────
-FAT    Wire 201-1.1    Continuity check: from      < 1 ohm,   [ ]
-201-                   +300-B301.1 input terminal   correct
-005                    to logic solver AI Ch 1      endpoints
+201-   Signal injection at      Transmitter not present.   YES
+010    field transmitter        Simulated at panel input
+       +300-B301.1              terminals (4-20 mA).
 
-FAT    Wire 201-2.1    Continuity check: from      < 1 ohm,   [ ]
-201-                   +300-B301.2 input terminal   correct
-006                    to logic solver AI Ch 2      endpoints
+201-   Signal injection at      Same as 201-010.           YES
+011    field transmitter
+       +300-B301.2
 
-FAT    Wire 201-3.1    Continuity check: from      < 1 ohm,   [ ]
-201-                   +300-B301.3 input terminal   correct
-007                    to logic solver AI Ch 3      endpoints
+201-   Signal injection at      Same as 201-010.           YES
+012    field transmitter
+       +300-B301.3
 
-FAT    Wire 201-4.1    Continuity check: from      < 1 ohm,   [ ]
-201-                   logic solver DO to           correct
-008                    +200-K201.1:A1 (coil)       endpoints
+201-   Full valve stroke test   Valve XV-201 not present.  YES
+025    (XV-201 closure)         Tested to relay output
+                                terminals. K201.1 contact
+                                state verified.
 
-FAT    Wire 201-5.1    Continuity check: from      < 1 ohm,   [ ]
-201-                   +200-K201.1 contact to      correct
-009                    shutdown valve output         endpoints
-                       terminal
+201-   Total response time      Field devices and valve    YES
+028    (sensor to valve         not present. Logic solver
+       closed)                  response time measured
+                                (0.045s). Full chain at
+                                SAT.
 
-INSULATION TESTING
-─────────────────────────────────────────────────────────────────────
-FAT    All circuits    500V DC megger, each        > 1 M-ohm  [ ]
-201-   Sheet 201       circuit to earth
-010
+201-   Environmental            Factory conditions         YES
+030    conditions check         controlled (22°C, no
+                                vibration). Site
+                                conditions at SAT.
 
-FAT    All circuits    500V DC megger, between     > 1 M-ohm  [ ]
-201-   Sheet 201       adjacent circuits
-011
-
-POWER SUPPLY VERIFICATION
-─────────────────────────────────────────────────────────────────────
-FAT    +24V rail       Measure DC supply voltage   24.0 +/-   [ ]
-201-   Sheet 201       at power supply output      1.0 V DC
-012
-
-FAT    +24V at         Measure DC at furthest      > 20.4 V   [ ]
-201-   +200-K201.1     device from supply          DC
-013
-
-I/O LOOP SIMULATION
-─────────────────────────────────────────────────────────────────────
-FAT    +300-B301.1     Inject 4 mA at input        Logic       [ ]
-201-   input terminals  terminal (0% pressure)     solver
-014                                                 reads 0%
-
-FAT    +300-B301.1     Inject 20 mA at input       Logic       [ ]
-201-   input terminals  terminal (100% pressure)   solver
-015                                                 reads 100%
-
-FAT    +300-B301.2     Inject 4 mA at input        Logic       [ ]
-201-   input terminals  terminal (0% pressure)     solver
-016                                                 reads 0%
-
-FAT    +300-B301.2     Inject 20 mA at input       Logic       [ ]
-201-   input terminals  terminal (100% pressure)   solver
-017                                                 reads 100%
-
-FAT    +300-B301.3     Inject 4 mA at input        Logic       [ ]
-201-   input terminals  terminal (0% pressure)     solver
-018                                                 reads 0%
-
-FAT    +300-B301.3     Inject 20 mA at input       Logic       [ ]
-201-   input terminals  terminal (100% pressure)   solver
-019                                                 reads 100%
-
-LOGIC FUNCTION VERIFICATION (2oo3 VOTING)
-─────────────────────────────────────────────────────────────────────
-FAT    B301.1 only     Inject trip signal on       No trip     [ ]
-201-                   Ch 1 only (> setpoint)      (1oo3 = no
-020                                                 action)
-
-FAT    B301.2 only     Inject trip signal on       No trip     [ ]
-201-                   Ch 2 only (> setpoint)      (1oo3 = no
-021                                                 action)
-
-FAT    B301.3 only     Inject trip signal on       No trip     [ ]
-201-                   Ch 3 only (> setpoint)      (1oo3 = no
-022                                                 action)
-
-FAT    B301.1 +        Inject trip on Ch 1 and     TRIP:       [ ]
-201-   B301.2          Ch 2 simultaneously         K201.1
-023                                                 de-energizes
-
-FAT    B301.1 +        Inject trip on Ch 1 and     TRIP:       [ ]
-201-   B301.3          Ch 3 simultaneously         K201.1
-024                                                 de-energizes
-
-FAT    B301.2 +        Inject trip on Ch 2 and     TRIP:       [ ]
-201-   B301.3          Ch 3 simultaneously         K201.1
-025                                                 de-energizes
-
-FAT    B301.1 +        Inject trip on all 3        TRIP:       [ ]
-201-   B301.2 +        channels simultaneously     K201.1
-026    B301.3                                       de-energizes
-
-SAFE STATE AND RESPONSE TIME
-─────────────────────────────────────────────────────────────────────
-FAT    +200-K201.1     Remove 24V DC supply to     K201.1      [ ]
-201-                   logic solver --- verify      de-energized
-027                    fail-safe state              (safe state)
-
-FAT    All channels    Inject 2oo3 trip, measure   < allocated [ ]
-201-                   time from input signal      response
-028                    to K201.1 de-energization   time budget
-                       (use data logger/scope)     (record ms)
-
-FAT    All channels    Reset test: after trip,     System does [ ]
-201-                   remove trip condition ---    not auto-
-029                    verify manual reset          reset;
-                       required                    requires
-                                                   manual reset
-
-DIAGNOSTIC VERIFICATION (per FMEA 201.1)
-─────────────────────────────────────────────────────────────────────
-FAT    +300-B301.1     Simulate open circuit       Logic solver [ ]
-201-   input            (remove signal wire)       reports
-030                                                 input fault
-                                                   alarm
-
-FAT    +300-B301.1     Simulate short circuit      Logic solver [ ]
-201-   input            (short input terminals)    reports
-031                                                 input fault
-                                                   alarm
-
-FAT    +300-B301.1     Simulate out-of-range       Logic solver [ ]
-201-   input            signal (inject < 3.6 mA)  reports
-032                                                 signal low
-                                                   alarm
-
-FAT    Channel          Verify discrepancy         Discrepancy [ ]
-201-   discrepancy      alarm: set Ch 1 to         alarm
-033                     trip, Ch 2 and Ch 3 to     activates
-                        normal, wait for alarm     within spec
-                        timeout                    time
+FAT SUMMARY:
+  Total SAT steps attempted: 33
+  PASS: 27
+  FAIL: 0
+  DEVIATION: 6 (18.2% — below 30% target)
 ```
 
 ---
@@ -572,17 +446,23 @@ SAT must be completed **before** process fluids are introduced (before commissio
 
 ### 6.3 SAT Scope
 
-SAT includes everything verified during FAT, **plus** the following site-specific verifications:
+SAT is the definitive system test. The SAT procedure defines the complete verification scope for the safety instrumented system. FAT executes the same procedure with documented deviations where factory conditions prevent full execution (see Section 5).
 
-| Category | FAT Scope | SAT Additional Scope |
-|----------|-----------|---------------------|
-| Wiring | Panel-internal continuity | Field wiring: wire numbers per drawing, cable IDs, junction box terminations |
-| Signal path | Simulated inputs at panel terminals | Loop check: signal injection at field device through to logic solver and back to final element |
-| Functional test | Logic test with simulated inputs | End-to-end with actual field devices |
-| Response time | Logic solver only | Full chain including field device and final element response |
-| Environmental | Controlled shop conditions | Actual site conditions (temperature, vibration, EMI) |
-| Communication | Bench-tested if applicable | Verified on site network infrastructure |
-| HMI | Simulated if HMI present at FAT | Full HMI/SCADA point verification |
+At SAT, all steps are executed without deviation. Any steps that were marked as deviations during FAT shall be fully executed and verified at SAT. Steps that passed at FAT do not require re-execution unless:
+
+- The system was modified, repaired, or reassembled after FAT
+- Transportation or installation may have affected the verified condition
+- The SAT authority requires re-verification
+
+| Category | SAT Verification |
+|----------|-----------------|
+| Wiring | Field wiring: wire numbers per drawing, cable IDs, junction box terminations |
+| Signal path | Loop check: signal injection at field device through to logic solver and back to final element |
+| Functional test | End-to-end functional test with actual field devices |
+| Response time | Full chain including field device and final element response |
+| Environmental | Actual site conditions (temperature, vibration, EMI) |
+| Communication | Verified on site network infrastructure |
+| HMI | Full HMI/SCADA point verification |
 
 ### 6.4 SAT Test Categories
 
