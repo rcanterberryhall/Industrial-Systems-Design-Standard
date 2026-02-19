@@ -1,9 +1,9 @@
 # Safety Documentation Standard
 ## Systems Design Documentation Framework for Industrial Control Systems
 
-**Version:** 1.0
+**Version:** 0.0
 **Date:** 2025-02-15
-**Author:** Reid
+**Author:** Reid Hall
 **Status:** Draft
 **Scope:** Defines the complete safety documentation framework for industrial control systems — document hierarchy, lifecycle, numbering conventions, traceability requirements, and the relationships between all standards in the systems design documentation suite.
 
@@ -586,17 +586,17 @@ The Document Register is the master index of all safety-related documentation fo
 
 | Doc ID | Title | Type | Rev | Date | Status | Author | Approved By | Related SFs | File Location |
 |--------|-------|------|-----|------|--------|--------|-------------|-------------|---------------|
-| HA-PRES-001 | Vessel Overpressure Hazard Analysis | HA | B | 2025-01-10 | Approved | Reid | T. Brown | SF-PRES-001 | /safety/HA/HA-PRES-001_RevB.pdf |
-| SRS-PRES-001 | Overpressure Protection SRS | SRS | A | 2025-01-20 | Approved | Reid | T. Brown | SF-PRES-001 | /safety/SRS/SRS-PRES-001_RevA.pdf |
+| HA-PRES-001 | Vessel Overpressure Hazard Analysis | HA | B | 2025-01-10 | Approved | Reid Hall | T. Brown | SF-PRES-001 | /safety/HA/HA-PRES-001_RevB.pdf |
+| SRS-PRES-001 | Overpressure Protection SRS | SRS | A | 2025-01-20 | Approved | Reid Hall | T. Brown | SF-PRES-001 | /safety/SRS/SRS-PRES-001_RevA.pdf |
 | — | Sheet 201: Overpressure Logic | Drawing | 5 | 2025-01-22 | Approved | J. Smith | T. Brown | SF-PRES-001 | /drawings/Sheet_201_Rev5.dwg |
-| FMEA 201.1 | Overpressure Protection FMEA | FMEA | B | 2025-02-01 | Approved | Reid | T. Brown | SF-PRES-001 | /safety/FMEA/FMEA_201.1_RevB.pdf |
+| FMEA 201.1 | Overpressure Protection FMEA | FMEA | B | 2025-02-01 | Approved | Reid Hall | T. Brown | SF-PRES-001 | /safety/FMEA/FMEA_201.1_RevB.pdf |
 | FAT 201 | Overpressure Protection FAT | FAT | A | 2025-02-10 | Complete | J. Smith | R. Jones | SF-PRES-001 | /testing/FAT/FAT_201_RevA.pdf |
 | SAT 201 | Overpressure Protection SAT | SAT | A | 2025-03-01 | Complete | J. Smith | R. Jones | SF-PRES-001 | /testing/SAT/SAT_201_RevA.pdf |
-| PT-201 | Overpressure Proof Test | PT | A | 2025-02-05 | Approved | Reid | T. Brown | SF-PRES-001 | /testing/PT/PT-201_RevA.pdf |
-| TM-REQ-RefineryXYZ | Requirements Traceability | TM | C | 2025-03-01 | Current | Reid | T. Brown | All | /safety/TM-REQ_RevC.xlsx |
-| TM-VER-RefineryXYZ | Verification Traceability | TM | B | 2025-03-01 | Current | Reid | T. Brown | All | /safety/TM-VER_RevB.xlsx |
-| TM-DEV-RefineryXYZ | Device Traceability | TM | B | 2025-03-01 | Current | Reid | T. Brown | All | /safety/TM-DEV_RevB.xlsx |
-| SVS-RefineryXYZ | Safety Validation Summary | SVS | A | 2025-03-05 | Draft | Reid | — | All | /safety/SVS_RevA.pdf |
+| PT-201 | Overpressure Proof Test | PT | A | 2025-02-05 | Approved | Reid Hall | T. Brown | SF-PRES-001 | /testing/PT/PT-201_RevA.pdf |
+| TM-REQ-RefineryXYZ | Requirements Traceability | TM | C | 2025-03-01 | Current | Reid Hall | T. Brown | All | /safety/TM-REQ_RevC.xlsx |
+| TM-VER-RefineryXYZ | Verification Traceability | TM | B | 2025-03-01 | Current | Reid Hall | T. Brown | All | /safety/TM-VER_RevB.xlsx |
+| TM-DEV-RefineryXYZ | Device Traceability | TM | B | 2025-03-01 | Current | Reid Hall | T. Brown | All | /safety/TM-DEV_RevB.xlsx |
+| SVS-RefineryXYZ | Safety Validation Summary | SVS | A | 2025-03-05 | Draft | Reid Hall | — | All | /safety/SVS_RevA.pdf |
 | BR-RefineryXYZ | Bypass Register | BR | — | Active | Active | Ops | — | All | /operations/BR_active.xlsx |
 
 ### 8.3 Document Status Definitions
@@ -803,24 +803,24 @@ Per IEC 61511 clause 5, an independent Functional Safety Assessment is required 
 
 ## 13. Document Information
 
-| Field | Value |
-|-------|-------|
-| Version | 1.0 |
+| Field | Value      |
+|-------|------------|
+| Version | 0.0        |
 | Date | 2025-02-15 |
-| Author | Reid |
-| Status | Draft |
+| Author | Reid Hall  |
+| Status | Draft      |
 
 **Revision History:**
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.0 | 2025-02-15 | Initial release. Establishes the safety documentation framework covering HA, FMEA, SAT/FAT, and Drawing Standards. Defines traceability matrices, SRS format, document register, bypass register, MOC integration, and audit checklists. | Reid |
+| 0.0     | 2025-02-15 | Initial release. Establishes the safety documentation framework covering HA, FMEA, SAT/FAT, and Drawing Standards. Defines traceability matrices, SRS format, document register, bypass register, MOC integration, and audit checklists. | Reid Hall |
 
 **Related Documents:**
 
-| Document | Version | Relationship |
-|----------|---------|-------------|
-| Industrial Systems Drawing Standard | v1.1 | Provides numbering backbone (sheets, devices, wires) |
-| Hazard Analysis Standard | v1.0 | Defines HAZOP/LOPA methodology |
-| FMEA Standard for Safety Instrumented Systems | v1.0 | Defines failure analysis and SIL verification |
-| FAT/SAT Standard | v1.0 | Defines testing and proof test methodology |
+| Document | Relationship |
+|----------|-------------|
+| Industrial Systems Drawing Standard | Provides numbering backbone (sheets, devices, wires) |
+| Hazard Analysis Standard | Defines HAZOP/LOPA methodology |
+| FMEA Standard for Safety Instrumented Systems | Defines failure analysis and SIL verification |
+| FAT/SAT Standard | Defines testing and proof test methodology |

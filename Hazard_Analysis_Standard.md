@@ -1,9 +1,9 @@
 # Hazard Analysis Standard
 ## HAZOP and LOPA for Industrial Control Systems
 
-**Version:** 1.0
+**Version:** 0.0
 **Date:** 2025-02-15
-**Author:** Reid
+**Author:** Reid Hall
 **Status:** Draft
 **Scope:** Hazard and Operability Study (HAZOP) methodology, Layer of Protection Analysis (LOPA) methodology, safety function identification, SIL determination, and integration with the Industrial Systems Drawing Standard for industrial control systems.
 
@@ -1315,15 +1315,15 @@ Risk Level
 
 ## 12. Document Information
 
-| Field | Value |
-|-------|-------|
-| Version | 1.0 |
+| Field | Value      |
+|-------|------------|
+| Version | 0.0        |
 | Date | 2025-02-15 |
-| Author | Reid |
-| Status | Draft |
+| Author | Reid Hall  |
+| Status | Draft      |
 
 **Revision History:**
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.0 | 2025-02-15 | Initial release. HAZOP methodology per IEC 61882, LOPA methodology per IEC 61511, safety function register format, cross-reference conventions to Industrial Systems Drawing Standard v1.1. | Reid |
+| 0.0     | 2025-02-15 | Initial release. HAZOP methodology per IEC 61882, LOPA methodology per IEC 61511, safety function register format, cross-reference conventions to Industrial Systems Drawing Standard v1.1. | Reid Hall |

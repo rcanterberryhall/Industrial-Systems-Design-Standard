@@ -1,9 +1,9 @@
 # FMEA Standard for Industrial Control Systems
 ## Failure Modes and Effects Analysis — Detection-Point Methodology
 
-**Version:** 1.1
+**Version:** 0.1
 **Date:** 2025-02-15
-**Author:** Reid
+**Author:** Reid Hall
 **Status:** Draft
 **Scope:** FMEA methodology for both safety instrumented systems (SIL verification) and non-safety control systems (reliability and availability analysis). Uses detection-point organization: failure modes are grouped by how they present to the monitoring system, with root cause decomposition to individual devices. Aligned to the sheet-based numbering conventions of the Industrial Systems Drawing Standard v1.1.
 
@@ -1537,25 +1537,25 @@ FMEA preparation and review shall be performed by personnel meeting the followin
 
 ## 16. Document Information
 
-| Field | Value |
-|-------|-------|
-| Version | 1.1 |
+| Field | Value      |
+|-------|------------|
+| Version | 1.1        |
 | Date | 2025-02-15 |
-| Author | Reid |
-| Status | Draft |
+| Author | Reid Hall  |
+| Status | Draft      |
 
 **Revision History:**
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.1 | 2025-02-15 | Detection-point methodology: FMEA numbered by detection/logic sheet, failure modes grouped by system presentation with root cause decomposition. Added non-safety reliability FMEA (Section 11). Design philosophy updated: DU classification requires justification — failure modes without detection methods are design action items, not accepted defaults. | Reid |
-| 1.0 | 2025-02-15 | Initial release. Sheet-based FMEA methodology for SIS hardware. Worked example: SF-PRES-001 Overpressure Protection (SIL 3, 2oo3 pressure voting). Includes SIL verification calculations, architectural constraints, CCF analysis, and proof test derivation. | Reid |
+| Version | Date | Changes | Author    |
+|---------|------|---------|-----------|
+| 0.1     | 2025-02-15 | Detection-point methodology: FMEA numbered by detection/logic sheet, failure modes grouped by system presentation with root cause decomposition. Added non-safety reliability FMEA (Section 11). Design philosophy updated: DU classification requires justification — failure modes without detection methods are design action items, not accepted defaults. | Reid Hall |
+| 0.0     | 2025-02-15 | Initial release. Sheet-based FMEA methodology for SIS hardware. Worked example: SF-PRES-001 Overpressure Protection (SIL 3, 2oo3 pressure voting). Includes SIL verification calculations, architectural constraints, CCF analysis, and proof test derivation. | Reid Hall |
 
 **Related Documents:**
 
-| Document | Version | Relationship |
-|----------|---------|-------------|
-| Industrial Systems Drawing Standard | v1.1 | Defines sheet numbering, device tags, and cross-referencing conventions used by this FMEA standard |
-| Hazard Analysis Standard | v1.0 | Defines hazard analysis methodology and safety function identification that provides inputs to FMEA |
-| FAT/SAT Standard | v1.0 | Defines testing methodology that uses FMEA failure modes to drive test requirements |
-| Safety Documentation Standard | v1.0 | Umbrella framework defining document hierarchy, traceability matrices, and lifecycle |
+| Document | Relationship |
+|----------|-|
+| Industrial Systems Drawing Standard | Defines sheet numbering, device tags, and cross-referencing conventions used by this FMEA standard |
+| Hazard Analysis Standard | Defines hazard analysis methodology and safety function identification that provides inputs to FMEA |
+| FAT/SAT Standard | Defines testing methodology that uses FMEA failure modes to drive test requirements |
+| Safety Documentation Standard | Umbrella framework defining document hierarchy, traceability matrices, and lifecycle |

@@ -1,9 +1,9 @@
 # Factory Acceptance Testing and Site Acceptance Testing Standard
 ## FAT, SAT, and Proof Test Methodology for Industrial Control Systems
 
-**Version:** 1.0
+**Version:** 0.0
 **Date:** 2025-02-15
-**Author:** Reid
+**Author:** Reid Hall
 **Status:** Draft
 **Scope:** Factory acceptance testing (FAT), site acceptance testing (SAT), and proof test procedure methodology for industrial control systems, with particular focus on safety instrumented systems (SIS) designed per IEC 61511.
 
@@ -1642,15 +1642,15 @@ After every test session, **before the system is returned to service**, the foll
 
 ## 13. Document Information
 
-| Field | Value |
-|-------|-------|
-| Version | 1.0 |
+| Field | Value      |
+|-------|------------|
+| Version | 0.0        |
 | Date | 2025-02-15 |
-| Author | Reid |
-| Status | Draft |
+| Author | Reid Hall  |
+| Status | Draft      |
 
 **Revision History:**
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.0 | 2025-02-15 | Initial release. Covers FAT, SAT, and proof test methodology for industrial control systems with focus on SIS. Includes worked examples for Overpressure Protection system (SF-PRES-001, SIL 3, 2oo3 voting). References Drawing Standard v1.1 for numbering conventions. | Reid |
+| 1.0 | 2025-02-15 | Initial release. Covers FAT, SAT, and proof test methodology for industrial control systems with focus on SIS. Includes worked examples for Overpressure Protection system (SF-PRES-001, SIL 3, 2oo3 voting). References Drawing Standard v1.1 for numbering conventions. | Reid Hall |

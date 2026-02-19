@@ -77,7 +77,7 @@ All documents use a consistent example system for illustration:
 
 ## Status
 
-All documents are in **Draft** status (v1.0/v1.1). The framework is structurally complete and internally consistent. Contributions, corrections, and industry feedback are welcome.
+All documents are in **Draft** status (v0.0/v0.1). These are still in draft form and will be heavily revised
 
 ## License
 
