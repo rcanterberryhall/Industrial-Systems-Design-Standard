@@ -1,84 +1,112 @@
-# Industrial Systems Design Documentation Standard
+# Industrial System Lifecycle Framework
+## Deterministic, Drawing-Centric Engineering for Functional Safety and Commissioning
 
-A complete, self-documenting standards framework for industrial control system design — from hazard identification through commissioning and ongoing maintenance.
+---
 
-## Overview
+## Why This Framework Exists
 
-This repository contains a suite of interconnected standards that define how to design, verify, validate, and maintain industrial control systems. The standards use a unified numbering system anchored to drawing sheet numbers, ensuring full traceability from hazard analysis through proof testing without lookup tables.
+Industrial systems are often engineered in fragments.
 
-```mermaid
-graph LR
-    HA["Hazard Analysis<br/>(HAZOP + LOPA)"] -->|"identifies safety<br/>functions + SIL"| SRS["Safety Requirements"]
-    SRS -->|"specifies"| DWG["Electrical Drawings"]
-    DWG -->|"analyzed by"| FMEA["FMEA"]
-    FMEA -->|"drives"| TEST["FAT / SAT / Proof Tests"]
-    TEST -->|"maintains"| SIL["Safety Integrity"]
+Hazard analysis is performed, but not structurally embedded into design.  
+FMEA is written, but not used to shape architecture.  
+PLC software is functional, but not deterministic by design.  
+Commissioning is treated as troubleshooting rather than structured validation.  
+Proof testing drifts away from its originating failure modes.
 
-    style HA fill:#d63031,color:#fff
-    style DWG fill:#0984e3,color:#fff
-    style FMEA fill:#e17055,color:#fff
-    style TEST fill:#00b894,color:#fff
-```
+The result is predictable: rework, tribal knowledge, inconsistent diagnostics, and commissioning chaos.
 
-## Documents
+This framework exists to eliminate that fragmentation.
 
-| Document | Description | Key Topics |
-|----------|-------------|------------|
-| [Drawing Standard](Industrial_Systems_Drawing_Standard_v1.1.md) | Electrical drawing organization, device tagging, wire numbering | IEC 61082/81346, sheet numbering by cabinet, self-documenting device tags, grid cross-referencing |
-| [Hazard Analysis Standard](Hazard_Analysis_Standard_v1.0.md) | HAZOP and LOPA methodology | IEC 61511/61508, guideword-based deviation analysis, SIL determination, safety function identification |
-| [FMEA Standard](FMEA_Standard_v1.0.md) | Failure mode analysis for safety and reliability | Detection-point methodology, SIL verification (PFDavg, SFF, HFT), non-safety reliability FMEA, proof test derivation |
-| [FAT/SAT Standard](SAT_FAT_Standard_v1.0.md) | Factory and site acceptance testing, proof tests | Test procedures, pass/fail criteria, bypass management, PSSR integration |
-| [Safety Documentation Standard](Safety_Documentation_Standard_v1.0.md) | Umbrella framework | Document hierarchy, traceability matrices, SRS format, document register, MOC integration |
+---
 
-## Key Design Principles
+## A Different Approach
 
-**The drawing is the source of truth.** Sheet numbers are the common key across all documents. `FMEA 201.1`, `FAT 201`, `SAT 201`, and `PT-201` all trace to Sheet 201.
+This methodology defines an integrated lifecycle for industrial systems that unifies:
 
-**Self-documenting numbering.** Device tag `+300-B301.1` tells you: Cabinet +300, transmitter, Sheet 301, first of its type. No lookup tables needed.
+- Hazard Analysis  
+- Safety Requirements Specification (SRS)  
+- Concept, Preliminary, and Detailed Design (CD / PD / DD)  
+- Architecture-Level and Detailed FMEA  
+- Deterministic PLC Software Architecture  
+- FAT and SAT execution  
+- Structured Startup & Commissioning Gates  
+- Proof Testing and Operational Governance  
 
-**Detection-point FMEA.** Failure modes are grouped by how they present to the monitoring system. A transmitter failing low, a cable going open, and an I/O card failing all present as "signal reads low" — one FMEA entry, one test action, no redundancy.
+It treats commissioning as part of design.  
+It treats FMEA as a design instrument.  
+It treats drawings as the navigation spine.  
+It treats determinism as non-negotiable in control-producing logic.
 
-**DU is a last resort, not a default.** A failure mode without a detection method is an incomplete design. The FMEA drives design iteration to add diagnostics before accepting Dangerous Undetected classification.
+---
 
-**Full traceability chain:** HA &rarr; SF &rarr; SRS &rarr; Drawings &rarr; FMEA &rarr; FAT &rarr; SAT &rarr; Proof Tests
+## Core Principles
 
-## Numbering Quick Reference
+1. **Hazards drive requirements.**  
+2. **Requirements drive architecture.**  
+3. **Architecture determines detection capability.**  
+4. **FMEA drives diagnostic strategy and proof testing.**  
+5. **Commissioning validates architecture in structured stages.**  
+6. **Hardware and software are co-designed.**  
+7. **Actuation must be deterministic.**  
 
-| Item | Format | Example |
-|------|--------|---------|
-| Drawing sheet | `[NNN]` | Sheet 201 |
-| Device tag | `+[Loc]-[Dev][Sheet].[Seq]` | +300-B301.1 |
-| Wire number | `[Sheet]-[Col].[Seq]` | 201-4.1 |
-| Hazard Analysis | `HA-[SYS]-[NNN]` | HA-PRES-001 |
-| Safety Function | `SF-[SYS]-[NNN]` | SF-PRES-001 |
-| FMEA | `FMEA [Sheet].[Seq]` | FMEA 201.1 |
-| FAT / SAT | `FAT [Sheet]` / `SAT [Sheet]` | FAT 201 / SAT 201 |
-| Proof Test | `PT-[Sheet]` | PT-201 |
+These principles are enforced through lifecycle gates, structured documentation, and traceable numbering systems.
 
-## Worked Example
+---
 
-All documents use a consistent example system for illustration:
+## Structural Innovations
 
-- **System:** Overpressure Protection, Refinery Vessel XYZ
-- **Safety Function:** SF-PRES-001, SIL 3
-- **Architecture:** 2oo3 pressure voting (HFT=1), 1oo1 logic solver, 1oo1 final element
-- **Devices:** +300-B301.1/B301.2/B301.3 (pressure transmitters), +200-K201.1 (safety relay)
-- **Result:** PFDavg = 4.76E-04, SIL 3 PASS
+This framework introduces practical engineering mechanisms rarely integrated into a single methodology:
 
-## Standards Referenced
+- Drawing sheet numbers as the traceability backbone across FMEA, FAT/SAT, software modules, and proof tests.
+- Explicit CD → PD → DD lifecycle integration with PDR, CDR, and DDR review gates.
+- Architecture-level FMEA during Preliminary Design — not after construction.
+- Deterministic gateway requirements for all motion-producing logic.
+- Startup Gates aligned with bottom-up technical validation levels.
+- Explicit handling of Dangerous Undetected (DU) failures and proof test derivation.
+- Clear separation of preventive maintenance from safety proof testing.
 
-- IEC 61508 (Functional safety — general)
-- IEC 61511 (Safety instrumented systems — process industry)
-- IEC 61082 (Electrotechnical document preparation)
-- IEC 81346 (Reference designations)
-- IEC 61882 (HAZOP application guide)
-- IEC 60812 (FMEA/FMECA techniques)
-- IEC 62382 (Loop checking)
+The result is a lifecycle that is both technically rigorous and field-practical.
 
-## Status
+---
 
-All documents are in **Draft** status (v0.0/v0.1). These are still in draft form and will be heavily revised
+## IEC 61511 Alignment Without Bureaucracy
 
-## License
+This methodology maps directly to IEC 61511 lifecycle clauses while remaining implementation-focused.
 
-This work is provided as-is for educational and professional reference purposes.
+It provides audit traceability without reducing safety engineering to compliance paperwork.
+
+It bridges the gap between regulatory expectation and engineering execution.
+
+---
+
+## Intended Audience
+
+- Controls Engineers  
+- Electrical Engineers  
+- Functional Safety Engineers  
+- Commissioning Engineers  
+- EPC Design Teams  
+- Owner-Operators seeking lifecycle discipline  
+
+---
+
+## The Objective
+
+The objective is not documentation volume.
+
+The objective is industrial systems that are:
+
+- Architecturally coherent  
+- Diagnosable  
+- Deterministic  
+- Testable in structured stages  
+- Commissioned without rework loops  
+- Defensible under audit  
+
+This is not a checklist.
+
+It is an operating system for industrial engineering.
+
+---
+
+# End Positioning Statement
