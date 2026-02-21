@@ -1,13 +1,10 @@
 # FMEA Standard for Industrial Control Systems
 ## Failure Modes and Effects Analysis — Detection-Point Methodology
 
-**Version:** 0.1
-**Date:** 2025-02-15
-**Author:** Reid Hall
 **Status:** Draft
-**Scope:** FMEA methodology for both safety instrumented systems (SIL verification) and non-safety control systems (reliability and availability analysis). Uses detection-point organization: failure modes are grouped by how they present to the monitoring system, with root cause decomposition to individual devices. Aligned to the sheet-based numbering conventions of the Industrial Systems Drawing Standard v1.1.
+**Scope:** FMEA methodology for both safety instrumented systems (SIL verification) and non-safety control systems (reliability and availability analysis). Uses detection-point organization: failure modes are grouped by how they present to the monitoring system, with root cause decomposition to individual devices. Aligned to the sheet-based numbering conventions of the Industrial Systems Drawing Standard.
 
----1
+---
 
 ## Table of Contents
 
@@ -18,15 +15,13 @@
 5. [Failure Classification](#5-failure-classification)
 6. [FMEA Methodology — Step by Step](#6-fmea-methodology--step-by-step)
 7. [FMEA Worksheet Format](#7-fmea-worksheet-format)
-8. [SIL Verification Calculations](#8-sil-verification-calculations)
-9. [Common Cause Failure Analysis](#9-common-cause-failure-analysis)
-10. [Proof Test Requirements Derived from FMEA](#10-proof-test-requirements-derived-from-fmea)
-11. [Non-Safety Reliability FMEA](#11-non-safety-reliability-fmea)
-12. [Coverage Analysis and BOM Reconciliation](#12-coverage-analysis-and-bom-reconciliation)
-13. [Cross-Reference to Other Documents](#13-cross-reference-to-other-documents)
-14. [Lifecycle and Review](#14-lifecycle-and-review)
-15. [Implementation Checklist](#15-implementation-checklist)
-16. [Document Information](#16-document-information)
+8. [Proof Test Requirements Derived from FMEA](#8-proof-test-requirements-derived-from-fmea)
+9. [Non-Safety Reliability FMEA](#9-non-safety-reliability-fmea)
+10. [Coverage Analysis and BOM Reconciliation](#10-coverage-analysis-and-bom-reconciliation)
+11. [Cross-Reference to Other Documents](#11-cross-reference-to-other-documents)
+12. [Lifecycle and Review](#12-lifecycle-and-review)
+13. [Implementation Checklist](#13-implementation-checklist)
+14. [Document Information](#14-document-information)
 
 ---
 
@@ -45,7 +40,7 @@ This standard defines the methodology for performing Failure Modes and Effects A
 
 **For non-safety control systems (reliability FMEA):**
 - Identify failure modes and their impact on process availability.
-- Calculate MTBF, expected failure frequency, and availability.
+- Calculate MTBF (Mean Time Between Failures), expected failure frequency, and availability.
 - Determine recommended spare parts, maintenance intervals, and monitoring requirements.
 - Optimize maintenance strategy based on failure mode analysis.
 
@@ -122,8 +117,9 @@ Additional principles:
 | IEC 61511-1 | Functional safety — Safety instrumented systems for the process industry sector | Process sector SIS requirements, proof testing |
 | IEC 61511-2 | Functional safety — Guidelines for the application of IEC 61511-1 | Practical guidance for SIS design verification |
 | IEC 60812 | Failure modes and effects analysis (FMEA and FMECA) | FMEA methodology, worksheet formats, severity classification |
-| Industrial Systems Drawing Standard v1.1 | Device, Wire, and Drawing Numbering Convention | Sheet numbering, device tags, cross-referencing |
-| HA Standard v1.0 | Hazard Analysis Standard | HA numbering, safety function identification, SIL allocation |
+| Industrial Systems Drawing Standard | Device, Wire, and Drawing Numbering Convention | Sheet numbering, device tags, cross-referencing |
+| Hazard Analysis Standard | HAZOP and LOPA methodology | HA numbering, safety function identification, SIL allocation |
+| SRS Standard | Safety Requirements Specification Methodology | Source of SIL targets, T_I values, architecture specification, and PFDavg calculation methodology |
 
 ---
 
@@ -182,22 +178,39 @@ Additional principles:
 
 ### 4.2 FMEA Item Numbering
 
-**Format:** `[DeviceCode].[FailureSequence]`
+**Format:** `FMEA Sheet.Device.Mode`
 
-Each FMEA worksheet row is identified by the device tag (without the `+Location-` prefix) followed by a sequential failure mode number. The device tag is already self-documenting per the Drawing Standard, so the FMEA item number inherits that traceability.
+Each FMEA worksheet entry is identified by the detection sheet number, the device sequence on that sheet, and the failure mode sequence for that device. This three-level format directly encodes context: which sheet, which device, which failure mode.
 
 | Component | Description | Example |
 |-----------|-------------|---------|
-| `[DeviceCode]` | Device type + sheet + sequence from the Drawing Standard tag | B301.1, A201.1, K201.1 |
-| `.[FailureSequence]` | Sequential failure mode number for that device | .1, .2, .3 |
+| `Sheet` | Detection/logic sheet number | 201 |
+| `.Device` | Device sequence on that sheet | .1 (first device), .2 (second device) |
+| `.Mode` | Sequential failure mode number for that device | .1, .2, .3 |
 
-**Examples:**
+**Single device or subsystem on the detection sheet:**
 
-- `B301.1.3` — Third failure mode of pressure transmitter B301.1 (fixed output / mid-range)
-- `A201.1.6` — Sixth failure mode of safety PLC A201.1 (output stuck ON)
-- `K201.1.3` — Third failure mode of safety relay K201.1 (contact weld)
+When one primary device or subsystem is analyzed per sheet, the device level is omitted and the format simplifies to `FMEA Sheet.Mode`:
 
-For identical redundant devices (e.g., B301.1 / B301.2 / B301.3 in a 2oo3 group), the failure sequence numbers correspond across devices: `.1` is always the same failure mode for each transmitter. This allows compact cross-references like `B301.x.3` to mean "fixed output failure mode for all three transmitters."
+- `FMEA 201.1` — First failure mode of the safety function on Sheet 201
+- `FMEA 201.2` — Second failure mode of the safety function on Sheet 201
+
+**Multiple devices on the detection sheet:**
+
+When multiple independent devices are analyzed on the same detection sheet, each gets its own device number:
+
+- `FMEA 201.1.1` — First failure mode of Device 1 on Sheet 201
+- `FMEA 201.1.2` — Second failure mode of Device 1 on Sheet 201
+- `FMEA 201.2.1` — First failure mode of Device 2 on Sheet 201
+- `FMEA 201.2.2` — Second failure mode of Device 2 on Sheet 201
+
+**Examples (three-level):**
+
+- `FMEA 201.1.3` — Third failure mode of the first device analyzed on Sheet 201 (e.g., transmitter B301.1 fixed output)
+- `FMEA 201.2.3` — Same failure mode for the second device (transmitter B301.2 fixed output)
+- `FMEA 201.3.3` — Same failure mode for the third device (transmitter B301.3 fixed output)
+
+For identical redundant devices (e.g., B301.1 / B301.2 / B301.3 in a 2oo3 group), the mode numbers correspond across devices: `.x.3` is always the same failure mode type across all channels. This allows compact cross-references like `FMEA 201.x.3` to mean "fixed output failure mode for all three transmitters."
 
 ### 4.3 One FMEA per Function per Detection Sheet
 
@@ -373,13 +386,14 @@ graph LR
 
 ### 6.2 Step 1: Identify the Safety Function and SIL Target
 
-From the Hazard Analysis (HA) and Layer of Protection Analysis (LOPA):
+From the SRS entry for this safety function (which was derived from the HA and LOPA):
 
-- **Safety Function ID:** SF-PRES-001
+- **Safety Function ID:** SF-PRES-001 (SRS entry in SRS-RefineryXYZ)
 - **Description:** On detection of high pressure in Vessel XYZ (2oo3 voting), de-energize safety relay +200-K201.1 to close shutdown valve XV-201 within 3 seconds.
-- **SIL Target:** SIL 3 (from LOPA, documented in HA-PRES-001)
+- **SIL Target:** SIL 3 (from LOPA, documented in HA entry HA-PRES-001, specified in SRS entry SF-PRES-001)
 - **Demand Mode:** Low demand (< 1 demand per year)
-- **Required PFDavg:** 1.0E-04 to < 1.0E-03
+- **Required PFDavg:** < 1.0E-03 (SIL 3 per SRS)
+- **Proof Test Interval:** 6 months (T_I = 4,380 hr, per SRS)
 - **Process Safety Time:** 10 seconds
 
 ### 6.3 Step 2: Define System Boundaries Using Drawing Sheets
@@ -474,7 +488,7 @@ For each device identified by its tag on the drawing, list all credible failure 
 For each failure mode, obtain the failure rate from the most authoritative source available, in this priority order:
 
 1. **Device Safety Manual** (manufacturer-certified data per IEC 61508). This is the preferred source for SIL-rated devices.
-2. **Third-party certification body data** (e.g., TUV, Exida certificates).
+2. **Third-party certification body data** (e.g., TÜV, Exida certificates).
 3. **IEC 61508-2/6 generic data tables.**
 4. **OREDA Handbook** (for process industry equipment).
 5. **SINTEF PDS Data Handbook.**
@@ -718,382 +732,36 @@ SFF = 0.850 (85.0%)
 
 ---
 
-## 8. SIL Verification Calculations
+## 8. Proof Test Requirements Derived from FMEA
 
-### 8.1 PFDavg Formulas by Architecture
+> **Note on SIL Verification Calculations:** PFDavg formulas, architectural constraint verification, and common cause failure (CCF) / beta factor analysis have been relocated to the **SRS Standard (07_SRS_Standard)**. These are design-intent calculations performed when specifying the safety function — they belong in the SRS, not in the FMEA. The FMEA uses the SRS-specified failure rate targets and T_I values to verify that selected hardware achieves the required SIL. See the SRS Standard Section 6 for the full calculation methodology.
 
-The following simplified formulas are from IEC 61508-6 for low-demand mode safety functions. Variables:
-
-- lambda_DU = dangerous undetected failure rate (per hour) for one channel
-- lambda_DD = dangerous detected failure rate (per hour) for one channel
-- T_I = proof test interval (hours)
-- MTTR = mean time to restoration for detected faults (hours)
-- beta = common cause beta factor for undetected dangerous failures
-- beta_D = common cause beta factor for detected dangerous failures
-- t_CE = channel equivalent mean down time
-
-**1oo1 Architecture (no redundancy, HFT=0):**
-
-```
-PFDavg = lambda_DU * T_I / 2 + lambda_DD * MTTR
-```
-
-**1oo2 Architecture (parallel redundancy, HFT=1):**
-
-```
-PFDavg = (1 - beta) * (1 - beta_D) * [ (lambda_DU)^2 * (T_I)^2 / 3
-         + lambda_DU * lambda_DD * MTTR * T_I
-         + (lambda_DD)^2 * MTTR^2 ]
-         + beta/2 * lambda_DU * T_I
-         + beta_D * lambda_DD * MTTR
-```
-
-For practical purposes with MTTR << T_I, the dominant term is:
-
-```
-PFDavg ≈ (1-beta)^2 * (lambda_DU)^2 * (T_I)^2 / 3 + beta * lambda_DU * T_I / 2
-```
-
-**2oo3 Architecture (majority voting, HFT=1):**
-
-```
-PFDavg = (1 - beta) * (1 - beta_D) * [ 3 * (lambda_DU)^2 * (T_I)^2 / 4
-         + 3 * lambda_DU * lambda_DD * MTTR * T_I
-         + 3 * (lambda_DD)^2 * MTTR^2 ]
-         + beta/2 * lambda_DU * T_I
-         + beta_D * lambda_DD * MTTR
-```
-
-For practical purposes with MTTR << T_I, the dominant term is:
-
-```
-PFDavg ≈ (1-beta)^2 * 3 * (lambda_DU)^2 * (T_I)^2 / 4 + beta * lambda_DU * T_I / 2
-```
-
-### 8.2 SIL Target Table (Low Demand Mode)
-
-| SIL | PFDavg Range | Risk Reduction Factor |
-|-----|-------------|----------------------|
-| SIL 1 | 1.0E-02 to < 1.0E-01 | 10 to 100 |
-| SIL 2 | 1.0E-03 to < 1.0E-02 | 100 to 1,000 |
-| SIL 3 | 1.0E-04 to < 1.0E-03 | 1,000 to 10,000 |
-| SIL 4 | 1.0E-05 to < 1.0E-04 | 10,000 to 100,000 |
-
-**SF-PRES-001 requires SIL 3: PFDavg must be < 1.0E-03.**
-
-### 8.3 Worked Example: PFDavg Calculation for SF-PRES-001
-
-**Given parameters:**
-
-| Parameter | Value | Basis |
-|-----------|-------|-------|
-| T_I (Proof Test Interval) | 4,380 hours (6 months) | Per PT-201 requirement |
-| MTTR (Mean Time to Restoration) | 8 hours | Site maintenance capability |
-| beta (undetected CCF factor) | 0.05 (5%) | Beta factor scoring (see Section 9) |
-| beta_D (detected CCF factor) | 0.025 (2.5%) | Typically beta_D = beta / 2 |
-
-#### 8.3.1 Sensor Subsystem PFDavg (2oo3 Pressure Transmitters)
-
-Per channel:
-- lambda_DU = 5.65E-07 per hour (from FMEA Section 7.2.1)
-- lambda_DD = 1.41E-06 per hour
-
-```
-PFDavg_sensor = (1 - beta)^2 * 3 * (lambda_DU)^2 * (T_I)^2 / 4
-                + beta * lambda_DU * T_I / 2
-                + (1 - beta_D)^2 * 3 * lambda_DD^2 * MTTR^2
-                + beta_D * lambda_DD * MTTR
-```
-
-Calculate each term:
-
-**Independent random failure term (DU):**
-```
-(1 - 0.05)^2 * 3 * (5.65E-07)^2 * (4380)^2 / 4
-= 0.9025 * 3 * 3.19E-13 * 1.918E+07 / 4
-= 0.9025 * 3 * 6.12E-06 / 4
-= 0.9025 * 4.59E-06
-= 4.14E-06
-```
-
-**Common cause failure term (DU):**
-```
-beta * lambda_DU * T_I / 2
-= 0.05 * 5.65E-07 * 4380 / 2
-= 0.05 * 2.47E-03 / 2
-= 6.19E-05
-```
-
-**Independent random failure term (DD):**
-```
-(1 - 0.025)^2 * 3 * (1.41E-06)^2 * (8)^2
-= 0.9506 * 3 * 1.99E-12 * 64
-= 0.9506 * 3.82E-10
-= 3.63E-10    (negligible)
-```
-
-**Common cause failure term (DD):**
-```
-0.025 * 1.41E-06 * 8
-= 2.82E-07    (negligible)
-```
-
-**PFDavg_sensor:**
-```
-PFDavg_sensor = 4.14E-06 + 6.19E-05 + 3.63E-10 + 2.82E-07
-PFDavg_sensor ≈ 6.61E-05
-```
-
-Note: The common cause term (6.19E-05) dominates. This is characteristic of redundant architectures -- CCF limits the achievable PFDavg regardless of the number of channels.
-
-#### 8.3.2 Logic Solver Subsystem PFDavg (1oo1 Safety PLC)
-
-- lambda_DU = 1.09E-07 per hour (from FMEA Section 7.2.2)
-- lambda_DD = 6.42E-07 per hour
-
-```
-PFDavg_logic = lambda_DU * T_I / 2 + lambda_DD * MTTR
-PFDavg_logic = 1.09E-07 * 4380 / 2 + 6.42E-07 * 8
-PFDavg_logic = 2.39E-04 + 5.14E-06
-PFDavg_logic ≈ 2.44E-04
-```
-
-#### 8.3.3 Final Element Subsystem PFDavg (1oo1 Safety Relay)
-
-- lambda_DU = 7.50E-08 per hour (from FMEA Section 7.2.3)
-- lambda_DD = 2.25E-07 per hour
-
-```
-PFDavg_final = lambda_DU * T_I / 2 + lambda_DD * MTTR
-PFDavg_final = 7.50E-08 * 4380 / 2 + 2.25E-07 * 8
-PFDavg_final = 1.64E-04 + 1.80E-06
-PFDavg_final ≈ 1.66E-04
-```
-
-#### 8.3.4 Overall SIF PFDavg
-
-```
-PFDavg_SIF = PFDavg_sensor + PFDavg_logic + PFDavg_final
-PFDavg_SIF = 6.61E-05 + 2.44E-04 + 1.66E-04
-PFDavg_SIF = 4.76E-04
-```
-
-**Result: PFDavg = 4.76E-04 which is within the SIL 3 range (1.0E-04 to < 1.0E-03). PASS.**
-
-**PFDavg budget breakdown:**
-
-| Subsystem | PFDavg | % of Total |
-|-----------|--------|-----------|
-| Sensor (2oo3) | 6.61E-05 | 13.9% |
-| Logic Solver (1oo1) | 2.44E-04 | 51.3% |
-| Final Element (1oo1) | 1.66E-04 | 34.8% |
-| **Total SIF** | **4.76E-04** | **100%** |
-
-The logic solver is the dominant contributor. This is expected for a 1oo1 logic solver with 2oo3 sensors. Margin to SIL 3 upper limit: (1.0E-03 - 4.76E-04) / 1.0E-03 = 52.4% margin.
-
-### 8.4 SFF Calculation Summary
-
-From the FMEA worksheet data:
-
-```
-SFF = (lambda_SD + lambda_SU + lambda_DD) / (lambda_SD + lambda_SU + lambda_DD + lambda_DU)
-```
-
-| Subsystem | lambda_SD | lambda_SU | lambda_DD | lambda_DU | SFF |
-|-----------|-----------|-----------|-----------|-----------|-----|
-| Sensor (per channel) | 1.38E-06 | 5.12E-08 | 1.41E-06 | 5.65E-07 | 83.4% |
-| Logic Solver | 7.23E-07 | 2.79E-08 | 6.42E-07 | 1.09E-07 | 92.7% |
-| Final Element | 1.80E-07 | 2.00E-08 | 2.25E-07 | 7.50E-08 | 85.0% |
-
-### 8.5 Architectural Constraints (IEC 61508-2, Route 1H)
-
-IEC 61508-2 Table 2 specifies minimum hardware fault tolerance based on SFF and SIL target:
-
-**Route 1H — Minimum HFT Requirements:**
-
-| SFF | SIL 1 | SIL 2 | SIL 3 | SIL 4 |
-|-----|-------|-------|-------|-------|
-| < 60% | HFT=0 | HFT=1 | HFT=2 | Not allowed |
-| 60% to < 90% | HFT=0 | HFT=0 | HFT=1 | HFT=2 |
-| 90% to < 99% | HFT=0 | HFT=0 | HFT=0 | HFT=1 |
-| >= 99% | HFT=0 | HFT=0 | HFT=0 | HFT=0 |
-
-**Verification for SF-PRES-001 (SIL 3):**
-
-| Subsystem | SFF | Required HFT for SIL 3 | Actual HFT | Result |
-|-----------|-----|------------------------|------------|--------|
-| Sensor | 83.4% (60-90% range) | HFT >= 1 | HFT = 1 (2oo3) | **PASS** |
-| Logic Solver | 92.7% (90-99% range) | HFT >= 0 | HFT = 0 (1oo1) | **PASS** |
-| Final Element | 85.0% (60-90% range) | HFT >= 1 | HFT = 0 (1oo1) | **FAIL** |
-
-**The final element subsystem fails architectural constraints.** With SFF = 85.0%, SIL 3 requires HFT >= 1, but the final element is 1oo1 (HFT = 0).
-
-### 8.6 Architectural Constraint Resolution
-
-Options to resolve the final element architectural constraint failure:
-
-**Option A: Increase final element redundancy to 1oo2 (HFT=1).**
-Add a second independent safety relay in series. This provides HFT=1 and satisfies the constraint. Disadvantage: increased spurious trip rate.
-
-**Option B: Use a final element with SFF >= 90%.**
-Select a safety relay or valve actuator with higher diagnostic coverage such that SFF >= 90%, allowing HFT=0 at SIL 3. This may require a different device with certified higher DC values.
-
-**Option C: Apply IEC 61511 Route 2H (prior use).**
-IEC 61511-1 allows prior use justification for proven-in-use devices in the process sector, with less stringent architectural constraints than IEC 61508 Route 1H. If the safety relay has sufficient field service history (>10 years, >10,000 operating hours in similar service), prior use may be claimed per IEC 61511-1 Clause 11.5.
-
-**Recommendation for this example:** Select Option B. Require a safety relay with force-guided contacts and enhanced output monitoring achieving DC >= 95% on the contact weld failure mode, increasing overall final element SFF above 90%.
-
-**Revised Final Element with enhanced diagnostics (Option B):**
-
-If contact weld DC is increased from 90% to 99% (enhanced feedback monitoring):
-- K201.1.3 revised: lambda_DD = 1.49E-07, lambda_DU = 1.50E-09
-- Contact high resistance (K201.1.5): add monitoring, DC = 60%: lambda_DD = 3.00E-08, lambda_DU = 2.00E-08
-
-Revised totals:
-```
-lambda_DU_revised = 1.50E-09 + 2.00E-08 + 1.00E-08 + (other DU unchanged)
-lambda_DU_revised ≈ 3.35E-08
-
-SFF_revised = (1.80E-07 + 2.00E-08 + 2.67E-07) / (1.80E-07 + 2.00E-08 + 2.67E-07 + 3.35E-08)
-SFF_revised = 4.67E-07 / 5.00E-07
-SFF_revised = 0.933 (93.3%)
-```
-
-With SFF = 93.3% (90-99% range), the final element now requires HFT >= 0 for SIL 3. **PASS.**
-
-Revised PFDavg for final element:
-```
-PFDavg_final_revised = 3.35E-08 * 4380 / 2 + 2.67E-07 * 8
-PFDavg_final_revised = 7.34E-05 + 2.14E-06
-PFDavg_final_revised ≈ 7.55E-05
-```
-
-Revised overall SIF PFDavg:
-```
-PFDavg_SIF_revised = 6.61E-05 + 2.44E-04 + 7.55E-05
-PFDavg_SIF_revised = 3.86E-04
-```
-
-**Revised result: PFDavg = 3.86E-04, SIL 3 PASS. All architectural constraints PASS.**
-
----
-
-## 9. Common Cause Failure Analysis
-
-### 9.1 Beta Factor Model (IEC 61508-6, Annex D)
-
-Common cause failures affect all redundant channels simultaneously. The beta factor represents the fraction of dangerous undetected failures that are common cause:
-
-```
-lambda_DU_common = beta * lambda_DU
-lambda_DU_independent = (1 - beta) * lambda_DU
-```
-
-For detected dangerous failures:
-```
-lambda_DD_common = beta_D * lambda_DD
-lambda_DD_independent = (1 - beta_D) * lambda_DD
-```
-
-The relationship beta_D = beta / 2 is commonly used (IEC 61508-6).
-
-### 9.2 Beta Factor Scoring (IEC 61508-6, Annex D)
-
-The beta factor is determined by scoring the following categories. Each category has subfactors scored as 0 (poor) or the indicated value (good practice):
-
-| # | Category | Subfactors | Max Score |
-|---|----------|-----------|-----------|
-| 1 | Separation / Segregation | Physical separation of channels, separate cable routes, separate power supplies | 2.5 |
-| 2 | Diversity / Redundancy | Different technology, different manufacturers, different measurement principles | 4.0 |
-| 3 | Complexity / Design / Application | Simple design, well-understood application, low component count | 1.5 |
-| 4 | Assessment / Analysis | Design review, FMEA performed, proven in use assessment | 3.0 |
-| 5 | Maintenance / Operating Procedures | Documented procedures, competent personnel, staggered testing | 3.0 |
-| 6 | Environmental Testing | Type tested to IEC 61508, environmental stress screening, EMC testing | 3.0 |
-| 7 | Competence / Training | Trained maintenance staff, competent design team, functional safety management | 1.5 |
-| 8 | Safety / Quality Management | Safety management system, quality system, change management | 1.5 |
-
-**Scoring total range:** 0 to 20
-
-**Beta value from score (IEC 61508-6, Table D.2):**
-
-| Score Range | Beta (non-diverse) | Beta (diverse) |
-|-------------|-------------------|----------------|
-| 0 - 4 | 10% | 5% |
-| 5 - 9 | 5% | 2.5% |
-| 10 - 14 | 2% | 1% |
-| 15 - 17 | 1% | 0.5% |
-| 18 - 20 | 0.5% | 0.5% |
-
-### 9.3 Beta Factor Scoring for SF-PRES-001
-
-**System: 2oo3 Pressure Transmitters (identical, non-diverse)**
-
-| # | Category | Score | Justification |
-|---|----------|-------|---------------|
-| 1 | Separation | 2.0 | Separate cable routes, separate junction boxes, same power supply (+0.5 deducted) |
-| 2 | Diversity | 0.0 | Identical transmitters, same manufacturer, same model (no diversity credit) |
-| 3 | Complexity | 1.5 | Simple 4-20 mA loop, well-understood pressure measurement |
-| 4 | Assessment | 2.5 | FMEA performed, design review complete, limited prior use data (+0.5 deducted) |
-| 5 | Maintenance | 2.0 | Documented procedures, trained staff, testing not staggered (+1.0 deducted) |
-| 6 | Environmental | 2.5 | Devices type-tested, EMC tested, limited environmental stress screening (+0.5 deducted) |
-| 7 | Competence | 1.0 | Trained staff, some functional safety training, not fully certified (+0.5 deducted) |
-| 8 | Safety/Quality | 1.0 | Quality system in place, safety management partially implemented (+0.5 deducted) |
-| **Total** | | **12.5** | |
-
-Score 12.5 falls in the 10-14 range for non-diverse redundancy: **beta = 2%**
-
-However, for this worked example, a conservative value of **beta = 5%** was used in Section 8.3 to account for the identical transmitter type and shared process connection considerations. This is a deliberate engineering judgment to apply additional conservatism. The scored beta of 2% could be used if additional measures are implemented (staggered testing, diverse process connections).
-
-### 9.4 Impact of CCF on 2oo3 PFDavg
-
-The 2oo3 PFDavg formula shows the CCF contribution clearly:
-
-```
-PFDavg_2oo3 = Independent term + CCF term
-
-Independent term = (1-beta)^2 * 3 * lambda_DU^2 * T_I^2 / 4
-CCF term         = beta * lambda_DU * T_I / 2
-```
-
-For the sensor subsystem with lambda_DU = 5.65E-07, T_I = 4380 hours:
-
-| Beta | Independent Term | CCF Term | Total PFDavg | CCF % of Total |
-|------|-----------------|----------|-------------|---------------|
-| 1% | 4.42E-06 | 1.24E-05 | 1.68E-05 | 73.7% |
-| 2% | 4.26E-06 | 2.47E-05 | 2.90E-05 | 85.3% |
-| 5% | 3.95E-06 | 6.19E-05 | 6.58E-05 | 94.0% |
-| 10% | 3.55E-06 | 1.24E-04 | 1.27E-04 | 97.2% |
-
-**Key insight:** Even at beta = 1%, the CCF term dominates the 2oo3 PFDavg. Adding more channels (e.g., 2oo4) reduces the independent term further but does not reduce the CCF term. The most effective way to improve PFDavg in redundant architectures is to reduce the beta factor through diversity, separation, and maintenance practices.
-
----
-
-## 10. Proof Test Requirements Derived from FMEA
-
-### 10.1 Proof Test Identification
+### 8.1 Proof Test Identification
 
 Per the Drawing Standard, proof tests are numbered by the sheet they test:
 
 **Format:** `PT-[Sheet]`
 
-**Example:** `PT-201` -- Proof test for the safety system on Sheet 201 (and related sheets 310-312)
+**Example:** `PT-201` — Proof test for the safety system on Sheet 201 (and related sheets 310-312)
 
-### 10.2 Proof Test Interval and PFDavg Sensitivity
+> **Note:** The following content was previously Section 10 of this standard. It has been renumbered to Section 8 following the relocation of SIL verification calculations and CCF analysis to the SRS Standard.
 
-The proof test interval (T_I) directly affects PFDavg. For the 1oo1 subsystems, the relationship is linear; for 2oo3, the independent term is quadratic and the CCF term is linear:
+### 8.2 Proof Test Interval and PFDavg Sensitivity
 
-**Sensitivity analysis for SF-PRES-001 overall PFDavg:**
+The proof test interval (T_I) is specified in the SRS entry and used as a calculation input in the FMEA PFDavg verification. The relationship between T_I and PFDavg is documented in the SRS Standard Section 6.5.
 
-| T_I | PFDavg_sensor | PFDavg_logic | PFDavg_final | PFDavg_SIF | SIL Achieved |
-|-----|--------------|-------------|-------------|-----------|-------------|
-| 3 months (2,190 hr) | 1.69E-05 | 1.22E-04 | 8.32E-05 | 2.22E-04 | SIL 3 |
-| 6 months (4,380 hr) | 6.61E-05 | 2.44E-04 | 1.66E-04 | 4.76E-04 | SIL 3 |
-| 12 months (8,760 hr) | 2.53E-04 | 4.86E-04 | 3.31E-04 | 1.07E-03 | **SIL 2 (FAIL)** |
-| 24 months (17,520 hr) | 9.85E-04 | 9.71E-04 | 6.60E-04 | 2.62E-03 | SIL 2 |
+**The proof test interval is the SRS's specification.** If the FMEA shows that the specified T_I leads to a PFDavg that misses the SIL target, the FMEA result drives an SRS revision — either to specify a shorter T_I or to revise the architecture.
 
-**Conclusion:** The maximum proof test interval for SIL 3 compliance is approximately 6 months. At 12 months, PFDavg exceeds 1.0E-03 and only SIL 2 is achieved. PT-201 shall specify a 6-month interval.
+The proof test interval for each SIF is documented in:
 
-### 10.3 Proof Test Coverage
+- The SRS entry (SF-XXX-NNN) — where the T_I is specified
+- The FMEA (FMEA Sheet.Seq) — where the T_I is used as a calculation input
+- The drawing title block (Sheet NNN) — where "PT-NNN (interval)" is noted
+- The proof test procedure (PT-NNN) — where the interval is on the cover page
+
+**Any change to the proof test interval requires an SRS revision followed by FMEA recalculation.**
+
+### 8.3 Proof Test Coverage
 
 Not all failure modes may be detectable by the proof test. Proof test coverage (PTC) is the fraction of lambda_DU that the proof test can detect:
 
@@ -1106,7 +774,7 @@ Residual undetected failures accumulate over the mission time and must be accoun
 
 For the purposes of this worked example, PTC = 100% is assumed (comprehensive proof test). If partial proof tests are used, the PFDavg formulas must be extended to include the residual term.
 
-### 10.4 Partial vs. Comprehensive Proof Test
+### 8.4 Partial vs. Comprehensive Proof Test
 
 | Type | Description | Coverage | Example |
 |------|------------|----------|---------|
@@ -1119,7 +787,7 @@ For the purposes of this worked example, PTC = 100% is assumed (comprehensive pr
 - Effective DU failure rate is split between failure modes covered by partial test and those requiring comprehensive test
 - Separate PFDavg terms are calculated for each group
 
-### 10.5 Failure Mode to Proof Test Action Mapping
+### 8.5 Failure Mode to Proof Test Action Mapping
 
 The FMEA identifies what can fail; the proof test defines how to find those failures. The following table maps FMEA failure modes to required proof test actions for PT-201:
 
@@ -1160,7 +828,7 @@ The FMEA identifies what can fail; the proof test defines how to find those fail
 | K201.1.5 | Contact high resistance | Energize relay; measure contact voltage drop under load | Voltage drop < 0.5V at rated current | Comprehensive |
 | K201.1.6 | Mechanical binding | Full cycle test: energize and de-energize multiple times; verify consistent operation | Relay operates within specified response time for 5 consecutive cycles | Comprehensive |
 
-### 10.6 End-to-End Trip Test
+### 8.6 End-to-End Trip Test
 
 In addition to individual device tests, the comprehensive proof test shall include an end-to-end trip test:
 
@@ -1180,13 +848,13 @@ PT-201 End-to-End Trip Test Procedure (Summary):
 
 ---
 
-## 11. Non-Safety Reliability FMEA
+## 9. Non-Safety Reliability FMEA
 
-### 11.1 Purpose
+### 9.1 Purpose
 
 Not every system requires SIL verification, but every system benefits from understanding its failure modes. The reliability FMEA uses the same detection-point methodology and worksheet structure as the safety FMEA, applied to non-safety control systems where failures impact production availability, equipment life, or maintenance cost — not personnel safety.
 
-### 11.2 When to Use
+### 9.2 When to Use
 
 Apply a reliability FMEA to any non-safety system where:
 
@@ -1196,13 +864,13 @@ Apply a reliability FMEA to any non-safety system where:
 - Maintenance strategy needs optimization (predictive vs. preventive vs. run-to-failure)
 - Spare parts stocking decisions need justification
 
-### 11.3 Numbering
+### 9.3 Numbering
 
 Same format as safety FMEA: `FMEA [Sheet].[Sequence]` where Sheet is the detection/control sheet.
 
 There is no conflict with safety FMEAs — safety functions and non-safety control loops are on different sheets per the Drawing Standard's sheet allocation strategy.
 
-### 11.4 Reliability FMEA Worksheet
+### 9.4 Reliability FMEA Worksheet
 
 The reliability FMEA uses the same failure presentation / root cause structure. Replace SIL-specific columns with reliability metrics:
 
@@ -1234,7 +902,7 @@ Reviewed By:      [Name]                    Date: [Date]
 | Maint. Interval | Recommended maintenance frequency | Based on MTBF and criticality |
 | Maint. Type | Predictive / Preventive / Run-to-failure | Based on failure characteristics |
 
-### 11.5 Worked Example: FMEA 235.1 — VFD Motor Control
+### 9.5 Worked Example: FMEA 235.1 — VFD Motor Control
 
 **System:** Feed Pump Variable Frequency Drive on Sheet 235, Cabinet +200. VFD drives a 50HP feed pump motor (+200-M235.1). PLC monitors VFD status via digital inputs and analog feedback on Sheet 235.
 
@@ -1261,7 +929,7 @@ Detection Sheet: 235
 | Recommended critical spares | 1× VFD (same model), 1× current transformer |
 | Maintenance strategy | 12-month VFD preventive maintenance; run-to-failure for feedback instruments |
 
-### 11.6 Reliability vs. Safety FMEA — Comparison
+### 9.6 Reliability vs. Safety FMEA — Comparison
 
 | Aspect | Safety FMEA | Reliability FMEA |
 |--------|------------|-----------------|
@@ -1276,9 +944,9 @@ Detection Sheet: 235
 
 ---
 
-## 12. Coverage Analysis and BOM Reconciliation
+## 10. Coverage Analysis and BOM Reconciliation
 
-### 12.1 Purpose
+### 10.1 Purpose
 
 The FMEA is only as good as its coverage. A failure mode analysis that misses devices is incomplete — and an incomplete analysis provides false confidence in the calculated PFDavg or MTBF.
 
@@ -1287,7 +955,7 @@ The Coverage Analysis reconciles the FMEA against the Bill of Materials (BOM) fr
 1. **Is every device in scope analyzed?** (BOM → FMEA)
 2. **Does every FMEA root cause reference a real device?** (FMEA → BOM)
 
-### 12.2 Coverage Audit Method
+### 10.2 Coverage Audit Method
 
 Start from the BOM, not from the FMEA. For every device tag within the FMEA scope, verify that it appears as a root cause in at least one FMEA failure presentation entry.
 
@@ -1305,7 +973,7 @@ flowchart LR
     style JUST fill:#fdcb6e,color:#2d3436
 ```
 
-### 12.3 Coverage Table Format
+### 10.3 Coverage Table Format
 
 Every FMEA shall include a Coverage Analysis table as an appendix. The table lists every device within scope and its FMEA coverage status.
 
@@ -1319,7 +987,7 @@ Every FMEA shall include a Coverage Analysis table as an appendix. The table lis
 | Covered? | YES / EXCLUDED / GAP |
 | Justification | Required for EXCLUDED and GAP — why excluded, or action to resolve gap |
 
-### 12.4 Worked Example: Coverage Table for FMEA 201.1
+### 10.4 Worked Example: Coverage Table for FMEA 201.1
 
 **Scope:** SF-PRES-001 Overpressure Protection — all devices in the safety function path from sensor through final element, including interconnecting cables.
 
@@ -1337,7 +1005,7 @@ Every FMEA shall include a Coverage Analysis table as an appendix. The table lis
 | +200-K201.1 | Safety Relay | 201 | K201.1.1–K201.1.6 | Coil fail, contact weld, contact open, high resistance, mechanical binding | YES | — |
 | +200-F201.1 | Control fuse (relay circuit) | 201 | — | — | GAP | **Action: Add fuse failure modes.** Fuse open = safe (relay de-energizes). Fuse fails to clear on short = dangerous. Add as root cause under K201.1.x. |
 
-### 12.5 Coverage Metrics
+### 10.5 Coverage Metrics
 
 Calculate and report coverage at the bottom of the coverage table:
 
@@ -1359,7 +1027,7 @@ FMEA 201.1 Coverage Summary:
 | Safety FMEA | **100%** — no unresolved gaps permitted | Every GAP must be resolved before FMEA approval |
 | Reliability FMEA | Project-defined (recommend > 80% of critical path devices) | GAPs documented as accepted risk |
 
-### 12.6 Bidirectional Check
+### 10.6 Bidirectional Check
 
 After completing the BOM → FMEA direction, verify the reverse:
 
@@ -1368,7 +1036,7 @@ After completing the BOM → FMEA direction, verify the reverse:
 - FMEA references a device not yet on the BOM (BOM incomplete — update BOM)
 - Device tag mismatch (typo — correct in FMEA or BOM)
 
-### 12.7 When to Perform Coverage Analysis
+### 10.7 When to Perform Coverage Analysis
 
 - **Initial:** After completing the first draft of the FMEA worksheet
 - **After design changes:** When devices are added, removed, or replaced (MOC)
@@ -1377,20 +1045,21 @@ After completing the BOM → FMEA direction, verify the reverse:
 
 ---
 
-## 13. Cross-Reference to Other Documents
+## 11. Cross-Reference to Other Documents
 
-### 13.1 Traceability Chain
+### 11.1 Traceability Chain
 
 The following chain links the hazard to the proof test through a complete, auditable path:
 
 ```
-HA-PRES-001          Hazard identified: Overpressure of Vessel XYZ
+HA entry HA-PRES-001   Hazard identified: Overpressure of Vessel XYZ
      │
      ▼
-SF-PRES-001 (SIL 3)  Safety function defined and SIL allocated by LOPA
+SRS entry SF-PRES-001  Safety function fully specified: SIL 3, 2oo3 voting,
+(in SRS-RefineryXYZ)   PFDavg target, T_I = 6 months, implementing Sheet 201
      │
      ▼
-FMEA 201.1            Hardware FMEA verifies SIL 3 achievability
+FMEA 201.1             Hardware FMEA verifies that selected hardware achieves SRS targets
      │
      ▼
 Sheet 201              Drawing defines implementation (devices, wiring, logic)
@@ -1406,25 +1075,25 @@ PT-201                 Proof test procedure derived from FMEA failure modes
 SAT 201                Site acceptance test verifies installed system
 ```
 
-### 13.2 Traceability Diagram
+### 11.2 Traceability Diagram
 
 ```mermaid
 graph TD
-    HA[HA-PRES-001<br/>Hazard Analysis] --> SF[SF-PRES-001<br/>Safety Function<br/>SIL 3]
-    SF --> FMEA[FMEA 201.1<br/>Hardware FMEA]
-    SF --> DRAW[Sheet 201<br/>Control Logic Drawing]
+    HA["HA entry HA-PRES-001<br/>Hazard Analysis"] --> SRS["SRS entry SF-PRES-001<br/>Safety Requirements<br/>SIL 3, T_I=6mo"]
+    SRS --> FMEA[FMEA 201.1<br/>Hardware FMEA<br/>Verifies SRS targets]
+    SRS --> DRAW[Sheet 201<br/>Control Logic Drawing]
     FMEA --> DRAW
     DRAW --> DEV1["+300-B301.1<br/>Pressure Tx #1"]
     DRAW --> DEV2["+300-B301.2<br/>Pressure Tx #2"]
     DRAW --> DEV3["+300-B301.3<br/>Pressure Tx #3"]
     DRAW --> DEV4["+200-K201.1<br/>Safety Relay"]
     FMEA --> PT[PT-201<br/>Proof Test<br/>6-month interval]
-    FMEA --> SIL[SIL Verification<br/>PFDavg = 4.76E-04<br/>SIL 3 PASS]
+    FMEA --> SIL[SIL Verification<br/>PFDavg = 3.86E-04<br/>SIL 3 PASS]
     DRAW --> SAT[SAT 201<br/>Site Acceptance Test]
     PT --> SAT
 
     style HA fill:#1565c0,color:#fff
-    style SF fill:#6a1b9a,color:#fff
+    style SRS fill:#6a1b9a,color:#fff
     style FMEA fill:#d32f2f,color:#fff
     style DRAW fill:#2e7d32,color:#fff
     style PT fill:#e65100,color:#fff
@@ -1432,7 +1101,7 @@ graph TD
     style SIL fill:#558b2f,color:#fff
 ```
 
-### 13.3 Feedback Paths
+### 11.3 Feedback Paths
 
 The FMEA is not a one-way document. Results may require changes to upstream and downstream documents:
 
@@ -1455,9 +1124,9 @@ The FMEA is not a one-way document. Results may require changes to upstream and 
 
 ---
 
-## 14. Lifecycle and Review
+## 12. Lifecycle and Review
 
-### 14.1 Initial FMEA Creation
+### 12.1 Initial FMEA Creation
 
 The FMEA shall be created during the detailed design phase, after:
 
@@ -1472,7 +1141,7 @@ The FMEA is completed before:
 6. Site Acceptance Testing (SAT uses FMEA results for test criteria).
 7. Commissioning and startup.
 
-### 14.2 FMEA Review Triggers
+### 12.2 FMEA Review Triggers
 
 The FMEA shall be reviewed and updated when any of the following occur:
 
@@ -1487,7 +1156,7 @@ The FMEA shall be reviewed and updated when any of the following occur:
 | Periodic review | Full review at least every 5 years regardless of other triggers | Scheduled review per functional safety management plan |
 | Drawing revision | Verify FMEA aligns with revised drawing; update device tags, sheet references | Sheet 201 revised to Rev 6 — verify FMEA 201.1 still current |
 
-### 14.3 Revision Control
+### 12.3 Revision Control
 
 FMEA revision numbering aligns with drawing revisions:
 
@@ -1496,7 +1165,7 @@ FMEA revision numbering aligns with drawing revisions:
 - FMEA revisions are tracked in the FMEA document revision history table.
 - All revisions require review and approval by a competent functional safety engineer.
 
-### 14.4 Competency Requirements
+### 12.4 Competency Requirements
 
 FMEA preparation and review shall be performed by personnel meeting the following competency requirements per IEC 61508-1 Clause 6 and IEC 61511-1 Clause 5:
 
@@ -1508,11 +1177,11 @@ FMEA preparation and review shall be performed by personnel meeting the followin
 
 ---
 
-## 15. Implementation Checklist
+## 13. Implementation Checklist
 
 - [ ] Define safety functions and SIL targets from HA/LOPA (SF-XXX-NNN, SIL X)
 - [ ] Identify all drawing sheets implementing each safety function
-- [ ] Assign FMEA document numbers (FMEA [Sheet].[Sequence])
+- [ ] Assign FMEA entry numbers (FMEA [Sheet].[Device].[Mode] format per FMEA Standard §4.2)
 - [ ] Define system boundaries for each FMEA (sensors, logic solver, final elements)
 - [ ] Decompose into subsystems with architecture notation (1oo1, 1oo2, 2oo3, etc.)
 - [ ] Obtain device safety manuals and failure rate data for all SIS devices
@@ -1535,27 +1204,3 @@ FMEA preparation and review shall be performed by personnel meeting the followin
 
 ---
 
-## 16. Document Information
-
-| Field | Value      |
-|-------|------------|
-| Version | 1.1        |
-| Date | 2025-02-15 |
-| Author | Reid Hall  |
-| Status | Draft      |
-
-**Revision History:**
-
-| Version | Date | Changes | Author    |
-|---------|------|---------|-----------|
-| 0.1     | 2025-02-15 | Detection-point methodology: FMEA numbered by detection/logic sheet, failure modes grouped by system presentation with root cause decomposition. Added non-safety reliability FMEA (Section 11). Design philosophy updated: DU classification requires justification — failure modes without detection methods are design action items, not accepted defaults. | Reid Hall |
-| 0.0     | 2025-02-15 | Initial release. Sheet-based FMEA methodology for SIS hardware. Worked example: SF-PRES-001 Overpressure Protection (SIL 3, 2oo3 pressure voting). Includes SIL verification calculations, architectural constraints, CCF analysis, and proof test derivation. | Reid Hall |
-
-**Related Documents:**
-
-| Document | Relationship |
-|----------|-|
-| Industrial Systems Drawing Standard | Defines sheet numbering, device tags, and cross-referencing conventions used by this FMEA standard |
-| Hazard Analysis Standard | Defines hazard analysis methodology and safety function identification that provides inputs to FMEA |
-| FAT/SAT Standard | Defines testing methodology that uses FMEA failure modes to drive test requirements |
-| Safety Documentation Standard | Umbrella framework defining document hierarchy, traceability matrices, and lifecycle |

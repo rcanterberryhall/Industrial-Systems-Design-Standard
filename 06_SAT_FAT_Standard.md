@@ -1,9 +1,6 @@
 # Factory Acceptance Testing and Site Acceptance Testing Standard
 ## FAT, SAT, and Proof Test Methodology for Industrial Control Systems
 
-**Version:** 0.0
-**Date:** 2025-02-15
-**Author:** Reid Hall
 **Status:** Draft
 **Scope:** Factory acceptance testing (FAT), site acceptance testing (SAT), and proof test procedure methodology for industrial control systems, with particular focus on safety instrumented systems (SIS) designed per IEC 61511.
 
@@ -19,11 +16,12 @@
 6. [SAT --- Site Acceptance Testing](#6-sat--site-acceptance-testing)
 7. [Proof Test Procedures](#7-proof-test-procedures)
 8. [Test Documentation Requirements](#8-test-documentation-requirements)
-9. [Cross-Reference to Other Documents](#9-cross-reference-to-other-documents)
-10. [Pre-Startup Safety Review (PSSR) Integration](#10-pre-startup-safety-review-pssr-integration)
-11. [Bypass and Override Management During Testing](#11-bypass-and-override-management-during-testing)
-12. [Implementation Checklist](#12-implementation-checklist)
-13. [Document Information](#13-document-information)
+9. [Project Traceability Matrix](#9-project-traceability-matrix)
+10. [Cross-Reference to Other Documents](#10-cross-reference-to-other-documents)
+11. [Pre-Startup Safety Review (PSSR) Integration](#11-pre-startup-safety-review-pssr-integration)
+12. [Bypass and Override Management During Testing](#12-bypass-and-override-management-during-testing)
+13. [Implementation Checklist](#13-implementation-checklist)
+14. [Document Information](#14-document-information)
 
 ---
 
@@ -55,9 +53,10 @@ This standard applies to:
 
 This standard does **not** define:
 
-- Drawing conventions (see Industrial Systems Drawing Standard v1.1)
-- Hazard analysis methodology (see HA Standard v1.0)
-- FMEA methodology (see FMEA Standard v1.0)
+- Drawing conventions (see Industrial Systems Drawing Standard)
+- Hazard analysis methodology (see Hazard Analysis Standard)
+- FMEA methodology (see FMEA Standard)
+- Staged startup and commissioning procedures (see Startup and Commissioning Standard)
 - Process commissioning procedures (chemical cleaning, line flushing, etc.)
 - Mechanical completion procedures
 
@@ -92,9 +91,10 @@ Principles:
 | IEC 61508 Part 2 | Functional safety --- Hardware | Diagnostic coverage verification, hardware fault tolerance |
 | IEC 61508 Part 7 | Functional safety --- Overview of techniques and measures | Test techniques for SIS |
 | IEC 62382 | Electrical and instrumentation loop checking | Loop check methodology for SAT |
-| Industrial Systems Drawing Standard v1.1 | Device, wire, and drawing numbering convention | Source of sheet numbers, device tags, wire numbers used in test procedures |
-| HA Standard v1.0 | Hazard Analysis Standard | Source of safety function definitions (SF-XXX-NNN) and HA references |
-| FMEA Standard v1.0 | Failure Modes and Effects Analysis Standard | Source of failure modes, diagnostic coverage, proof test coverage requirements |
+| Industrial Systems Drawing Standard | Device, wire, and drawing numbering convention | Source of sheet numbers, device tags, wire numbers used in test procedures |
+| Hazard Analysis Standard | HAZOP and LOPA methodology | Source of hazard entries (HA-XXX-NNN) and safety function identification |
+| SRS Standard | Safety Requirements Specification methodology | Source of safety function definitions (SF-XXX-NNN), SIL targets, proof test intervals, and PFDavg calculation methodology |
+| FMEA Standard | Failure Modes and Effects Analysis Standard | Source of failure mode entries, diagnostic coverage, proof test coverage requirements |
 
 ---
 
@@ -104,7 +104,7 @@ Principles:
 |------|------------|
 | **Factory Acceptance Test (FAT)** | Formal testing performed at the factory or panel shop prior to shipment, verifying that an assembled system matches its engineering drawings and performs its intended functions in a controlled environment. |
 | **Site Acceptance Test (SAT)** | Formal testing performed at the installation site after field wiring is complete, verifying end-to-end functionality including actual field devices, field wiring, and environmental conditions. |
-| **Loop Check** | Verification per IEC 62382 that a signal path is continuous from field device through wiring, junction boxes, terminal strips, and I/O modules to the logic solver and/or HMI --- and back to final elements where applicable. |
+| **Loop Check** | Verification per IEC 62382 that a signal path is continuous from field device through wiring, junction boxes, terminal strips, and I/O modules to the logic solver and/or HMI (Human-Machine Interface) --- and back to final elements where applicable. |
 | **Functional Test** | Verification that a system performs its intended control function correctly, including logic execution, alarm generation, and output response. Used for non-safety systems. |
 | **Proof Test** | Periodic exercise of a safety instrumented function during operation to confirm it still works. Reveals whether dangerous undetected (DU) failures have occurred by exercising the function and observing the response. Required by IEC 61511 clause 16. |
 | **Partial Stroke Test (PST)** | A proof test technique for on/off valves where the valve is moved a fraction of its full stroke (typically 10--20%) to verify mechanical freedom without interrupting the process. Provides partial proof test coverage. |
@@ -116,7 +116,7 @@ Principles:
 | **Partial Proof Test** | A proof test that covers only a subset of the possible failure modes for a device or subsystem. Provides a proof test coverage factor less than 100%. |
 | **Comprehensive Proof Test** | A proof test that covers all (or nearly all) possible failure modes for a device or subsystem. Typically requires device removal or full shutdown. Provides proof test coverage approaching 100%. |
 | **Proof Test Coverage (PTC)** | The fraction of potential DU failure modes that a given proof test procedure can exercise, expressed as a percentage. A higher PTC means the proof test exercises more of the possible ways the function could silently fail. Feeds directly into PFDavg calculations. |
-| **Test Interval (TI)** | The time between successive proof tests for a safety instrumented function. Determined by the SIL target and PFDavg calculation in the FMEA. |
+| **Test Interval (TI)** | The time between successive proof tests for a safety instrumented function. Specified in the SRS entry for each safety function; the SRS is the authority for TI values. |
 
 ---
 
@@ -124,7 +124,7 @@ Principles:
 
 ### 4.1 Test Document ID Formats
 
-Test document identification is based on drawing sheet numbers from the Industrial Systems Drawing Standard v1.1:
+Test document identification is based on drawing sheet numbers from the Industrial Systems Drawing Standard:
 
 | Document Type | Format | Example | Meaning |
 |---------------|--------|---------|---------|
@@ -257,12 +257,12 @@ Before FAT can begin, the following must be complete:
 | Prerequisite | Document/Evidence | Verification |
 |-------------|-------------------|--------------|
 | Prerequisite checks complete and signed | Prerequisite sign-off sheet (§5.2.5) | All checks PASS |
-| Engineering drawings issued for construction | Drawing set per Drawing Standard v1.1 | Drawing revision confirmed current |
-| FMEA complete and approved (safety systems) | FMEA document per FMEA Standard v1.0 | FMEA revision confirmed current |
+| Engineering drawings issued for construction | Drawing set per Drawing Standard | Drawing revision confirmed current |
+| FMEA complete and approved (safety systems) | FMEA document per FMEA Standard | FMEA revision confirmed current |
 | Safety function specification available | SF-XXX-NNN from HA Standard | SF document revision confirmed |
 | Test equipment calibrated | Calibration certificates for all test instruments | Certificates in date |
 | FAT procedure approved | This FAT document, reviewed and signed | Signatures on cover page |
-| Witness notification | Written notice to client/end-user/TUV | Notice sent with adequate lead time |
+| Witness notification | Written notice to client/end-user/TÜV (independent safety certification body) | Notice sent with adequate lead time |
 
 ### 5.4 FAT Test Procedure
 
@@ -287,7 +287,7 @@ Any SAT test step that cannot be performed during FAT shall be recorded in the F
 | 201-012 | Signal injection at field transmitter +300-B301.3 | Field device not present at factory | Same as above. | YES |
 | 201-025 | Valve stroke test (XV-201 full closure) | Valve not present at factory | Final element tested to relay output terminals only. Valve stroke verified at SAT. | YES |
 | 201-028 | Total response time (sensor to valve closed) | Field devices and valve not present | Logic solver response time measured at FAT. Full chain response time measured at SAT. | YES |
-| 201-030 | Environmental conditions verification | Factory ≠ site environment | Factory conditions controlled. Site EMI, temperature, vibration verified at SAT. | YES |
+| 201-030 | Environmental conditions verification | Factory ≠ site environment | Factory conditions controlled. Site EMI (Electromagnetic Interference), temperature, vibration verified at SAT. | YES |
 
 **Rules for deviations:**
 - Every deviation must have a specific justification — "not available" alone is insufficient; explain *why* it's not available and what was tested instead
@@ -454,8 +454,7 @@ The purpose of FAT is early detection of issues before shipment — it provides 
 
 | Category | SAT Verification |
 |----------|-----------------|
-| Wiring | Field wiring: wire numbers per drawing, cable IDs, junction box terminations |
-| Signal path | Loop check: signal injection at field device through to logic solver and back to final element |
+| Signal path | Loop check: signal injection at field device through to logic solver and back to final element. Point-to-point wiring, continuity, and loop check sign-off are prerequisites before SAT begins — not SAT test steps. |
 | Functional test | End-to-end functional test with actual field devices |
 | Response time | Full chain including field device and final element response |
 | Environmental | Actual site conditions (temperature, vibration, EMI) |
@@ -464,15 +463,14 @@ The purpose of FAT is early detection of issues before shipment — it provides 
 
 ### 6.4 SAT Test Categories
 
-#### 6.4.1 Loop Integrity Verification (per IEC 62382)
+#### 6.4.1 Loop Signal Verification
 
-For each instrument loop shown on the drawings, verify:
+Point-to-point wiring continuity, cable ID confirmation, and junction box inspection are prerequisite checks completed and signed off before SAT begins (see §6.2). They are not SAT test steps.
+
+For each instrument loop shown on the drawings, the SAT verifies signal path integrity:
 
 | Check | Method | Acceptance Criteria |
 |-------|--------|-------------------|
-| Wire number verification | Trace each wire from field device to panel terminal, verify wire label matches drawing | All wire numbers match drawing |
-| Cable ID verification | Verify cable tags at each end and at each junction box | Cable IDs match cable schedule |
-| Junction box terminations | Inspect each junction box, verify terminal assignments per drawing | Correct terminals, tight connections |
 | Signal injection at field device | Apply known stimulus at the field device (e.g., pressure at transmitter) | Logic solver reads correct value within specified accuracy |
 | Signal return to field | Command output from logic solver, verify final element responds | Final element moves to commanded state |
 
@@ -661,65 +659,34 @@ Safety Function: SF-PRES-001          HA: HA-PRES-001
 FMEA: 201.1                           Architecture: 2oo3, HFT=1
 FAT: FAT 201 (completed and accepted)
 
-FIELD WIRING VERIFICATION
+NOTE: Point-to-point wiring, wire label verification, cable ID confirmation, and junction box inspection
+are prerequisite checks completed and signed off before SAT begins (see §6.2 Prerequisites). They
+are not part of this test procedure.
+
+LOOP SIGNAL VERIFICATION
 ─────────────────────────────────────────────────────────────────────
 Step   Device/Wire     Test Action                Expected    Pass/
  ID    Reference                                  Result      Fail
 ─────────────────────────────────────────────────────────────────────
-SAT    Wire 201-1.1    Verify wire label at       Label reads  [ ]
-201-   +300-B301.1     transmitter junction box   "201-1.1"
-001    to panel        and at +200 panel terminal
-
-SAT    Wire 201-1.1    Verify cable ID            Cable tag    [ ]
-201-   Cable           CBL-201-01 at both ends    matches
-002    CBL-201-01      and at each junction box   cable
-                                                  schedule
-
-SAT    Wire 201-2.1    Verify wire label at       Label reads  [ ]
-201-   +300-B301.2     transmitter junction box   "201-2.1"
-003    to panel        and at +200 panel terminal
-
-SAT    Wire 201-2.1    Verify cable ID            Cable tag    [ ]
-201-   Cable           CBL-201-02 at both ends    matches
-004    CBL-201-02
-
-SAT    Wire 201-3.1    Verify wire label at       Label reads  [ ]
-201-   +300-B301.3     transmitter junction box   "201-3.1"
-005    to panel        and at +200 panel terminal
-
-SAT    Wire 201-3.1    Verify cable ID            Cable tag    [ ]
-201-   Cable           CBL-201-03 at both ends    matches
-006    CBL-201-03
-
-SAT    Wire 201-4.1    Verify wire from logic     Label reads  [ ]
-201-   +200-K201.1     solver DO to safety relay  "201-4.1"
-007    coil            coil terminal A1
-
-SAT    Wire 201-5.1    Verify wire from K201.1    Label reads  [ ]
-201-   K201.1 to       contact to shutdown valve   "201-5.1"
-008    valve           solenoid terminal
-
-LOOP CHECKS (per IEC 62382)
-─────────────────────────────────────────────────────────────────────
 SAT    +300-B301.1     Apply 0% pressure at       Logic solver [ ]
 201-   Loop 1          transmitter, verify logic  reads 0%
-009                    solver reads 0%            +/- 0.5%
+001                    solver reads 0%            +/- 0.5%
 
 SAT    +300-B301.1     Apply 50% pressure at      Logic solver [ ]
 201-   Loop 1          transmitter, verify logic  reads 50%
-010                    solver reads 50%           +/- 0.5%
+002                    solver reads 50%           +/- 0.5%
 
 SAT    +300-B301.1     Apply 100% pressure at     Logic solver [ ]
 201-   Loop 1          transmitter, verify logic  reads 100%
-011                    solver reads 100%          +/- 0.5%
+003                    solver reads 100%          +/- 0.5%
 
 SAT    +300-B301.2     Apply 0% / 50% / 100%     Readings     [ ]
 201-   Loop 2          pressure, verify logic     within
-012                    solver reads correctly     +/- 0.5%
+004                    solver reads correctly     +/- 0.5%
 
 SAT    +300-B301.3     Apply 0% / 50% / 100%     Readings     [ ]
 201-   Loop 3          pressure, verify logic     within
-013                    solver reads correctly     +/- 0.5%
+005                    solver reads correctly     +/- 0.5%
 
 END-TO-END FUNCTIONAL TEST (Standard 10-Step Fault Sequence per §6.4.2)
 ─────────────────────────────────────────────────────────────────────
@@ -732,70 +699,70 @@ Step   Seq   Description                        Expected         Pass/
 
 SAT     1    Apply normal operating pressure    System in        [ ]
 201-         to all 3 transmitters. Verify      normal state,
-014          system running, no faults.         no alarms.
+006          system running, no faults.         no alarms.
 
 SAT     2    Apply trip pressure to B301.1      Trip pressure    [ ]
 201-         and B301.2 (2oo3 satisfied).       applied to
-015                                             2 of 3 channels.
+007                                             2 of 3 channels.
 
 SAT     3    Verify system reaction: valve      TRIP: K201.1     [ ]
 201-         closes, relay de-energizes,        de-energized,
-016          trip alarm activates.              valve fully
+008          trip alarm activates.              valve fully
                                                closed, trip
                                                alarm active.
 
 SAT     4    Attempt fault reset while trip     Reset actuated.  [ ]
 201-         pressure still applied to
-017          B301.1 and B301.2.
+009          B301.1 and B301.2.
 
 SAT     5    Verify system does NOT reset.      System remains   [ ]
 201-         Valve remains closed.              tripped. Valve
-018          No motion observed.                closed. No
+010          No motion observed.                closed. No
                                                motion.
 
 SAT     6    Remove trip condition — restore    Trip pressure    [ ]
 201-         normal pressure to B301.1 and      removed from
-019          B301.2.                            both channels.
+011          B301.2.                            both channels.
 
 SAT     7    Verify system does NOT             No auto-         [ ]
 201-         auto-restart. Valve remains        restart. Valve
-020          closed. Fault does not             closed. Trip
+012          closed. Fault does not             closed. Trip
              auto-clear. No motion.             indication
                                                persists.
 
 SAT     8    Attempt fault reset now that       Reset actuated.  [ ]
 201-         trip pressure is cleared.
-021
+013
 
 SAT     9    Verify fault clears. Verify        Fault clears.    [ ]
 201-         machine does NOT initiate          No automatic
-022          motion on its own.                 motion. System
+014          motion on its own.                 motion. System
                                                ready for
                                                restart.
 
 SAT    10    Return to normal operating         Normal           [ ]
 201-         state. Verify motion is            operation.
-023          allowed and no faults present.     No faults.
+015          allowed and no faults present.     No faults.
 
 RESPONSE TIME MEASUREMENT (ACTUAL)
 ─────────────────────────────────────────────────────────────────────
 SAT    +300-B301.1     Apply step change from     Record       [ ]
 201-   sensor          normal to trip pressure    sensor
-020    response        at B301.1, record time     response
+016    response        at B301.1, record time     response
                        to 4-20 mA output change   time: ___ms
 
 SAT    Logic solver    Record time from input     Record       [ ]
 201-   processing      signal recognition to      processing
-021                    output command              time: ___ms
+017                    output command              time: ___ms
 
 SAT    Shutdown        Record time from K201.1    Record       [ ]
 201-   valve stroke    de-energization to valve   stroke
-022                    fully closed (position     time: ___ms
+018                    fully closed (position     time: ___ms
                        switch)
 
-SAT    Total           Sum of steps 020-022       Total:       [ ]
+SAT    Total           Sum of steps 016-018       Total:       [ ]
 201-   response time                              ___ms
-023                                               Must be
+019                                               Must be
                                                   < process
                                                   safety time
 
@@ -803,111 +770,111 @@ BYPASS FUNCTION VERIFICATION
 ─────────────────────────────────────────────────────────────────────
 SAT    Bypass          Activate bypass for        Bypass       [ ]
 201-   function        SF-PRES-001 per            indication
-024                    procedure                  active on
+020                    procedure                  active on
                                                   HMI + panel
 
 SAT    Bypass          Apply trip condition       System does  [ ]
 201-   behavior        while bypass is active     NOT trip;
-025                                               "BYPASSED"
+021                                               "BYPASSED"
                                                   alarm active
 
 SAT    Bypass          Remove bypass              Protection   [ ]
 201-   removal                                    restored;
-026                                               indication
+022                                               indication
                                                   clears
 
 FAILURE MODE INJECTION (per FMEA 201.1, Standard 10-Step Sequence per §6.4.2)
 ─────────────────────────────────────────────────────────────────────
 
   Open Circuit — Channel 1 (+300-B301.1)
-  Fault injection: Disconnect field wiring at B301.1 terminals
+  Fault injection: Disconnect signal wiring at B301.1 terminals
 
 SAT     1    System running normally, all 3      Normal state,   [ ]
 201-         channels reading normal pressure.   no faults.
-027
+023
 
-SAT     2    Disconnect field wiring at          Wiring          [ ]
+SAT     2    Disconnect signal wiring at         Signal          [ ]
 201-         B301.1 terminals (open circuit).    disconnected.
-028
+024
 
 SAT     3    Verify system reaction: Ch 1        Fault alarm     [ ]
 201-         fault alarm, remaining channels     for Ch 1.
-029          continue voting (now 1oo2).         1oo2 voting
+025          continue voting (now 1oo2).         1oo2 voting
                                                 active.
 
 SAT     4    Attempt fault reset while           Reset           [ ]
 201-         B301.1 is still disconnected.       actuated.
-030
+026
 
 SAT     5    Verify system does NOT clear        Ch 1 fault      [ ]
 201-         the channel fault. 1oo2 degraded    persists.
-031          voting persists.                    No change.
+027          voting persists.                    No change.
 
-SAT     6    Reconnect field wiring at           Wiring          [ ]
+SAT     6    Reconnect signal wiring at          Signal          [ ]
 201-         B301.1 terminals.                   reconnected.
-032
+028
 
 SAT     7    Verify system does NOT              No auto-        [ ]
 201-         auto-clear fault. Degraded          clear. Fault
-033          voting persists. Ch 1 does not      persists.
+029          voting persists. Ch 1 does not      persists.
              automatically rejoin voting.
 
 SAT     8    Attempt fault reset.                Reset           [ ]
 201-                                             actuated.
-034
+030
 
 SAT     9    Verify fault clears. Verify         Fault clears.   [ ]
 201-         system returns to 2oo3 voting.      2oo3 voting
-035          No automatic motion.                restored.
+031          No automatic motion.                restored.
 
 SAT    10    Verify normal operating state.      Normal          [ ]
 201-         All 3 channels active, no faults.   operation.
-036                                              No faults.
+032                                              No faults.
 
   Safety Relay Coil Failure (+200-K201.1)
   Fault injection: Disconnect relay coil supply
 
 SAT     1    System running normally, no         Normal state,   [ ]
 201-         faults.                             no faults.
-037
+033
 
 SAT     2    Disconnect K201.1 coil supply       Coil supply     [ ]
 201-         (simulate relay coil failure).      disconnected.
-038
+034
 
 SAT     3    Verify system reaction: valve       Valve closed    [ ]
 201-         goes to safe state (de-energize     (safe state).
-039          to trip). Trip alarm active.        Trip alarm
+035          to trip). Trip alarm active.        Trip alarm
                                                 active.
 
 SAT     4    Attempt fault reset while coil      Reset           [ ]
 201-         supply is still disconnected.       actuated.
-040
+036
 
 SAT     5    Verify system does NOT reset.       Trip persists.  [ ]
 201-         Valve remains closed. No motion.    Valve closed.
-041                                              No motion.
+037                                              No motion.
 
 SAT     6    Reconnect K201.1 coil supply.       Coil supply     [ ]
 201-                                             reconnected.
-042
+038
 
 SAT     7    Verify system does NOT auto-        No auto-        [ ]
 201-         restart. Valve remains closed.      restart. Valve
-043          No motion.                          closed.
+039          No motion.                          closed.
                                                 No motion.
 
 SAT     8    Attempt fault reset.                Reset           [ ]
 201-                                             actuated.
-044
+040
 
 SAT     9    Verify fault clears. Verify         Fault clears.   [ ]
 201-         machine does NOT initiate           No automatic
-045          motion on its own.                  motion.
+041          motion on its own.                  motion.
 
 SAT    10    Return to normal operating          Normal          [ ]
 201-         state. Verify no faults.            operation.
-046                                              No faults.
+042                                              No faults.
 ```
 
 ### 6.7 SAT for 2oo3 Voting Systems --- Specific Test Methodology
@@ -922,9 +889,9 @@ Test each channel individually to confirm that a single channel trip does NOT ca
 
 | Test | Ch 1 (B301.1) | Ch 2 (B301.2) | Ch 3 (B301.3) | Expected Output | Expected Alarm |
 |------|:---:|:---:|:---:|---------|---------|
-| SAT 201-047 | TRIP | Normal | Normal | NO TRIP | Channel 1 high alarm, discrepancy alarm |
-| SAT 201-048 | Normal | TRIP | Normal | NO TRIP | Channel 2 high alarm, discrepancy alarm |
-| SAT 201-049 | Normal | Normal | TRIP | NO TRIP | Channel 3 high alarm, discrepancy alarm |
+| SAT 201-043 | TRIP | Normal | Normal | NO TRIP | Channel 1 high alarm, discrepancy alarm |
+| SAT 201-044 | Normal | TRIP | Normal | NO TRIP | Channel 2 high alarm, discrepancy alarm |
+| SAT 201-045 | Normal | Normal | TRIP | NO TRIP | Channel 3 high alarm, discrepancy alarm |
 
 #### 6.7.2 Dual Channel Trip Tests (10-Step Sequence)
 
@@ -932,15 +899,15 @@ Test each pair of channels to confirm that any two channels tripping DOES cause 
 
 | Test | Ch 1 (B301.1) | Ch 2 (B301.2) | Ch 3 (B301.3) | Expected Output | Expected Alarm |
 |------|:---:|:---:|:---:|---------|---------|
-| SAT 201-050 | TRIP | TRIP | Normal | **TRIP** | System trip alarm, valve closed |
-| SAT 201-051 | TRIP | Normal | TRIP | **TRIP** | System trip alarm, valve closed |
-| SAT 201-052 | Normal | TRIP | TRIP | **TRIP** | System trip alarm, valve closed |
+| SAT 201-046 | TRIP | TRIP | Normal | **TRIP** | System trip alarm, valve closed |
+| SAT 201-047 | TRIP | Normal | TRIP | **TRIP** | System trip alarm, valve closed |
+| SAT 201-048 | Normal | TRIP | TRIP | **TRIP** | System trip alarm, valve closed |
 
 #### 6.7.3 All Channels Trip Test (10-Step Sequence)
 
 | Test | Ch 1 (B301.1) | Ch 2 (B301.2) | Ch 3 (B301.3) | Expected Output | Expected Alarm |
 |------|:---:|:---:|:---:|---------|---------|
-| SAT 201-053 | TRIP | TRIP | TRIP | **TRIP** | System trip alarm, valve closed |
+| SAT 201-049 | TRIP | TRIP | TRIP | **TRIP** | System trip alarm, valve closed |
 
 #### 6.7.4 Single Channel Fail-Safe Verification (10-Step Sequence)
 
@@ -948,9 +915,9 @@ Verify that a single channel failure is handled safely and does not prevent the 
 
 | Test | Failure | Remaining Channels | Action | Expected |
 |------|---------|-------------------|--------|----------|
-| SAT 201-054 | B301.1 open circuit | B301.2 + B301.3 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
-| SAT 201-055 | B301.2 open circuit | B301.1 + B301.3 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
-| SAT 201-056 | B301.3 open circuit | B301.1 + B301.2 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
+| SAT 201-050 | B301.1 open circuit | B301.2 + B301.3 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
+| SAT 201-051 | B301.2 open circuit | B301.1 + B301.3 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
+| SAT 201-052 | B301.3 open circuit | B301.1 + B301.2 trip | Apply trip to remaining 2 channels | System trips (degraded to 1oo2) |
 
 #### 6.7.5 Voting Logic Complete Truth Table
 
@@ -958,20 +925,41 @@ For reference and completeness, the full truth table that SAT 201 verifies:
 
 | Ch 1 | Ch 2 | Ch 3 | Votes | 2oo3 Output | Test Step |
 |:---:|:---:|:---:|:---:|:---:|---------|
-| 0 | 0 | 0 | 0 | No Trip | SAT 201-014 |
-| 1 | 0 | 0 | 1 | No Trip | SAT 201-047 |
-| 0 | 1 | 0 | 1 | No Trip | SAT 201-048 |
-| 0 | 0 | 1 | 1 | No Trip | SAT 201-049 |
-| 1 | 1 | 0 | 2 | **Trip** | SAT 201-050 |
-| 1 | 0 | 1 | 2 | **Trip** | SAT 201-051 |
-| 0 | 1 | 1 | 2 | **Trip** | SAT 201-052 |
-| 1 | 1 | 1 | 3 | **Trip** | SAT 201-053 |
+| 0 | 0 | 0 | 0 | No Trip | SAT 201-006 |
+| 1 | 0 | 0 | 1 | No Trip | SAT 201-043 |
+| 0 | 1 | 0 | 1 | No Trip | SAT 201-044 |
+| 0 | 0 | 1 | 1 | No Trip | SAT 201-045 |
+| 1 | 1 | 0 | 2 | **Trip** | SAT 201-046 |
+| 1 | 0 | 1 | 2 | **Trip** | SAT 201-047 |
+| 0 | 1 | 1 | 2 | **Trip** | SAT 201-048 |
+| 1 | 1 | 1 | 3 | **Trip** | SAT 201-049 |
 
 (0 = Normal, 1 = Trip)
 
 ---
 
 ## 7. Proof Test Procedures
+
+### 7.0 What a Proof Test Is — and How It Differs from SAT
+
+**Proof tests and SAT are fundamentally different activities.** Understanding this distinction is essential before designing either procedure.
+
+**SAT (Site Acceptance Test)** is a commissioning activity — it validates that the newly installed system functions correctly before the process is introduced. SAT is a one-time event (per project lifecycle) that exercises the full system end-to-end and generates the acceptance records that authorize process introduction.
+
+**Proof tests** are operational maintenance activities — they confirm periodically, during system operation, that the safety function is still capable of performing its action. Proof tests have a "check and correct" structure: each step checks that a component or function is within its required condition, and if it is not, the failure is corrected before the proof test is declared passed. This is analogous to an aircraft preflight check or an oil level inspection: Check the oil level; if low, top it up.
+
+**Key distinctions:**
+
+| Aspect | SAT | Proof Test |
+|--------|-----|-----------|
+| When | Once, at commissioning | Periodically during operation |
+| Scope | Full system, end-to-end | Sufficient to reveal DU failures within T_I |
+| Structure | Verify the as-built system matches design | Check-and-correct each component/function |
+| Failure response | Punch list, must resolve before acceptance | Corrective action, re-test, document |
+| Authority required | Safety engineer, client sign-off | Operations, maintenance technician |
+| Result | SAT acceptance = authorized for process introduction | Proof test PASS = SIL target maintained for next T_I |
+
+**Both SAT and proof tests confirm that the safety function can perform its action.** The difference is context: SAT confirms this at commissioning; proof tests confirm this is still true at each T_I interval during operation. Neither can substitute for the other.
 
 ### 7.1 Purpose
 
@@ -982,7 +970,7 @@ A dangerous undetected (DU) failure has no detection method and no system reacti
 The purpose of proof testing is to confirm that:
 
 - The SIF will function on demand — the function is exercised and the correct response is observed
-- The assumed PFDavg in the FMEA remains valid — the proof test interval has not been exceeded
+- The assumed PFDavg in the SRS/FMEA remains valid — the proof test interval has not been exceeded
 - The SIF continues to meet its SIL target
 
 If the safety function does not respond correctly during a proof test, a DU failure has been revealed. The system must be taken out of service or placed under compensating measures until the failure is corrected.
@@ -1008,13 +996,14 @@ RELATIONSHIP: TI, PTC, AND PFDavg
     - PTC < 60% may require impractically short TI to meet SIL 3
 ```
 
-The proof test interval for each SIF is documented in:
+The proof test interval for each SIF is specified in the SRS and cross-referenced in:
 
-- The FMEA document (FMEA 201.1) --- where the TI is a calculation input
+- The **SRS entry** (e.g., SF-PRES-001) --- where TI is defined as a functional requirement
+- The **FMEA** --- where TI is used as a calculation input to the PFDavg formula
 - The drawing title block (Sheet 201) --- where "PT-201 (6-month interval)" is noted
 - The proof test procedure (PT-201) --- where the interval is specified on the cover page
 
-**Any change to the proof test interval requires recalculation of PFDavg in the FMEA.**
+**Any change to the proof test interval requires an SRS revision and recalculation of PFDavg.**
 
 ### 7.3 Proof Test Coverage
 
@@ -1391,17 +1380,63 @@ Pass/fail criteria shall be:
 | SAT procedure and records | Life of the plant | Plant SIS documentation |
 | Proof test procedures (current) | Life of the SIF | Plant SIS documentation |
 | Proof test records (completed) | Life of the plant or 10 years minimum | Plant SIS documentation |
-| Calibration certificates (test equipment) | 5 years after test date | QA files |
+| Calibration certificates (test equipment) | 5 years after test date | QA (Quality Assurance) files |
 | Punch list and deviation records | Life of the plant | Plant SIS documentation |
 | Bypass records from testing | 5 years after test date | Plant SIS documentation |
 
 ---
 
-## 9. Cross-Reference to Other Documents
+## 9. Project Traceability Matrix
 
-### 9.1 Drawing Standard
+### 9.1 Purpose and Format
 
-Test procedures reference the Industrial Systems Drawing Standard v1.1 for:
+The Project Traceability Matrix is a project-level deliverable that provides a single consolidated view of how every SAT document connects to the safety requirements, hazard analysis, FMEA, and ongoing proof test activities. It is produced alongside (not inside) the individual SAT procedures.
+
+**Document ID:** `TM-[Project]`
+
+The matrix is a single table — one row per SAT document. Every safety-critical SAT must have a complete row. Non-safety functional tests (FT documents) may be included for completeness.
+
+### 9.2 Traceability Matrix Format
+
+| SAT ID | Sheet(s) | Safety Function | SRS Entry | HA Entry | FMEA Entries | Proof Test | Status |
+|--------|----------|----------------|-----------|----------|--------------|------------|--------|
+| SAT 201 | 201, 301 | SF-PRES-001 | SF-PRES-001 (SRS-RefineryXYZ) | HA-PRES-001 | FMEA 201.1.1 – 201.3.7 | PT-201 (6-month) | Complete |
+| SAT 130 | 130, 320 | SF-TEMP-001 | SF-TEMP-001 (SRS-RefineryXYZ) | HA-TEMP-001 | FMEA 130.1.1 – 130.2.5 | PT-130 (12-month) | Complete |
+| SAT 140 | 140, 325 | SF-LEV-001 | SF-LEV-001 (SRS-RefineryXYZ) | HA-LEV-001 | FMEA 140.1.1 – 140.1.4 | PT-140 (12-month) | SAT Pending |
+| FT 150 | 150 | — (non-safety) | — | — | FMEA 150.1 | — | Complete |
+
+**Column Definitions:**
+
+| Column | Content | Rules |
+|--------|---------|-------|
+| SAT ID | SAT document identifier (e.g., SAT 201) | One row per SAT document |
+| Sheet(s) | Drawing sheet(s) covered by this SAT | Must match SAT document scope |
+| Safety Function | SF-XXX-NNN | Must be populated for all safety-critical SATs |
+| SRS Entry | SF-XXX-NNN with SRS document reference | Must be populated for all safety-critical SATs |
+| HA Entry | HA-XXX-NNN entry reference | Must be populated for all safety-critical SATs |
+| FMEA Entries | Range of FMEA item IDs covered | Must include all DU failure modes for the SF |
+| Proof Test | PT-[Sheet] with interval | Must be populated for all safety-critical SATs |
+| Status | Planned / In Progress / Complete / Not Required | Blank = gap requiring resolution |
+
+### 9.3 Matrix Rules
+
+- **Every safety-critical SAT must appear** — a missing SAT row is a documentation gap
+- **Every safety-critical row must have a complete SF, SRS, HA, FMEA, and PT entry** — blank cells indicate missing documentation that must be resolved before PSSR
+- **Non-safety functional tests (FT documents)** may be included; their SF/SRS/HA/FMEA/PT columns are marked `—` (not applicable)
+- **The matrix is a living document** — it is updated as SATs are completed and statuses are updated
+- **PSSR prerequisite:** The traceability matrix must be fully populated (no blank safety-critical cells) before the Pre-Startup Safety Review can be authorized
+
+### 9.4 Relationship to Safety Documentation Standard Traceability Matrices
+
+The Safety Documentation Standard (Section 7) defines three project-level traceability matrices (TM-REQ, TM-VER, TM-DEV). The Traceability Matrix defined here is a simplified operational view, focused specifically on SAT-to-requirement linkage. For projects requiring formal FSA compliance, produce all three matrices as defined in the Safety Documentation Standard. For smaller projects, this single matrix may suffice.
+
+---
+
+## 10. Cross-Reference to Other Documents
+
+### 10.1 Drawing Standard
+
+Test procedures reference the Industrial Systems Drawing Standard for:
 
 - **Sheet numbers:** FAT/SAT/PT document IDs are based on drawing sheet numbers
 - **Device tags:** Every test step references devices using the `+[Location]-[Device][Sheet].[Sequence]` format
@@ -1409,34 +1444,34 @@ Test procedures reference the Industrial Systems Drawing Standard v1.1 for:
 - **Grid references:** Physical location of devices on drawings for field verification
 - **Cabinet codes:** +100, +200, +300 location codes identify physical test locations
 
-### 9.2 HA Standard
+### 10.2 HA Standard
 
-The Hazard Analysis Standard v1.0 provides:
+The Hazard Analysis Standard provides:
 
 - **Safety function definitions:** SF-XXX-NNN identifiers define what each SIF must do
 - **HA references:** HA-XXX-NNN identifiers link to the hazard being mitigated
 - **SIL targets:** Determined by the HA process, these set the rigor of testing required
 - **Process safety time:** Maximum time from hazardous event to SIF action, which sets response time acceptance criteria
 
-### 9.3 FMEA Standard
+### 10.3 FMEA Standard
 
-The FMEA Standard v1.0 provides:
+The FMEA Standard provides:
 
 - **Failure modes to test:** Each detectable (DD) failure mode in the FMEA is a candidate for fault injection testing during FAT/SAT. DU failure modes are addressed by proof testing, which exercises the safety function to confirm it still works.
 - **Diagnostic coverage assumptions:** FAT verifies that diagnostics detect the failure modes claimed as DD in the FMEA
 - **Proof test coverage factors:** The FMEA assumes specific PTC values; the proof test procedure must achieve at least these values
-- **Proof test interval:** The TI used in PFDavg calculation is the maximum allowable interval between proof tests
-- **PFDavg feedback:** Actual proof test results (especially failures found) feed back into FMEA assumptions for the next SIS lifecycle review
+- **Proof test interval:** The TI is specified in the SRS entry for each safety function and used as a calculation input in the FMEA. The SRS is the authority; the maximum allowable TI is derived from the SRS PFDavg calculation
+- **PFDavg feedback:** Actual proof test results (especially failures found) feed back into the SRS and FMEA assumptions for the next SIS lifecycle review
 
-### 9.4 Traceability Chain
+### 10.4 Traceability Chain
 
 The complete traceability chain from hazard identification through ongoing operation:
 
 ```mermaid
 graph LR
-    HA["HA-PRES-001<br/>Hazard Analysis"] --> SF["SF-PRES-001<br/>Safety Function Spec"]
-    SF --> FMEA["FMEA 201.1<br/>Failure Modes Analysis"]
-    SF --> DWG["Sheet 201<br/>Engineering Drawing"]
+    HA["HA-PRES-001<br/>HA Entry"] --> SRS["SF-PRES-001<br/>SRS Entry"]
+    SRS --> FMEA["FMEA 201.x<br/>FMEA Entries"]
+    SRS --> DWG["Sheet 201<br/>Engineering Drawing"]
     FMEA --> DWG
     DWG --> FAT["FAT 201<br/>Factory Acceptance Test"]
     FAT --> SAT["SAT 201<br/>Site Acceptance Test"]
@@ -1445,12 +1480,12 @@ graph LR
     OP --> PT["PT-201<br/>Proof Test (6-month)"]
     PT --> OP
 
-    FMEA -.->|failure modes<br/>to test| SAT
-    FMEA -.->|proof test<br/>coverage| PT
+    FMEA -.->|failure mode<br/>entries to test| SAT
+    SRS -.->|PTC, TI<br/>requirements| PT
     PT -.->|test results<br/>feed back| FMEA
 ```
 
-### 9.5 Test Lifecycle
+### 10.5 Test Lifecycle
 
 ```mermaid
 graph TB
@@ -1491,9 +1526,9 @@ graph TB
 
 ---
 
-## 10. Pre-Startup Safety Review (PSSR) Integration
+## 11. Pre-Startup Safety Review (PSSR) Integration
 
-### 10.1 How FAT/SAT Completion Feeds into PSSR
+### 11.1 How FAT/SAT Completion Feeds into PSSR
 
 The PSSR is the final gate before process fluids are introduced. FAT and SAT completion are mandatory inputs to the PSSR checklist.
 
@@ -1512,7 +1547,7 @@ The PSSR is the final gate before process fluids are introduced. FAT and SAT com
 | Operator training complete | Training records for SIS operation, bypass procedures, and emergency response | Training coordinator |
 | Response time verification complete | Response time test records showing all SIFs within process safety time | Commissioning team |
 
-### 10.2 Required Sign-Offs Before Process Introduction
+### 11.2 Required Sign-Offs Before Process Introduction
 
 The following sign-offs are required on the PSSR form before process introduction is authorized:
 
@@ -1524,7 +1559,7 @@ The following sign-offs are required on the PSSR form before process introductio
 
 **No single individual may authorize process introduction without all other signatures.**
 
-### 10.3 Outstanding Punch List Item Disposition
+### 11.3 Outstanding Punch List Item Disposition
 
 | Status | Permitted Action | Documentation Required |
 |--------|-----------------|----------------------|
@@ -1536,9 +1571,9 @@ The following sign-offs are required on the PSSR form before process introductio
 
 ---
 
-## 11. Bypass and Override Management During Testing
+## 12. Bypass and Override Management During Testing
 
-### 11.1 Bypass Documentation Requirements
+### 12.1 Bypass Documentation Requirements
 
 Every bypass applied during testing shall be documented with:
 
@@ -1558,7 +1593,7 @@ Every bypass applied during testing shall be documented with:
 | Removed By | Name of technician who removed bypass | R. Jones, Instrument Technician |
 | Verified By | Name of person who verified bypass was fully removed | J. Smith, Operations Supervisor |
 
-### 11.2 Bypass Register Format
+### 12.2 Bypass Register Format
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -1576,7 +1611,7 @@ Every bypass applied during testing shall be documented with:
 └──────┴────────┴─────┴───────┴───────────┴──────┴──────┴──────┴─────────────┘
 ```
 
-### 11.3 Maximum Bypass Duration
+### 12.3 Maximum Bypass Duration
 
 | SIL Level | Maximum Single Bypass Duration | Notes |
 |-----------|-------------------------------|-------|
@@ -1592,7 +1627,7 @@ Every bypass applied during testing shall be documented with:
 3. Document reason for delay
 4. Re-authorize bypass for a new period when ready to resume
 
-### 11.4 Authorization Requirements
+### 12.4 Authorization Requirements
 
 | Action | SIL 3 | SIL 2 | SIL 1 | Non-Safety |
 |--------|-------|-------|-------|------------|
@@ -1601,7 +1636,7 @@ Every bypass applied during testing shall be documented with:
 | Remove bypass | Same technician who activated (or qualified alternate) | Same or qualified alternate | Same or qualified alternate | Technician |
 | Verify removal | Independent person (not the technician who removed it) | Independent person | Supervisor | Supervisor |
 
-### 11.5 Bypass Removal Verification
+### 12.5 Bypass Removal Verification
 
 After every test session, **before the system is returned to service**, the following shall be verified:
 
@@ -1615,12 +1650,12 @@ After every test session, **before the system is returned to service**, the foll
 
 ---
 
-## 12. Implementation Checklist
+## 13. Implementation Checklist
 
 - [ ] Define test document ID format per Section 4 (FAT, SAT, PT, FT numbering)
 - [ ] Identify all safety-critical sheets requiring FAT/SAT/PT procedures
 - [ ] Identify all non-safety sheets requiring functional test (FT) procedures
-- [ ] Obtain current approved drawings (Drawing Standard v1.1) for all sheets under test
+- [ ] Obtain current approved drawings (Drawing Standard) for all sheets under test
 - [ ] Obtain current approved FMEA for all safety-rated systems
 - [ ] Obtain current approved safety function specifications
 - [ ] Prepare FAT procedures for each safety system panel
@@ -1640,17 +1675,3 @@ After every test session, **before the system is returned to service**, the foll
 
 ---
 
-## 13. Document Information
-
-| Field | Value      |
-|-------|------------|
-| Version | 0.0        |
-| Date | 2025-02-15 |
-| Author | Reid Hall  |
-| Status | Draft      |
-
-**Revision History:**
-
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.0 | 2025-02-15 | Initial release. Covers FAT, SAT, and proof test methodology for industrial control systems with focus on SIS. Includes worked examples for Overpressure Protection system (SF-PRES-001, SIL 3, 2oo3 voting). References Drawing Standard v1.1 for numbering conventions. | Reid Hall |

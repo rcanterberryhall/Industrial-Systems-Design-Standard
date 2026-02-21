@@ -2,13 +2,12 @@
 # Industrial Control Software Architecture Standard  
 ## PLC Runtime Architecture for Testable and Diagnosable Industrial Systems
 
-**Version:** 0.2 (Draft)  
-**Status:** Working Draft
+**Status:** Draft
 
 ---
 # 1. Purpose
 
-This standard defines a reference PLC software architecture that:
+This standard defines a reference PLC (Programmable Logic Controller) software architecture that:
 
 - Aligns runtime behavior with drawings, FMEA, FAT/SAT, and proof testing
 - Preserves determinism required for machine control
@@ -46,7 +45,7 @@ Service-oriented or asynchronous architectures are prohibited in the control cor
 ---
 # 4. Deterministic Actuation Gateway
 
-HMI/SCADA are non-deterministic interfaces.
+HMI (Human-Machine Interface)/SCADA (Supervisory Control and Data Acquisition) are non-deterministic interfaces.
 
 Any action causing motion or state change must pass through a deterministic gateway.
 
@@ -174,6 +173,3 @@ Simulation/substitution shall be:
 - Traceable
 
 Virtual control may be disabled during SAT without invalidating safety proof.
-
----
-# End Draft v0.2

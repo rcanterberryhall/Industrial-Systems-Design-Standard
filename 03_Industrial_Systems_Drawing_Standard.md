@@ -1,10 +1,7 @@
 # Industrial Systems Drawing Standard
 ## Device, Wire, and Drawing Numbering Convention
 
-**Version:** 0.1  
-**Date:** 2025-02-15  
-**Author:** Reid  
-**Status:** Draft  
+**Status:** Draft
 **Scope:** Electrical drawing organization, device tagging, wire numbering, title block requirements, and cross-referencing conventions for industrial control systems.
 
 ---
@@ -783,18 +780,3 @@ Field additions follow the numbering standard. Document via Field Change Notice 
 
 ---
 
-## Document Information
-
-| Field | Value      |
-|-------|------------|
-| Version | 0.1        |
-| Date | 2025-02-15 |
-| Author | Reid Hall  |
-| Status | Draft      |
-
-**Revision History:**
-
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 0.1     | 2025-02-15 | Restructured scope to drawing standard only. Safety documentation moved to separate standard. P&ID and HA tags carried as description fields. Single-cabinet-per-sheet rule enforced. Wire renumbering only at protective devices. CAD section reduced to requirements. | Reid Hall |
-| 0.0     | 2025-02-15 | Initial release (combined drawing and safety standard) | Reid Hall |

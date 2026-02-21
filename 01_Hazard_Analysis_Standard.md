@@ -1,9 +1,6 @@
 # Hazard Analysis Standard
 ## HAZOP and LOPA for Industrial Control Systems
 
-**Version:** 0.0
-**Date:** 2025-02-15
-**Author:** Reid Hall
 **Status:** Draft
 **Scope:** Hazard and Operability Study (HAZOP) methodology, Layer of Protection Analysis (LOPA) methodology, safety function identification, SIL determination, and integration with the Industrial Systems Drawing Standard for industrial control systems.
 
@@ -46,10 +43,10 @@ This standard applies to:
 
 This standard does **not** define:
 
-- Electrical drawing conventions — these are covered by the Industrial Systems Drawing Standard v1.1.
+- Electrical drawing conventions — these are covered by the Industrial Systems Drawing Standard.
 - FMEA methodology or content — these are covered by a separate FMEA Standard that references safety functions identified here.
 - SAT or proof test procedures — these are produced downstream using safety functions and SIL targets from this standard.
-- P&ID development — P&IDs are produced independently and serve as input to the HAZOP study.
+- P&ID (Piping and Instrumentation Diagram) development — P&IDs are produced independently and serve as input to the HAZOP study.
 - PLC safety application programming — software design references safety functions defined by this standard.
 
 ### 1.3 Design Philosophy
@@ -74,8 +71,9 @@ Principles:
 | IEC 61508 | Functional safety of electrical/electronic/programmable electronic safety-related systems | Parent standard for functional safety, SIL definitions, hardware fault tolerance |
 | IEC 61882 | Hazard and operability studies (HAZOP studies) — Application guide | HAZOP methodology, guidewords, study preparation, documentation |
 | IEC 31010 | Risk management — Risk assessment techniques | General risk assessment framework |
-| Industrial Systems Drawing Standard v1.1 | Device, Wire, and Drawing Numbering Convention | Drawing numbering, device tagging, title block conventions, HA cross-reference format |
-| FMEA Standard v1.0 | Failure Modes and Effects Analysis for Safety Instrumented Systems | FMEA methodology using safety functions identified in this standard |
+| Industrial Systems Drawing Standard | Device, Wire, and Drawing Numbering Convention | Drawing numbering, device tagging, title block conventions, HA cross-reference format |
+| SRS Standard | Safety Requirements Specification Methodology | SF entry structure and reliability calculations for safety functions identified in this standard |
+| FMEA Standard | Failure Modes and Effects Analysis for Safety Instrumented Systems | FMEA methodology using safety functions identified in this standard and specified in the SRS |
 
 **Relationship between standards:**
 
@@ -138,21 +136,23 @@ Principles:
 
 ## 4. Numbering and Identification
 
-### 4.1 Hazard Analysis Document ID
+### 4.1 Hazard Analysis Entry ID
 
 **Format:** `HA-XXX-NNN`
 
+**One HA document is produced per project.** The `HA-XXX-NNN` identifier refers to a **scenario entry** within that project-level HA document, not to a standalone document per entry. For example, `HA-PRES-001` is the first pressure-system hazard scenario recorded in the project's HA document — it is not a separate file.
+
 | Component | Description | Example |
 |-----------|-------------|---------|
-| `HA` | Document type prefix — Hazard Analysis | HA |
+| `HA` | Entry type prefix — Hazard Analysis | HA |
 | `XXX` | System abbreviation code (see Section 4.3) | PRES |
-| `NNN` | Sequential document number within that system | 001 |
+| `NNN` | Sequential scenario number within that system | 001 |
 
 **Examples:**
 
-- `HA-PRES-001` → Hazard Analysis for Pressure system, first document
-- `HA-TEMP-003` → Hazard Analysis for Temperature system, third document
-- `HA-FIRE-001` → Hazard Analysis for Fire protection system, first document
+- `HA-PRES-001` → Hazard Analysis entry for Pressure system, first scenario
+- `HA-TEMP-003` → Hazard Analysis entry for Temperature system, third scenario
+- `HA-FIRE-001` → Hazard Analysis entry for Fire protection system, first scenario
 
 ### 4.2 Safety Function ID
 
@@ -199,7 +199,7 @@ SIL targets shall be determined through LOPA (Section 6), not assigned by assump
 2. **SIL 3** is the maximum addressed by this standard per IEC 61511 process sector practice.
 3. If LOPA indicates no SIL requirement, the function may be implemented as a non-safety control function or alarm, documented accordingly.
 4. If LOPA indicates a SIL 4 requirement, the design shall be reviewed to reduce inherent risk, add non-SIS IPLs, or re-evaluate consequence severity. SIL 4 is not permitted under IEC 61511.
-5. SIL targets shall be documented in the Safety Function Register (Section 7.4) with full LOPA traceability.
+5. SIL targets shall be documented in the HA safety function identification output (Section 7.4) with full LOPA traceability, and carried forward to the SRS entry (SF-XXX-NNN) for complete specification.
 6. The SIL target determines the minimum architectural requirements (HFT), diagnostic coverage, and proof test interval for the implementing system per IEC 61511.
 
 ---
@@ -447,53 +447,53 @@ Design Intent: Maintain vessel pressure between 50 and 150 psig
 P&ID Reference: P&ID-201 Rev D
 ```
 
-| # | Field | Entry |
-|---|-------|-------|
-| **Scenario 1** | | |
-| 1 | Node | Node 1 — Refinery Vessel XYZ |
-| 2 | Deviation | MORE PRESSURE |
-| 3 | Cause | Blocked outlet (valve XV-105 fails closed or operator error) while feed continues |
-| 4 | Consequence (Unmitigated) | Vessel pressure exceeds design pressure (200 psig). Potential vessel rupture, release of hot hydrocarbons, fire/explosion. Multiple fatalities possible. |
-| 5 | Safeguards | (a) BPCS high-pressure alarm at 140 psig with operator response; (b) Pressure relief valve PSV-201 set at 200 psig; (c) Vessel design margin (hydrostatic test pressure 300 psig) |
-| 6 | Consequence Severity | **5 — Catastrophic** (potential multiple fatalities) |
-| 7 | Likelihood (Unmitigated) | **C — Occasional** (once per 10 years based on blocked outlet frequency) |
-| 8 | Risk Rank | **VERY HIGH** |
-| 9 | Recommendation | (1) Implement SIF for high-pressure shutdown — proceed to LOPA for SIL determination. (2) Verify PSV-201 sizing for blocked outlet scenario. |
-| 10 | Action Party | (1) Control Systems / Safety Engineer; (2) Process Engineer |
-| 11 | HA Reference | HA-PRES-001 |
-| 12 | SF Reference | SF-PRES-001 (pending LOPA) |
+| Field | Entry |
+|-------|-------|
+| **Scenario 1** | |
+| Node | Node 1 — Refinery Vessel XYZ |
+| Deviation | MORE PRESSURE |
+| Cause | Blocked outlet (valve XV-105 fails closed or operator error) while feed continues |
+| Consequence (Unmitigated) | Vessel pressure exceeds design pressure (200 psig). Potential vessel rupture, release of hot hydrocarbons, fire/explosion. Multiple fatalities possible. |
+| Safeguards | (a) BPCS high-pressure alarm at 140 psig with operator response; (b) Pressure relief valve PSV-201 set at 200 psig; (c) Vessel design margin (hydrostatic test pressure 300 psig) |
+| Consequence Severity | **5 — Catastrophic** (potential multiple fatalities) |
+| Likelihood (Unmitigated) | **C — Occasional** (once per 10 years based on blocked outlet frequency) |
+| Risk Rank | **VERY HIGH** |
+| Recommendation | (1) Implement SIF for high-pressure shutdown — proceed to LOPA for SIL determination. (2) Verify PSV-201 sizing for blocked outlet scenario. |
+| Action Party | (1) Control Systems / Safety Engineer; (2) Process Engineer |
+| HA Reference | HA-PRES-001 |
+| SF Reference | SF-PRES-001 (pending LOPA) |
 
-| # | Field | Entry |
-|---|-------|-------|
-| **Scenario 2** | | |
-| 1 | Node | Node 1 — Refinery Vessel XYZ |
-| 2 | Deviation | MORE PRESSURE |
-| 3 | Cause | External fire impinging on vessel (pool fire from adjacent unit) |
-| 4 | Consequence (Unmitigated) | Vessel pressure rises due to heat input. PSV may not have adequate capacity for fire case. Potential BLEVE if liquid contents superheat. Multiple fatalities possible. |
-| 5 | Safeguards | (a) PSV-201 (fire case may exceed relief capacity); (b) Fireproofing on vessel supports; (c) Fire detection and deluge system; (d) Emergency depressuring valve |
-| 6 | Consequence Severity | **5 — Catastrophic** |
-| 7 | Likelihood (Unmitigated) | **D — Remote** (external fire scenario frequency ~10⁻² per year) |
-| 8 | Risk Rank | **HIGH** |
-| 9 | Recommendation | (1) Verify PSV-201 fire case relief capacity. (2) Confirm fireproofing per API 2218. (3) Evaluate emergency depressuring valve as IPL. |
-| 10 | Action Party | (1) Process Engineer; (2) Mechanical Engineer; (3) Safety Engineer |
-| 11 | HA Reference | HA-PRES-001 |
-| 12 | SF Reference | — (fire scenario addressed by passive protection and depressuring; SIF not primary mitigation) |
+| Field | Entry |
+|-------|-------|
+| **Scenario 2** | |
+| Node | Node 1 — Refinery Vessel XYZ |
+| Deviation | MORE PRESSURE |
+| Cause | External fire impinging on vessel (pool fire from adjacent unit) |
+| Consequence (Unmitigated) | Vessel pressure rises due to heat input. PSV may not have adequate capacity for fire case. Potential BLEVE (Boiling Liquid Expanding Vapor Explosion) if liquid contents superheat. Multiple fatalities possible. |
+| Safeguards | (a) PSV-201 (fire case may exceed relief capacity); (b) Fireproofing on vessel supports; (c) Fire detection and deluge system; (d) Emergency depressuring valve |
+| Consequence Severity | **5 — Catastrophic** |
+| Likelihood (Unmitigated) | **D — Remote** (external fire scenario frequency ~10⁻² per year) |
+| Risk Rank | **HIGH** |
+| Recommendation | (1) Verify PSV-201 fire case relief capacity. (2) Confirm fireproofing per API (American Petroleum Institute) 2218. (3) Evaluate emergency depressuring valve as IPL. |
+| Action Party | (1) Process Engineer; (2) Mechanical Engineer; (3) Safety Engineer |
+| HA Reference | HA-PRES-001 |
+| SF Reference | — (fire scenario addressed by passive protection and depressuring; SIF not primary mitigation) |
 
-| # | Field | Entry |
-|---|-------|-------|
-| **Scenario 3** | | |
-| 1 | Node | Node 1 — Refinery Vessel XYZ |
-| 2 | Deviation | NO FLOW |
-| 3 | Cause | Feed pump failure (loss of power or mechanical failure) |
-| 4 | Consequence (Unmitigated) | Loss of feed to vessel. Vessel level drops, downstream units starved. Potential dry running of downstream pump. Economic loss. No safety consequence. |
-| 5 | Safeguards | (a) BPCS low-flow alarm; (b) Low-level trip on downstream pump; (c) Operator monitoring |
-| 6 | Consequence Severity | **2 — Minor** (economic loss only) |
-| 7 | Likelihood (Unmitigated) | **B — Likely** (pump failures 1–10 per year) |
-| 8 | Risk Rank | **MEDIUM** |
-| 9 | Recommendation | (1) Confirm BPCS low-flow alarm setpoint. (2) Verify downstream pump low-level trip is functional. No SIF required. |
-| 10 | Action Party | (1) Control Systems Engineer; (2) Instrument Engineer |
-| 11 | HA Reference | HA-PRES-001 |
-| 12 | SF Reference | — (no SIF required) |
+| Field | Entry |
+|-------|-------|
+| **Scenario 3** | |
+| Node | Node 1 — Refinery Vessel XYZ |
+| Deviation | NO FLOW |
+| Cause | Feed pump failure (loss of power or mechanical failure) |
+| Consequence (Unmitigated) | Loss of feed to vessel. Vessel level drops, downstream units starved. Potential dry running of downstream pump. Economic loss. No safety consequence. |
+| Safeguards | (a) BPCS low-flow alarm; (b) Low-level trip on downstream pump; (c) Operator monitoring |
+| Consequence Severity | **2 — Minor** (economic loss only) |
+| Likelihood (Unmitigated) | **B — Likely** (pump failures 1–10 per year) |
+| Risk Rank | **MEDIUM** |
+| Recommendation | (1) Confirm BPCS low-flow alarm setpoint. (2) Verify downstream pump low-level trip is functional. No SIF required. |
+| Action Party | (1) Control Systems Engineer; (2) Instrument Engineer |
+| HA Reference | HA-PRES-001 |
+| SF Reference | — (no SIF required) |
 
 ---
 
@@ -706,22 +706,22 @@ Consequence Severity: 5 — Catastrophic
 TMEL:                 1 × 10⁻⁶ per year (corporate criteria for Severity 5)
 ```
 
-| # | Item | Value | Basis |
-|---|------|-------|-------|
-| 1 | **Initiating Event** | Blocked outlet — valve XV-105 fails closed or operator error | HAZOP Scenario 1 |
-| 2 | **Initiating Event Frequency** | 1 × 10⁻¹ per year | Industry data: control valve failure rate |
-| 3 | **Enabling Conditions** | 1.0 (no enabling conditions — feed is always present during operation) | Conservative: no credit for partial operation |
-| 4 | **Conditional Modifiers** | 1.0 (probability of ignition = 1.0 for hot hydrocarbon release, occupancy = 1.0 for operator area) | Conservative: worst case |
-| | | | |
-| 5 | **IPL 1: BPCS high-pressure alarm + operator response** | PFD = 1 × 10⁻¹ | Alarm at 140 psig, operator has >30 min to respond. Independent of initiating event (operator error cause is different operator action than alarm response). Procedure exists. |
-| 6 | **IPL 2: Pressure relief valve PSV-201** | PFD = 1 × 10⁻² | Sized for blocked outlet. Inspected per API 576. Set at 200 psig. Independent of initiating event and IPL 1. |
-| | | | |
-| 7 | **Mitigated Frequency (without SIS)** | 1 × 10⁻¹ × 1.0 × 1.0 × (1 × 10⁻¹) × (1 × 10⁻²) = **1 × 10⁻⁴** per year | |
-| 8 | **Required SIS PFD** | TMEL ÷ f_intermediate = 1 × 10⁻⁶ ÷ 1 × 10⁻⁴ = **1 × 10⁻²** | |
-| 9 | **SIL Determination** | PFD = 10⁻² → lower bound of **SIL 2** range | |
-| | | | |
-| 10 | **Conservative Assessment** | Apply **SIL 3** | Given: (a) catastrophic consequence, (b) PFD at SIL 2/3 boundary, (c) uncertainty in PRV performance, (d) ALARP principle requires further risk reduction when practicable. |
-| 11 | **Safety Function** | **SF-PRES-001 — SIL 3** | High-pressure shutdown: upon 2oo3 voting of pressure transmitters exceeding high-high setpoint (170 psig), de-energize safety relay to close emergency shutdown valve XV-106. |
+| Item | Value | Basis |
+|------|-------|-------|
+| **Initiating Event** | Blocked outlet — valve XV-105 fails closed or operator error | HAZOP Scenario 1 |
+| **Initiating Event Frequency** | 1 × 10⁻¹ per year | Industry data: control valve failure rate |
+| **Enabling Conditions** | 1.0 (no enabling conditions — feed is always present during operation) | Conservative: no credit for partial operation |
+| **Conditional Modifiers** | 1.0 (probability of ignition = 1.0 for hot hydrocarbon release, occupancy = 1.0 for operator area) | Conservative: worst case |
+| | | |
+| **IPL 1: BPCS high-pressure alarm + operator response** | PFD = 1 × 10⁻¹ | Alarm at 140 psig, operator has >30 min to respond. Independent of initiating event (operator error cause is different operator action than alarm response). Procedure exists. |
+| **IPL 2: Pressure relief valve PSV-201** | PFD = 1 × 10⁻² | Sized for blocked outlet. Inspected per API 576. Set at 200 psig. Independent of initiating event and IPL 1. |
+| | | |
+| **Mitigated Frequency (without SIS)** | 1 × 10⁻¹ × 1.0 × 1.0 × (1 × 10⁻¹) × (1 × 10⁻²) = **1 × 10⁻⁴** per year | |
+| **Required SIS PFD** | TMEL ÷ f_intermediate = 1 × 10⁻⁶ ÷ 1 × 10⁻⁴ = **1 × 10⁻²** | |
+| **SIL Determination** | PFD = 10⁻² → lower bound of **SIL 2** range | |
+| | | |
+| **Conservative Assessment** | Apply **SIL 3** | Given: (a) catastrophic consequence, (b) PFD at SIL 2/3 boundary, (c) uncertainty in PRV performance, (d) ALARP principle requires further risk reduction when practicable. |
+| **Safety Function** | **SF-PRES-001 — SIL 3** | High-pressure shutdown: upon 2oo3 voting of pressure transmitters exceeding high-high setpoint (170 psig), de-energize safety relay to close emergency shutdown valve XV-106. |
 
 **Architecture selected:** 2oo3 pressure transmitter voting → Safety logic solver → Emergency shutdown valve
 
@@ -782,15 +782,17 @@ Every Hazard Analysis document shall include the following sections:
 
 ### 7.2 Cover Page Format
 
+The cover page belongs to the **HA document as a whole** — not to any individual entry. The document is titled by project, not by entry ID. The entries (HA-PRES-001, HA-TEMP-001, etc.) appear within the document body, not as the document title.
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                                                              │
 │               HAZARD ANALYSIS DOCUMENT                       │
-│               HA-PRES-001                                    │
+│               Refinery Vessel XYZ Project                    │
 │                                                              │
-│  Title:    Overpressure Protection — Refinery Vessel XYZ     │
-│  System:   Pressure Protection System                        │
-│  Unit:     Hydrocarbon Processing Unit A                     │
+│  Title:    Hazard Analysis — Refinery Vessel XYZ             │
+│  Project:  Refinery Vessel XYZ Overpressure Protection       │
+│  Client:   ABC Chemical Co.                                  │
 │                                                              │
 │  Revision: A                                                 │
 │  Date:     2025-01-10                                        │
@@ -801,16 +803,20 @@ Every Hazard Analysis document shall include the following sections:
 │  Reviewed By:    R. Jones (Process Safety Engineer)          │
 │  Approved By:    T. Brown (Plant Manager)                    │
 │                                                              │
-│  Project:  Refinery Vessel XYZ Overpressure Protection       │
-│  Client:   ABC Chemical Co.                                  │
+│  HA Entries in This Document:                                │
+│    HA-PRES-001  Vessel XYZ overpressure (blocked outlet)     │
+│    HA-PRES-002  Vessel XYZ overpressure (external fire)      │
+│    HA-TEMP-001  Reactor high temperature (cooling failure)   │
+│    HA-LEV-001   Tank overflow (level control failure)        │
 │                                                              │
-│  Related Documents:                                          │
-│    Drawing Standard: Industrial Systems Drawing Std v1.1     │
-│    FMEA:            FMEA 201.1                               │
-│    Implementing:    Sheet 201, Sheet 301                     │
-│    Safety Function: SF-PRES-001 (SIL 3)                     │
-│    Proof Test:      PT-201 (6-month interval)                │
-│    SAT:             SAT 201                                  │
+│  Safety Functions Identified:                                │
+│    SF-PRES-001 (SIL 3) — pending SRS                        │
+│    SF-TEMP-001 (SIL 2) — pending SRS                        │
+│    SF-LEV-001  (SIL 1) — pending SRS                        │
+│                                                              │
+│  Source Documents:                                           │
+│    P&IDs: P&ID-201 Rev D, P&ID-301 Rev C                    │
+│    Drawing Standard: Industrial Systems Drawing Std          │
 │                                                              │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -830,82 +836,61 @@ The executive summary shall include:
 5. **Critical findings** — top 3–5 most significant hazard scenarios and recommendations
 6. **Safety Function summary** — list of identified SIFs with SIL targets
 
-### 7.4 Safety Function Register
+### 7.4 Safety Function Identification
 
-The Safety Function Register is the central document linking hazard scenarios to safety system implementation. It shall be maintained as a living document throughout the safety lifecycle.
+The HA document identifies safety functions as an output of the LOPA study. For each safety function, the HA records the following fields within the HA document:
 
-**Format:**
+| Field | Content |
+|-------|---------|
+| SF ID | Safety Function identifier (SF-XXX-NNN) — assigned during LOPA |
+| Description | Brief description of the safety function and the hazard it prevents |
+| SIL Target | Assigned SIL (1, 2, or 3) from LOPA calculation |
+| HA Entry Reference | Source HA entry (HA-XXX-NNN) and scenario number |
+| Initiating Cause | Primary initiating event from LOPA |
+| Consequence | Hazardous event being prevented |
+| Required PFD | Required PFD from LOPA calculation |
+| Status | SRS status: `pending SRS` → `SRS issued` → `In Service` |
 
-| Column | Header | Description |
-|--------|--------|-------------|
-| 1 | SF ID | Safety Function identifier (SF-XXX-NNN) |
-| 2 | Description | Brief description of the safety function |
-| 3 | SIL Target | Assigned SIL (1, 2, or 3) |
-| 4 | HA Reference | Source Hazard Analysis document (HA-XXX-NNN) |
-| 5 | Initiating Cause | Primary initiating event from LOPA |
-| 6 | Consequence | Hazardous event being prevented |
-| 7 | Required PFD | Required probability of failure on demand from LOPA |
-| 8 | Architecture | Voting architecture (e.g., 2oo3, 1oo2) and HFT |
-| 9 | Implementing Sheets | Drawing sheet numbers where the SF is implemented |
-| 10 | FMEA Reference | Associated FMEA document number |
-| 11 | Proof Test Reference | Associated proof test procedure |
-| 12 | Proof Test Interval | Required proof test interval |
-| 13 | SAT Reference | Associated SAT document number |
-| 14 | Status | Design / Installed / Validated / In Service |
+**The HA is not the owner of the full safety function specification.** The HA records that a safety function is required, assigns its SIL target, and flags it as `SF-PRES-001 (pending SRS)`. The full functional requirements (setpoints, voting logic, response time, architecture, reliability calculations, proof test interval) are defined in the SRS entry for that function. See the SRS Standard (07_SRS_Standard) for the complete SF entry methodology.
 
-**Worked Example — Safety Function Register Entry:**
+**Worked Example — HA Safety Function Identification Output:**
 
 | Field | Value |
 |-------|-------|
 | SF ID | SF-PRES-001 |
-| Description | Overpressure shutdown — 2oo3 pressure voting closes ESD valve on Vessel XYZ high-high pressure |
+| Description | Overpressure shutdown — high-pressure shutdown for Vessel XYZ |
 | SIL Target | SIL 3 |
-| HA Reference | HA-PRES-001, Scenario 1 |
+| HA Entry Reference | HA-PRES-001, Scenario 1 |
 | Initiating Cause | Blocked outlet (valve XV-105 fails closed or operator error) |
 | Consequence | Vessel rupture, hydrocarbon release, fire/explosion, multiple fatalities |
 | Required PFD | ≤ 1 × 10⁻² (conservatively assigned SIL 3: ≤ 1 × 10⁻³) |
-| Architecture | 2oo3 pressure voting, HFT=1 |
-| Implementing Sheets | Sheet 201 (Control Logic), Sheet 301 (Field Instruments) |
-| FMEA Reference | FMEA 201.1 |
-| Proof Test Reference | PT-201 |
-| Proof Test Interval | 6 months |
-| SAT Reference | SAT 201 |
-| Status | In Service |
+| Status | SRS issued (SRS-RefineryXYZ Rev A) |
 
-**Device mapping for SF-PRES-001:**
-
-| Function Element | Device Tag | Description | Drawing Sheet |
-|-----------------|-----------|-------------|---------------|
-| Sensor 1 | +300-B301.1 | Pressure Transmitter #1 (P&ID: PT-201A) | 301 |
-| Sensor 2 | +300-B301.2 | Pressure Transmitter #2 (P&ID: PT-201B) | 301 |
-| Sensor 3 | +300-B301.3 | Pressure Transmitter #3 (P&ID: PT-201C) | 301 |
-| Logic Solver | +200-K201.1 | Safety Relay — 2oo3 Voting Logic | 201 |
-| Final Element | +300-Y301.1 | ESD Valve XV-106 Solenoid | 301 |
+The full SF-PRES-001 definition — including 2oo3 voting architecture, setpoints, PFDavg calculation, proof test interval, and implementing sheet numbers — resides in the SRS entry SF-PRES-001 within the project SRS document.
 
 ### 7.5 Action Item Tracking Format
 
 | Column | Header | Description |
 |--------|--------|-------------|
-| 1 | Item # | Sequential action item number |
-| 2 | HA Reference | Source HA document (HA-XXX-NNN) |
-| 3 | Scenario | HAZOP scenario number |
-| 4 | Recommendation | Description of the required action |
-| 5 | Type | Design change / SIF / Alarm / Procedure / Study / Info |
-| 6 | Priority | Critical / High / Medium / Low |
-| 7 | Responsible | Assigned discipline or person |
-| 8 | Target Date | Required completion date |
-| 9 | Status | Open / In Progress / Complete / Cancelled |
-| 10 | Resolution | How the action was resolved, with reference to evidence |
-| 11 | Closed By | Name and date of closure |
+| 1 | HA Reference | Source HA document (HA-XXX-NNN) |
+| 2 | Scenario | HAZOP scenario number |
+| 3 | Recommendation | Description of the required action |
+| 4 | Type | Design change / SIF / Alarm / Procedure / Study / Info |
+| 5 | Priority | Critical / High / Medium / Low |
+| 6 | Responsible | Assigned discipline or person |
+| 7 | Target Date | Required completion date |
+| 8 | Status | Open / In Progress / Complete / Cancelled |
+| 9 | Resolution | How the action was resolved, with reference to evidence |
+| 10 | Closed By | Name and date of closure |
 
 **Worked Example:**
 
-| Item # | HA Ref | Scenario | Recommendation | Type | Priority | Responsible | Target | Status | Resolution |
-|--------|--------|----------|---------------|------|----------|-------------|--------|--------|------------|
-| 001 | HA-PRES-001 | 1 | Implement SIF SF-PRES-001 (SIL 3) for high-pressure shutdown with 2oo3 pressure voting | SIF | Critical | Control Systems | 2025-03-01 | Complete | SF-PRES-001 implemented on Sheet 201. FMEA 201.1 complete. SAT 201 passed. |
-| 002 | HA-PRES-001 | 1 | Verify PSV-201 sizing for blocked outlet scenario | Study | High | Process Eng | 2025-02-15 | Complete | PSV-201 confirmed adequate. Calc ref: PSV-CALC-201. |
-| 003 | HA-PRES-001 | 2 | Verify PSV-201 fire case relief capacity | Study | High | Process Eng | 2025-02-15 | Complete | Fire case requires additional relief. PSV-202 added. |
-| 004 | HA-PRES-001 | 3 | Confirm BPCS low-flow alarm setpoint | Alarm | Medium | Control Sys | 2025-02-28 | Complete | Alarm LAL-101 set at 200 GPM. |
+| HA Ref | Scenario | Recommendation | Type | Priority | Responsible | Target | Status | Resolution |
+|--------|----------|---------------|------|----------|-------------|--------|--------|------------|
+| HA-PRES-001 | 1 | Implement SIF SF-PRES-001 (SIL 3) for high-pressure shutdown with 2oo3 pressure voting | SIF | Critical | Control Systems | 2025-03-01 | Complete | SF-PRES-001 implemented on Sheet 201. FMEA 201.1 complete. SAT 201 passed. |
+| HA-PRES-001 | 1 | Verify PSV-201 sizing for blocked outlet scenario | Study | High | Process Eng | 2025-02-15 | Complete | PSV-201 confirmed adequate. Calc ref: PSV-CALC-201. |
+| HA-PRES-001 | 2 | Verify PSV-201 fire case relief capacity | Study | High | Process Eng | 2025-02-15 | Complete | Fire case requires additional relief. PSV-202 added. |
+| HA-PRES-001 | 3 | Confirm BPCS low-flow alarm setpoint | Alarm | Medium | Control Sys | 2025-02-28 | Complete | Alarm LAL-101 set at 200 GPM. |
 
 ---
 
@@ -938,15 +923,15 @@ flowchart LR
 **Traceability chain:**
 
 ```
-HA-PRES-001 → SF-PRES-001 → FMEA 201.1 → Sheet 201 → SAT 201 → PT-201
-  (Hazard)     (Safety Fn)    (Analysis)   (Drawing)   (Test)    (Ongoing)
+HA-PRES-001 → SF-PRES-001 → SRS entry → FMEA 201.1 → Sheet 201 → SAT 201 → PT-201
+  (HA entry)   (SF in SRS)   (SRS reqts)  (Analysis)   (Drawing)   (Test)    (Ongoing)
 ```
 
 Every element in this chain references the elements before and after it. A change to any element triggers a review of downstream elements.
 
 ### 8.2 Integration with Drawing Standard Title Blocks
 
-Per Section 8.2 of the Industrial Systems Drawing Standard v1.1, safety-critical sheets include the HA reference in the title block:
+Per Section 8.2 of the Industrial Systems Drawing Standard, safety-critical sheets include the HA reference in the title block:
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -974,7 +959,7 @@ Per Section 8.2 of the Industrial Systems Drawing Standard v1.1, safety-critical
 
 ### 8.3 Integration with Device Description Fields
 
-Per Section 5.3 of the Industrial Systems Drawing Standard v1.1, safety-critical devices carry HA references in their description fields:
+Per Section 5.3 of the Industrial Systems Drawing Standard, safety-critical devices carry HA references in their description fields:
 
 ```
 +200-K201.1
@@ -998,15 +983,15 @@ Desc: Pressure Transmitter #3 (P&ID: PT-201C) (HA: HA-PRES-001)
 
 ### 8.4 How Safety Functions Drive FMEA Scope
 
-The FMEA Standard uses safety functions identified in this standard to define its scope:
+The FMEA Standard uses safety functions identified in this standard and specified in the SRS to define its scope:
 
-- Each safety function (SF-XXX-NNN) generates at least one FMEA.
-- The FMEA document number is based on the implementing sheet number per the Drawing Standard: `FMEA [Sheet].[Sequence]`.
-- The FMEA analyzes failure modes of all devices in the safety function's device mapping (Section 7.4).
-- The FMEA validates that the achieved PFD meets or exceeds the SIL target from LOPA.
-- FMEA findings may trigger changes to the safety function design, which flow back to this standard for re-evaluation.
+- Each safety function (SF-XXX-NNN) generates at least one FMEA entry.
+- The FMEA entry number is based on the implementing sheet number per the Drawing Standard: `FMEA [Sheet].[Sequence]`.
+- The FMEA analyzes failure modes of all devices in the safety function's device mapping (defined in the SRS entry).
+- The FMEA verifies that the achieved PFD meets or exceeds the SIL target from LOPA as specified in the SRS entry.
+- FMEA findings may trigger changes to the safety function design, which flow back to the SRS and this HA for re-evaluation.
 
-**Example:** SF-PRES-001 is implemented on Sheet 201 → FMEA 201.1 is produced → FMEA 201.1 analyzes +300-B301.1, +300-B301.2, +300-B301.3, +200-K201.1, and +300-Y301.1.
+**Example:** HA entry HA-PRES-001 identifies SF-PRES-001 → SRS specifies SF-PRES-001 (SIL 3, 2oo3 voting, Sheet 201) → FMEA 201.1 is produced → FMEA 201.1 analyzes +300-B301.1, +300-B301.2, +300-B301.3, +200-K201.1, and +300-Y301.1.
 
 ### 8.5 How Safety Functions Drive SAT and Proof Test Requirements
 
@@ -1023,14 +1008,14 @@ The following table demonstrates the full traceability for the Overpressure Prot
 
 | Lifecycle Phase | Document | Reference | Content |
 |----------------|----------|-----------|---------|
-| Hazard Identification | HAZOP Worksheet | HA-PRES-001 | MORE PRESSURE deviation, blocked outlet cause |
-| SIL Determination | LOPA Worksheet | HA-PRES-001 | SIL 3 target for SF-PRES-001 |
-| Safety Function Definition | Safety Function Register | SF-PRES-001 | 2oo3 pressure voting, HFT=1, SIL 3 |
+| Hazard Identification | HAZOP Worksheet | HA entry HA-PRES-001 | MORE PRESSURE deviation, blocked outlet cause |
+| SIL Determination | LOPA Worksheet | HA entry HA-PRES-001 | SIL 3 target for SF-PRES-001 |
+| Safety Function Definition | SRS entry SF-PRES-001 (in SRS-RefineryXYZ) | SF-PRES-001 | 2oo3 pressure voting, HFT=1, SIL 3, PFDavg calculation |
 | Detailed Design | Electrical Drawings | Sheet 201 (logic), Sheet 301 (field) | Control logic, device wiring |
-| Failure Analysis | FMEA | FMEA 201.1 | PFD calculation, failure modes, diagnostic coverage |
+| Failure Analysis | FMEA entry FMEA 201.1 | FMEA 201.1 | Hardware failure modes, diagnostic coverage, SIL verification |
 | Commissioning | SAT | SAT 201 | End-to-end functional test |
 | Operation | Proof Test | PT-201 | 6-month periodic validation |
-| Review | HA Revalidation | HA-PRES-001 Rev B | 5-year periodic review or triggered review |
+| Review | HA Revalidation | HA entry HA-PRES-001 Rev B | 5-year periodic review or triggered review |
 
 ---
 
@@ -1313,17 +1298,3 @@ Risk Level
 
 ---
 
-## 12. Document Information
-
-| Field | Value      |
-|-------|------------|
-| Version | 0.0        |
-| Date | 2025-02-15 |
-| Author | Reid Hall  |
-| Status | Draft      |
-
-**Revision History:**
-
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 0.0     | 2025-02-15 | Initial release. HAZOP methodology per IEC 61882, LOPA methodology per IEC 61511, safety function register format, cross-reference conventions to Industrial Systems Drawing Standard v1.1. | Reid Hall |
