@@ -53,6 +53,8 @@ This standard does **not** define:
 
 **The hazard analysis is the origin of all safety requirements.** Every safety function, every SIL target, every FMEA, every proof test, and every safety-critical drawing traces back to a hazard scenario identified and documented per this standard.
 
+**Hazards are risks to the process function.** The process function is defined in the Functional Requirements Standard (`01_Functional_Requirements_Standard`). Each HAZOP node's "Design Intent" statement should trace to one or more functional requirement entries (FR-XXX-NNN). A hazard is meaningful only in the context of a defined intended function.
+
 Principles:
 
 - Hazard identification precedes design — HAZOP findings drive the safety design, not the reverse.
@@ -140,19 +142,19 @@ Principles:
 
 **Format:** `HA-XXX-NNN`
 
-**One HA document is produced per project.** The `HA-XXX-NNN` identifier refers to a **scenario entry** within that project-level HA document, not to a standalone document per entry. For example, `HA-PRES-001` is the first pressure-system hazard scenario recorded in the project's HA document — it is not a separate file.
+**One HA document is produced per project.** The `HA-XXX-NNN` identifier refers to a **node entry** within that project-level HA document, not to a standalone document per entry. Each node entry may contain multiple scenarios (e.g., HA-PRES-001, Scenario 1; HA-PRES-001, Scenario 2). For example, `HA-PRES-001` is the first pressure-system node recorded in the project's HA document — it is not a separate file.
 
 | Component | Description | Example |
 |-----------|-------------|---------|
 | `HA` | Entry type prefix — Hazard Analysis | HA |
 | `XXX` | System abbreviation code (see Section 4.3) | PRES |
-| `NNN` | Sequential scenario number within that system | 001 |
+| `NNN` | Sequential node number within that system | 001 |
 
 **Examples:**
 
-- `HA-PRES-001` → Hazard Analysis entry for Pressure system, first scenario
-- `HA-TEMP-003` → Hazard Analysis entry for Temperature system, third scenario
-- `HA-FIRE-001` → Hazard Analysis entry for Fire protection system, first scenario
+- `HA-PRES-001` → Hazard Analysis entry for Pressure system, first node (may contain multiple scenarios)
+- `HA-TEMP-003` → Hazard Analysis entry for Temperature system, third node
+- `HA-FIRE-001` → Hazard Analysis entry for Fire protection system, first node
 
 ### 4.2 Safety Function ID
 
@@ -851,7 +853,7 @@ The HA document identifies safety functions as an output of the LOPA study. For 
 | Required PFD | Required PFD from LOPA calculation |
 | Status | SRS status: `pending SRS` → `SRS issued` → `In Service` |
 
-**The HA is not the owner of the full safety function specification.** The HA records that a safety function is required, assigns its SIL target, and flags it as `SF-PRES-001 (pending SRS)`. The full functional requirements (setpoints, voting logic, response time, architecture, reliability calculations, proof test interval) are defined in the SRS entry for that function. See the SRS Standard (02_SRS_Standard) for the complete SF entry methodology.
+**The HA is not the owner of the full safety function specification.** The HA records that a safety function is required, assigns its SIL target, and flags it as `SF-PRES-001 (pending SRS)`. The full functional requirements (setpoints, voting logic, response time, architecture, reliability calculations, proof test interval) are defined in the SRS entry for that function. See the SRS Standard (03_SRS_Standard) for the complete SF entry methodology.
 
 **Worked Example — HA Safety Function Identification Output:**
 

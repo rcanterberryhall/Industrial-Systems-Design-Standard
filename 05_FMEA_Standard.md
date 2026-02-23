@@ -37,6 +37,7 @@ This standard defines the methodology for performing Failure Modes and Effects A
 - Verify that SIL targets established by Hazard Analysis and LOPA are achievable by the hardware design.
 - Derive proof test requirements and diagnostic test specifications.
 - **Drive design iteration** — every failure mode without a detection method is a design gap to be resolved, not merely classified.
+- Note that "safe" failures (spurious trips) have operational consequences traceable to the functional requirements defined in the Functional Requirements Standard (`01_Functional_Requirements_Standard`). A safe failure prevents the process function even though it does not create a safety hazard.
 
 **For non-safety control systems (reliability FMEA):**
 - Identify failure modes and their impact on process availability.
@@ -541,15 +542,15 @@ Using the classified failure rates from the worksheet:
 
 1. Sum failure rates by category for each device: lambda_SD, lambda_SU, lambda_DD, lambda_DU
 2. Calculate SFF for each subsystem
-3. Calculate PFDavg for each subsystem using the appropriate architecture formula (see Section 8)
+3. Calculate PFDavg for each subsystem using the appropriate architecture formula (see SRS Standard Section 6)
 4. Calculate overall SIF PFDavg
 
 ### 6.10 Step 9: Verify Against SIL Target
 
 Compare calculated values against:
 
-1. **PFDavg target** for the required SIL (see Section 8.2)
-2. **Architectural constraints** per IEC 61508-2 Route 1H (see Section 8.5)
+1. **PFDavg target** for the required SIL (see SRS Standard Section 6.2)
+2. **Architectural constraints** per IEC 61508-2 Route 1H (see SRS Standard Section 6.4)
 3. **Both checks must pass** for the SIL to be claimed
 
 ### 6.11 Step 10: Document Recommendations
@@ -734,7 +735,7 @@ SFF = 0.850 (85.0%)
 
 ## 8. Proof Test Requirements Derived from FMEA
 
-> **Note on SIL Verification Calculations:** PFDavg formulas, architectural constraint verification, and common cause failure (CCF) / beta factor analysis have been relocated to the **SRS Standard (02_SRS_Standard)**. These are design-intent calculations performed when specifying the safety function — they belong in the SRS, not in the FMEA. The FMEA uses the SRS-specified failure rate targets and T_I values to verify that selected hardware achieves the required SIL. See the SRS Standard Section 6 for the full calculation methodology.
+> **Note on SIL Verification Calculations:** PFDavg formulas, architectural constraint verification, and common cause failure (CCF) / beta factor analysis have been relocated to the **SRS Standard (03_SRS_Standard)**. These are design-intent calculations performed when specifying the safety function — they belong in the SRS, not in the FMEA. The FMEA uses the SRS-specified failure rate targets and T_I values to verify that selected hardware achieves the required SIL. See the SRS Standard Section 6 for the full calculation methodology.
 
 ### 8.1 Proof Test Identification
 
@@ -791,7 +792,7 @@ For the purposes of this worked example, PTC = 100% is assumed (comprehensive pr
 
 The FMEA identifies what can fail; the proof test defines how to find those failures. The following table maps FMEA failure modes to required proof test actions for PT-201:
 
-#### 10.5.1 Sensor Proof Test Actions (Transmitters +300-B301.1/B301.2/B301.3)
+#### 8.5.1 Sensor Proof Test Actions (Transmitters +300-B301.1/B301.2/B301.3)
 
 | FMEA Item | Failure Mode | Proof Test Action | Pass Criteria | Partial/Comprehensive |
 |-----------|-------------|-------------------|---------------|----------------------|
@@ -803,7 +804,7 @@ The FMEA identifies what can fail; the proof test defines how to find those fail
 | B301.x.6 | Electronics failure (high) | Verify over-range detection; check transmitter diagnostics | Transmitter internal diagnostics report no faults | Partial |
 | B301.x.7 | Electronics failure (low) | Verify under-range detection; apply pressure and confirm response | Transmitter responds to applied pressure | Comprehensive |
 
-#### 10.5.2 Logic Solver Proof Test Actions (Safety PLC, Sheet 201)
+#### 8.5.2 Logic Solver Proof Test Actions (Safety PLC, Sheet 201)
 
 | FMEA Item | Failure Mode | Proof Test Action | Pass Criteria | Partial/Comprehensive |
 |-----------|-------------|-------------------|---------------|----------------------|
@@ -817,7 +818,7 @@ The FMEA identifies what can fail; the proof test defines how to find those fail
 | A201.1.8 | Power supply failure | Verify power supply diagnostics; check voltage levels | Supply voltage within specification; diagnostics normal | Partial |
 | A201.1.9 | Communication failure | Verify communication status; check diagnostic counters | No communication errors; counters normal | Partial |
 
-#### 10.5.3 Final Element Proof Test Actions (Safety Relay +200-K201.1)
+#### 8.5.3 Final Element Proof Test Actions (Safety Relay +200-K201.1)
 
 | FMEA Item | Failure Mode | Proof Test Action | Pass Criteria | Partial/Comprehensive |
 |-----------|-------------|-------------------|---------------|----------------------|
@@ -1088,7 +1089,7 @@ graph TD
     DRAW --> DEV3["+300-B301.3<br/>Pressure Tx #3"]
     DRAW --> DEV4["+200-K201.1<br/>Safety Relay"]
     FMEA --> PT[PT-201<br/>Proof Test<br/>6-month interval]
-    FMEA --> SIL[SIL Verification<br/>PFDavg = 3.86E-04<br/>SIL 3 PASS]
+    FMEA --> SIL[SIL Verification<br/>PFDavg = 4.76E-04<br/>SIL 3 PASS]
     DRAW --> SAT[SAT 201<br/>Site Acceptance Test]
     PT --> SAT
 

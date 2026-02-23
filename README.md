@@ -23,33 +23,36 @@ This framework exists to eliminate that fragmentation.
 
 This methodology defines an integrated lifecycle for industrial systems that unifies:
 
-- Hazard Analysis  
-- Safety Requirements Specification (SRS)  
-- Concept, Preliminary, and Detailed Design (CD / PD / DD)  
-- Architecture-Level and Detailed FMEA  
-- Deterministic PLC Software Architecture  
-- FAT and SAT execution  
-- Structured Startup & Commissioning Gates  
-- Proof Testing and Operational Governance  
+- Functional Requirements and Design Constraints
+- Hazard Analysis
+- Safety Requirements Specification (SRS)
+- Concept, Preliminary, and Detailed Design (CD / PD / DD)
+- Architecture-Level and Detailed FMEA
+- Deterministic PLC Software Architecture
+- FAT and SAT execution (Functional and Safety)
+- Structured Startup & Commissioning Gates
+- Proof Testing and Operational Governance
 
 It treats commissioning as part of design.
 It treats FMEA as a design instrument.
 It treats drawings as the navigation spine of implementation and verification — not the origin of safety intent.
 It treats determinism as non-negotiable in control-producing logic.
 
-Safety intent originates upstream: **HA → SRS → FMEA**. This chain defines what must be protected, to what integrity level, and with what architecture — independent of any drawing. Drawings are where that intent is implemented. Once implementation exists, drawing sheet numbers become the navigation key that links FMEA entries, test procedures, software modules, and proof tests into a single traceable system.
+Functional intent originates upstream: **FR → HA → SRS → FMEA**. This chain defines what the system must do, what hazards threaten that function, what safety integrity is required, and what architecture achieves it — independent of any drawing. Drawings are where that intent is implemented. Once implementation exists, drawing sheet numbers become the navigation key that links FMEA entries, test procedures, software modules, and proof tests into a single traceable system.
 
 ---
 
 ## Core Principles
 
-1. **Hazards drive requirements.**  
-2. **Requirements drive architecture.**  
-3. **Architecture determines detection capability.**  
-4. **FMEA drives diagnostic strategy and proof testing.**  
-5. **Commissioning validates architecture in structured stages.**  
-6. **Hardware and software are co-designed.**  
-7. **Actuation must be deterministic.**  
+1. **Function defines intent — safety protects it.**
+2. **Constraints bound the design space.**
+3. **Hazards drive requirements.**
+4. **Requirements drive architecture.**
+5. **Architecture determines detection capability.**
+6. **FMEA drives diagnostic strategy and proof testing.**
+7. **Commissioning validates architecture in structured stages.**
+8. **Hardware and software are co-designed.**
+9. **Actuation must be deterministic.**
 
 These principles are enforced through lifecycle gates, structured documentation, and traceable numbering systems.
 
@@ -59,7 +62,8 @@ These principles are enforced through lifecycle gates, structured documentation,
 
 This framework introduces practical engineering mechanisms rarely integrated into a single methodology:
 
-- Drawing sheet numbers as the implementation and verification traceability backbone — linking FMEA entries, FAT/SAT procedures, software modules, and proof tests. Safety requirements originate upstream in the HA and SRS, independent of sheet structure.
+- Explicit functional requirements and design constraints as the upstream anchor for hazard analysis and safety requirements. Constraints (regulatory, physical, interface, operational, design standard) are captured alongside requirements — not discovered during construction.
+- Drawing sheet numbers as the implementation and verification traceability backbone — linking FMEA entries, FAT/SAT procedures, software modules, and proof tests. Functional and safety requirements originate upstream in the FR, HA, and SRS, independent of sheet structure.
 - Explicit CD → PD → DD lifecycle integration with PDR, CDR, and DDR review gates.
 - Architecture-level FMEA during Preliminary Design — not after construction.
 - Deterministic gateway requirements for all motion-producing logic.

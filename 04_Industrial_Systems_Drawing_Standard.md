@@ -18,7 +18,7 @@
 8. [Title Block Requirements](#8-title-block-requirements)
 9. [Drawing Set Organization](#9-drawing-set-organization)
 10. [Interaction with Other Documentation](#10-interaction-with-other-documentation)
-11. [CAD Implementation Requirements](The #11-cad-implementation-requirements)
+11. [CAD Implementation Requirements](#11-cad-implementation-requirements)
 12. [Change Management](#12-change-management)
 13. [Implementation Checklist](#13-implementation-checklist)
 
@@ -70,8 +70,10 @@ Principles:
 | IEC 60445 | Basic and safety principles — Identification of equipment terminals and conductor terminations | Terminal and conductor marking |
 | NEC (NFPA 70) | National Electrical Code | US installation requirements |
 | UL 508A | Industrial Control Panels | Panel construction and wire marking (US) |
+| ISA-5.1 | Instrumentation Symbols and Identification | P&ID symbology and instrument identification conventions |
+| ISA-5.4 | Instrument Loop Diagrams | Loop diagram format and content standards |
 
-For safety-critical systems, the separate Safety Documentation Standard references IEC 61508 and IEC 61511.
+For safety-critical systems, the Safety Documentation Standard (`00_Safety_Documentation_Standard`) references IEC 61508 and IEC 61511. For the complete list of standards referenced across this framework, see Section 3 of that document.
 
 ---
 

@@ -24,7 +24,21 @@ This document establishes:
 
 ---
 
-# 2. Commissioning as a Design Activity
+# 2. Standards References
+
+| Standard | Title | Application |
+|----------|-------|-------------|
+| IEC 61511-1 | Functional safety — Safety instrumented systems for the process industry | Clauses 14–15 — installation, commissioning, validation, and pre-startup safety review |
+| IEC 62382 | Automation systems in the process industry — Electrical and instrumentation loop checking | Loop check methodology as prerequisite to commissioning |
+| IEC 62337 | Commissioning of electrical, instrumentation and control systems in the process industry | Structured commissioning process for process automation systems |
+
+This standard implements the commissioning and validation requirements of IEC 61511-1 Clauses 14–15 and the structured commissioning methodology of IEC 62337.
+
+For the complete list of standards referenced across this framework, see the Safety Documentation Standard (`00_Safety_Documentation_Standard`), Section 3.
+
+---
+
+# 3. Commissioning as a Design Activity
 
 Commissioning requirements shall be considered during design.
 
@@ -41,7 +55,7 @@ Software architecture shall support staged commissioning.
 
 ---
 
-# 3. Bottom-Up Validation Order
+# 4. Bottom-Up Validation Order
 
 Systems shall be validated from foundational layers upward.
 
@@ -88,7 +102,7 @@ Higher validation levels shall not proceed until lower levels are stable and rep
 
 ---
 
-# 4. Startup Gates (Operational Envelope Model)
+# 5. Startup Gates (Operational Envelope Model)
 
 Startup Gates define what level of operation is permitted.
 
@@ -118,7 +132,8 @@ Example gate structure:
 
 ## Gate E – Full Production
 - All operational modes enabled
-- All SAT items complete
+- All safety SAT items complete
+- All functional FAT/SAT items complete (per `01_Functional_Requirements_Standard`)
 - No temporary safeguards active
 
 Each gate shall define:
@@ -131,9 +146,9 @@ Each gate shall define:
 
 ---
 
-# 5. Alignment with FAT and SAT
+# 6. Alignment with FAT and SAT
 
-FAT and SAT test cases are produced per the FAT/SAT Standard.
+Safety FAT and SAT test cases are produced per the SAT/FAT Standard (`07_SAT_FAT_Standard`). Functional FAT/SAT test cases are produced per the Functional Requirements Standard (`01_Functional_Requirements_Standard`). Both functional and safety test results are required evidence for gate passage.
 
 For commissioning tracking purposes, each test case should record:
 
@@ -150,7 +165,7 @@ Gate passage requires documented completion of required tests.
 
 ---
 
-# 6. Alignment with Software Architecture
+# 7. Alignment with Software Architecture
 
 Software shall support commissioning by:
 
@@ -164,7 +179,7 @@ Virtual control layers may be disabled during early startup gates.
 
 ---
 
-# 7. Temporary Safeguards and Deferred Scope
+# 8. Temporary Safeguards and Deferred Scope
 
 Deferred scope is permitted only if:
 
@@ -182,7 +197,7 @@ No undocumented bypasses are permitted.
 
 ---
 
-# 8. Feedback Loop into Design
+# 9. Feedback Loop into Design
 
 Commissioning discoveries shall trigger review of:
 
@@ -198,7 +213,7 @@ All changes shall follow formal change control procedures.
 
 ---
 
-# 9. Transition to PSSR
+# 10. Transition to PSSR
 
 Final startup authorization (PSSR) shall confirm:
 

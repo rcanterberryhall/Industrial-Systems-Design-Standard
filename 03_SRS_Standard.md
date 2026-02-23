@@ -26,6 +26,8 @@
 
 This standard defines the methodology for producing and maintaining a Safety Requirements Specification (SRS) for industrial control system projects. The SRS is the bridge between the Hazard Analysis (HA) — which identifies what must be protected against — and the FMEA and drawings — which define and verify how that protection is implemented.
 
+Each safety function (SF-XXX-NNN) protects people and equipment from the consequences of hazardous events related to a process function defined in the Functional Requirements Standard (`01_Functional_Requirements_Standard`). The corresponding functional requirement (FR-XXX-NNN) defines the process context from which the hazard arises.
+
 The SRS answers three questions for every identified safety function:
 
 1. **What must the safety function do?** (functional requirements: setpoints, voting, response time, reset)
@@ -186,7 +188,7 @@ Header:
 Functional Requirements:
   - Monitor vessel pressure via three independent transmitters
     (+300-B301.1, +300-B301.2, +300-B301.3; Sheet 301)
-  - Trip on 2-of-3 voting at 95% of design pressure (setpoint: 285 psig)
+  - Trip on 2-of-3 voting at high-high setpoint (170 psig, per HA-PRES-001)
   - De-energize safety relay (+200-K201.1) to close isolation valve XV-106
   - Response time: < 1 second from setpoint to valve closure initiation
   - Manual reset required after trip (no auto-reset permitted)
@@ -201,7 +203,7 @@ Integrity Requirements:
 Architecture:
   - Sensor:        2oo3 voting, HFT = 1 (three independent transmitters)
   - Logic Solver:  1oo1, safety-rated PLC (HFT = 0 with SFF ≥ 90%)
-  - Final Element: 1oo1, de-energize-to-trip relay (HFT = 0 with SFF ≥ 90%)
+  - Final Element: 1oo1, de-energize-to-trip relay (HFT = 0, SFF = 85.0% — Route 2H prior use applied)
 
 Interface Requirements:
   - Sensors:        +300-B301.1, .2, .3 — Sheet 301 (Cabinet +300)
@@ -329,13 +331,13 @@ PFDavg ≈ (1-beta)² × 3 × (lambda_DU)² × (T_I)² / 4 + beta × lambda_DU �
 | beta (undetected CCF factor) | 0.05 (5%) | Beta factor scoring (see Section 6.5) |
 | beta_D (detected CCF factor) | 0.025 (2.5%) | beta_D = beta / 2 per IEC 61508-6 |
 
-**Failure rate inputs** (from FMEA 201.1 once hardware is selected; shown here as design targets):
+**Failure rate inputs** (from FMEA 201.1 — device-specific data per manufacturer safety manual):
 
 | Subsystem | Architecture | lambda_DU (/hr) | lambda_DD (/hr) |
 |-----------|-------------|-----------------|-----------------|
 | Sensor (per channel) | 2oo3 | 5.65E-07 | 1.41E-06 |
 | Logic Solver | 1oo1 | 1.09E-07 | 6.42E-07 |
-| Final Element | 1oo1 | 3.35E-08 | 2.67E-07 |
+| Final Element | 1oo1 | 7.50E-08 | 2.25E-07 |
 
 #### 6.3.1 Sensor Subsystem PFDavg (2oo3 Pressure Transmitters)
 
@@ -377,31 +379,31 @@ PFDavg_logic ≈ 2.44E-04
 
 ```
 PFDavg_final = lambda_DU × T_I / 2 + lambda_DD × MTTR
-PFDavg_final = 3.35E-08 × 4380 / 2 + 2.67E-07 × 8
-PFDavg_final = 7.34E-05 + 2.14E-06
-PFDavg_final ≈ 7.55E-05
+PFDavg_final = 7.50E-08 × 4380 / 2 + 2.25E-07 × 8
+PFDavg_final = 1.64E-04 + 1.80E-06
+PFDavg_final ≈ 1.66E-04
 ```
 
 #### 6.3.4 Overall SIF PFDavg
 
 ```
 PFDavg_SIF = PFDavg_sensor + PFDavg_logic + PFDavg_final
-PFDavg_SIF = 6.61E-05 + 2.44E-04 + 7.55E-05
-PFDavg_SIF = 3.86E-04
+PFDavg_SIF = 6.61E-05 + 2.44E-04 + 1.66E-04
+PFDavg_SIF = 4.76E-04
 ```
 
-**Result: PFDavg = 3.86E-04, which is within the SIL 3 range (1.0E-04 to < 1.0E-03). PASS.**
+**Result: PFDavg = 4.76E-04, which is within the SIL 3 range (1.0E-04 to < 1.0E-03). PASS.**
 
 **PFDavg budget breakdown:**
 
 | Subsystem | PFDavg | % of Total |
 |-----------|--------|-----------|
-| Sensor (2oo3) | 6.61E-05 | 17.1% |
-| Logic Solver (1oo1) | 2.44E-04 | 63.2% |
-| Final Element (1oo1) | 7.55E-05 | 19.6% |
-| **Total SIF** | **3.86E-04** | **100%** |
+| Sensor (2oo3) | 6.61E-05 | 13.9% |
+| Logic Solver (1oo1) | 2.44E-04 | 51.3% |
+| Final Element (1oo1) | 1.66E-04 | 34.9% |
+| **Total SIF** | **4.76E-04** | **100%** |
 
-The logic solver is the dominant contributor. Margin to SIL 3 upper limit: (1.0E-03 − 3.86E-04) / 1.0E-03 = 61.4%.
+The logic solver is the dominant contributor, followed closely by the final element. Margin to SIL 3 upper limit: (1.0E-03 − 4.76E-04) / 1.0E-03 = 52.4%.
 
 ### 6.4 Architectural Constraints (IEC 61508-2, Route 1H)
 
@@ -424,11 +426,13 @@ SFF = (lambda_SD + lambda_SU + lambda_DD) / (lambda_SD + lambda_SU + lambda_DD +
 
 **Verification for SF-PRES-001 (SIL 3):**
 
-| Subsystem | SFF | Required HFT (SIL 3) | Actual HFT | Result |
-|-----------|-----|----------------------|------------|--------|
-| Sensor | 83.4% (60–90% range) | HFT ≥ 1 | HFT = 1 (2oo3) | **PASS** |
-| Logic Solver | 92.7% (90–99% range) | HFT ≥ 0 | HFT = 0 (1oo1) | **PASS** |
-| Final Element | 93.3% (90–99% range) | HFT ≥ 0 | HFT = 0 (1oo1) | **PASS** |
+| Subsystem | SFF | Required HFT (SIL 3, Route 1H) | Actual HFT | Route 1H Result | Resolution |
+|-----------|-----|-------------------------------|------------|----------------|------------|
+| Sensor | 83.4% (60–90% range) | HFT ≥ 1 | HFT = 1 (2oo3) | **PASS** | — |
+| Logic Solver | 92.7% (90–99% range) | HFT ≥ 0 | HFT = 0 (1oo1) | **PASS** | — |
+| Final Element | 85.0% (60–90% range) | HFT ≥ 1 | HFT = 0 (1oo1) | **FAIL** | Route 2H applied (see below) |
+
+**Route 2H justification for final element:** Per IEC 61511 Clause 11.4, the Route 1H architectural constraint for the safety relay is relaxed based on prior use evidence. The force-guided safety relay is a proven-in-use device with extensive field history in SIL 3 applications. Prior use documentation per IEC 61511 Clause 11.5 is maintained in the project functional safety file. The quantitative PFDavg analysis (above) confirms the overall SIF achieves SIL 3 with adequate margin (52.4%).
 
 **Resolution when architectural constraints fail:** If the initial analysis shows a constraint failure (e.g., a final element with SFF < 90% in a 1oo1 architecture for SIL 3), three options are available:
 
@@ -446,12 +450,12 @@ The proof test interval (T_I) directly affects PFDavg. The maximum allowable T_I
 
 | T_I | PFDavg_sensor | PFDavg_logic | PFDavg_final | PFDavg_SIF | SIL Achieved |
 |-----|--------------|-------------|-------------|-----------|-------------|
-| 3 months (2,190 hr) | 1.69E-05 | 1.22E-04 | 3.78E-05 | 1.77E-04 | SIL 3 |
-| 6 months (4,380 hr) | 6.61E-05 | 2.44E-04 | 7.55E-05 | 3.86E-04 | SIL 3 |
-| 12 months (8,760 hr) | 2.53E-04 | 4.86E-04 | 1.51E-04 | 8.89E-04 | SIL 3 (marginal) |
-| 18 months (13,140 hr) | 5.58E-04 | 7.29E-04 | 2.27E-04 | 1.51E-03 | **SIL 2 (FAIL)** |
+| 3 months (2,190 hr) | 1.69E-05 | 1.22E-04 | 8.39E-05 | 2.23E-04 | SIL 3 |
+| 6 months (4,380 hr) | 6.61E-05 | 2.44E-04 | 1.66E-04 | 4.76E-04 | SIL 3 |
+| 12 months (8,760 hr) | 2.53E-04 | 4.86E-04 | 3.31E-04 | 1.07E-03 | **SIL 2 (FAIL)** |
+| 18 months (13,140 hr) | 5.58E-04 | 7.29E-04 | 4.95E-04 | 1.78E-03 | **SIL 2 (FAIL)** |
 
-**Conclusion for SF-PRES-001:** The maximum proof test interval for SIL 3 compliance is approximately 12 months, with significant margin reduction. The SRS specifies 6 months to maintain adequate margin and to align with typical turnaround schedules. PT-201 shall specify this interval.
+**Conclusion for SF-PRES-001:** The maximum proof test interval for SIL 3 compliance is approximately 11 months. At 12 months PFDavg exceeds the SIL 3 upper limit. The SRS specifies 6 months to maintain adequate margin (52.4%) and to align with typical turnaround schedules. PT-201 shall specify this interval.
 
 **Any change to the proof test interval requires an SRS revision and FMEA recalculation.**
 

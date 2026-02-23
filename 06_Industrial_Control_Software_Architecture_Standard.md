@@ -18,7 +18,20 @@ Drawings remain the **source of truth**.
 Software is a projection of the drawings.
 
 ---
-# 2. Lifecycle Integration
+# 2. Standards References
+
+| Standard | Title | Application |
+|----------|-------|-------------|
+| IEC 61131-3 | Programmable controllers — Programming languages | PLC programming language standards (Ladder Diagram, Function Block Diagram, Structured Text) |
+| IEC 61508-3 | Functional safety — Software requirements | Software safety lifecycle, software architectural design, coding standards for safety-related software |
+| IEC 61511-1 | Functional safety — Safety instrumented systems for the process industry | Clause 12 — SIS software requirements; application programming |
+
+This standard implements the software architecture requirements of IEC 61508-3 and IEC 61511-1 Clause 12 for PLC-based industrial control and safety systems.
+
+For the complete list of standards referenced across this framework, see the Safety Documentation Standard (`00_Safety_Documentation_Standard`), Section 3.
+
+---
+# 3. Lifecycle Integration
 
 Updated lifecycle:
 
@@ -28,7 +41,7 @@ Drawings, software, and FMEA iterate until testing succeeds.
 All good design is iterative.
 
 ---
-# 3. Determinism First
+# 4. Determinism First
 
 Determinism is a primary design constraint.
 
@@ -43,7 +56,7 @@ State machines are the preferred sequencing method.
 Service-oriented or asynchronous architectures are prohibited in the control core unless bounded latency and execution order are proven.
 
 ---
-# 4. Deterministic Actuation Gateway
+# 5. Deterministic Actuation Gateway
 
 HMI (Human-Machine Interface)/SCADA (Supervisory Control and Data Acquisition) are non-deterministic interfaces.
 
@@ -58,7 +71,7 @@ HMI issues requests only.
 Modules decide if actuation is allowed.
 
 ---
-# 5. HMI Action Tiers
+# 6. HMI Action Tiers
 
 ## Tier 0 – Informational
 Viewing data only.
@@ -77,7 +90,7 @@ Start/Stop/Reset/Bypass.
 Requires deterministic confirmation.
 
 ---
-# 6. Staged → Committed Parameter Pattern
+# 7. Staged → Committed Parameter Pattern
 
 Parameters are:
 - Staged (HMI writes)
@@ -86,7 +99,7 @@ Parameters are:
 Transfer from staged → committed requires deterministic confirmation.
 
 ---
-# 7. Software Layering
+# 8. Software Layering
 
 Layer 0 – Signals (I/O)  
 Layer 1 – Device Objects  
@@ -96,7 +109,7 @@ Layer 3 – Virtual Control Layer
 Virtual control may compute requests but never actuates hardware directly.
 
 ---
-# 8. Object Model
+# 9. Object Model
 
 ## Device Object
 Owns I/O semantics, device faults, reaction evidence.
@@ -132,7 +145,7 @@ Math-heavy algorithms only.
 No sequencing or actuation.
 
 ---
-# 9. Sheet Modules
+# 10. Sheet Modules
 
 Each testable drawing sheet shall have a primary software module.
 
@@ -141,7 +154,7 @@ SAT/FAT shall map to these modules.
 Fault lifecycle behavior must be co-located in the owning sheet module.
 
 ---
-# 10. Test Surfaces
+# 11. Test Surfaces
 
 Each module shall expose a Test Surface containing:
 - Fault states
@@ -153,7 +166,7 @@ Each module shall expose a Test Surface containing:
 SAT execution should require opening only the relevant Sheet Module and dependencies.
 
 ---
-# 11. TRACE Tag Convention
+# 12. TRACE Tag Convention
 
 Traceability shall use IDs only.
 
@@ -163,7 +176,7 @@ TRACE: SF=SF-PRES-001; FR=FR-EM-MTR-005-START-001; DWG=201
 Do not duplicate requirement text in code.
 
 ---
-# 12. Commissioning Reality Requirements
+# 13. Commissioning Reality Requirements
 
 Architecture shall support commissioning without code hacks.
 

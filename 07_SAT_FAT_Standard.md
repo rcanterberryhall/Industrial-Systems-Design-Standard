@@ -33,6 +33,8 @@ This standard defines a consistent methodology for testing industrial control sy
 
 The standard establishes repeatable, traceable test procedures that connect directly to engineering drawings, hazard analysis, and failure modes and effects analysis. Every test step traces to a specific drawing sheet, device tag, and --- for safety systems --- a specific failure mode identified in the FMEA.
 
+This standard covers safety FAT/SAT (validating safety functions per FMEA and SRS). Functional FAT/SAT (validating process functions per functional requirements) is defined in the Functional Requirements Standard (`01_Functional_Requirements_Standard`). Both functional and safety testing are required for a complete commissioning package.
+
 ### 1.2 Scope
 
 This standard covers three testing phases:
@@ -91,6 +93,8 @@ Principles:
 | IEC 61508 Part 2 | Functional safety --- Hardware | Diagnostic coverage verification, hardware fault tolerance |
 | IEC 61508 Part 7 | Functional safety --- Overview of techniques and measures | Test techniques for SIS |
 | IEC 62382 | Electrical and instrumentation loop checking | Loop check methodology for SAT |
+| IEC 62381 | Automation systems in the process industry — Factory acceptance testing (FAT), site acceptance testing (SAT), and site integration testing (SIT) | FAT/SAT methodology and scope definition |
+| IEC 61439 | Low-voltage switchgear and controlgear assemblies | Panel and enclosure inspection standards for FAT |
 | Industrial Systems Drawing Standard | Device, wire, and drawing numbering convention | Source of sheet numbers, device tags, wire numbers used in test procedures |
 | Hazard Analysis Standard | HAZOP and LOPA methodology | Source of hazard entries (HA-XXX-NNN) and safety function identification |
 | SRS Standard | Safety Requirements Specification methodology | Source of safety function definitions (SF-XXX-NNN), SIL targets, proof test intervals, and PFDavg calculation methodology |
@@ -1344,13 +1348,13 @@ Every test step must be traceable to its source documentation. The required trac
 | Device/Wire Reference | Drawing sheet + device tag + wire number | Sheet 201, +200-K201.1, Wire 201-4.1 |
 | Test Action | Drawing function + Safety Function Spec | SF-PRES-001, logic on Sheet 201 |
 | Failure Mode (fault injection) | FMEA failure mode ID | FMEA 201.1-07 |
-| Acceptance Criteria | Safety Function Spec (response time, setpoint) | SF-PRES-001: trip at 150 psig, < 2 sec |
+| Acceptance Criteria | Safety Function Spec (response time, setpoint) | SF-PRES-001: trip at 170 psig, < 1 sec |
 
 ### 8.4 Pass/Fail Criteria Definition
 
 Pass/fail criteria shall be:
 
-- **Quantitative** where measurable: voltage within +/- 5%, response time < 500 ms, setpoint at 150.0 +/- 0.5 psig
+- **Quantitative** where measurable: voltage within +/- 5%, response time < 500 ms, setpoint at 170.0 +/- 0.5 psig
 - **Qualitative** where observation-based: correct lamp color, correct alarm text, valve fully closed
 - **Binary** where applicable: wire correctly terminated (yes/no), label present (yes/no)
 

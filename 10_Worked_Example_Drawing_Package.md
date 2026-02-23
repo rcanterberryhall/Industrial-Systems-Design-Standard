@@ -1,10 +1,11 @@
-You# Drawing Package Map — Overpressure Protection SF-PRES-001
+# Drawing Package Map — Overpressure Protection SF-PRES-001
 
 ## Project Header
 
 | Field | Value |
 |---|---|
-| **Safety Function** | SF-PRES-001 — Overpressure Protection |
+| **Functional Requirement** | FR-PRES-001 — Vessel XYZ Pressure Control |
+| **Safety Function** | SF-PRES-001 — Overpressure Protection (protects people and equipment when FR-PRES-001 fails) |
 | **Hazard Analysis** | HA-PRES-001 |
 | **SIL Target** | SIL 3 (PFDavg < 1.0E-03) |
 | **Architecture** | 2oo3 sensor voting, 1oo1 logic solver, 1oo1 final element |
@@ -153,7 +154,7 @@ Wire naming convention: `[Sheet]-[Column].[Sequence]` per Drawing Standard §3.
 | A201.1:DI1 | Digital In 1 | 24VDC | ON/OFF | — | +300-S302.1 | ZSC-201 | 201-7.1 / 201-7.2 | 201 |
 | A201.1:DO1 | Digital Out 1 | 24VDC | ON/OFF | — | +200-K201.1 | — | 201-5.1 / 201-5.2 | 201 |
 
-**Voting logic:** 2oo3 on AI1, AI2, AI3. Trip setpoint: 180 psig. Any 2 of 3 channels exceeding setpoint de-energizes DO1 → K201.1 opens → XV-201 closes.
+**Voting logic:** 2oo3 on AI1, AI2, AI3. Trip setpoint: 170 psig. Any 2 of 3 channels exceeding setpoint de-energizes DO1 → K201.1 opens → XV-201 closes.
 
 ---
 
@@ -223,9 +224,11 @@ Every document in the safety lifecycle references back to this drawing package t
 ### Traceability Chain
 
 ```
-HA-PRES-001          Hazard Analysis identifies risk
+FR-PRES-001          Functional requirement defines process function
     ↓
-SF-PRES-001          Safety function defined (SIL 3, 2oo3)
+HA-PRES-001          Hazard Analysis identifies risks arising from the function
+    ↓
+SF-PRES-001          Safety function defined (SIL 3, 2oo3) — protects people and equipment
     ↓
 Sheets 201–302       Electrical design implements the function
     ↓
@@ -233,7 +236,7 @@ FMEA 201.1           Verifies design meets SIL 3 target
     ↓
 PT-201               Proof test derived from FMEA DU failure modes
     ↓
-FAT-201 / SAT-201    Validates built system matches drawings
+FFAT-150 / SAT-201   Validates functional and safety performance
     ↓
 PT-201 execution     Ongoing proof testing every 6 months
 ```
