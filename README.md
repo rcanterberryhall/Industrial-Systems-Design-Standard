@@ -1,5 +1,5 @@
 # Industrial System Lifecycle Framework
-## Deterministic, Drawing-Centric Engineering for Functional Safety and Commissioning
+## Hazard-Driven, Drawing-Navigated Engineering for Functional Safety and Commissioning
 
 ---
 
@@ -32,10 +32,12 @@ This methodology defines an integrated lifecycle for industrial systems that uni
 - Structured Startup & Commissioning Gates  
 - Proof Testing and Operational Governance  
 
-It treats commissioning as part of design.  
-It treats FMEA as a design instrument.  
-It treats drawings as the navigation spine.  
+It treats commissioning as part of design.
+It treats FMEA as a design instrument.
+It treats drawings as the navigation spine of implementation and verification — not the origin of safety intent.
 It treats determinism as non-negotiable in control-producing logic.
+
+Safety intent originates upstream: **HA → SRS → FMEA**. This chain defines what must be protected, to what integrity level, and with what architecture — independent of any drawing. Drawings are where that intent is implemented. Once implementation exists, drawing sheet numbers become the navigation key that links FMEA entries, test procedures, software modules, and proof tests into a single traceable system.
 
 ---
 
@@ -57,7 +59,7 @@ These principles are enforced through lifecycle gates, structured documentation,
 
 This framework introduces practical engineering mechanisms rarely integrated into a single methodology:
 
-- Drawing sheet numbers as the traceability backbone across FMEA, FAT/SAT, software modules, and proof tests.
+- Drawing sheet numbers as the implementation and verification traceability backbone — linking FMEA entries, FAT/SAT procedures, software modules, and proof tests. Safety requirements originate upstream in the HA and SRS, independent of sheet structure.
 - Explicit CD → PD → DD lifecycle integration with PDR, CDR, and DDR review gates.
 - Architecture-level FMEA during Preliminary Design — not after construction.
 - Deterministic gateway requirements for all motion-producing logic.

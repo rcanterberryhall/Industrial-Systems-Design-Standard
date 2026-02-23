@@ -1426,9 +1426,9 @@ The matrix is a single table — one row per SAT document. Every safety-critical
 - **The matrix is a living document** — it is updated as SATs are completed and statuses are updated
 - **PSSR prerequisite:** The traceability matrix must be fully populated (no blank safety-critical cells) before the Pre-Startup Safety Review can be authorized
 
-### 9.4 Relationship to Safety Documentation Standard Traceability Matrices
+### 9.4 Scope Notes
 
-The Safety Documentation Standard (Section 7) defines three project-level traceability matrices (TM-REQ, TM-VER, TM-DEV). The Traceability Matrix defined here is a simplified operational view, focused specifically on SAT-to-requirement linkage. For projects requiring formal FSA compliance, produce all three matrices as defined in the Safety Documentation Standard. For smaller projects, this single matrix may suffice.
+The Traceability Matrix defined here is a simplified operational view focused specifically on SAT-to-requirement linkage. For projects requiring formal FSA compliance, additional project-level traceability matrices may be warranted — covering requirements traceability (HA → SRS → Drawings), verification traceability (SRS → FMEA → FAT/SAT), and device traceability (device tag → all referencing documents). For smaller projects, this single matrix may suffice.
 
 ---
 
@@ -1463,7 +1463,16 @@ The FMEA Standard provides:
 - **Proof test interval:** The TI is specified in the SRS entry for each safety function and used as a calculation input in the FMEA. The SRS is the authority; the maximum allowable TI is derived from the SRS PFDavg calculation
 - **PFDavg feedback:** Actual proof test results (especially failures found) feed back into the SRS and FMEA assumptions for the next SIS lifecycle review
 
-### 10.4 Traceability Chain
+### 10.4 Startup and Commissioning Standard
+
+FAT and SAT results are direct inputs to the Startup Gate passage process defined in the Startup and Commissioning Standard. That standard defines:
+
+- **Validation Levels (0–7):** Bottom-up technical verification stages from individual device checks through to integrated system readiness. SAT completion contributes evidence for the upper validation levels.
+- **Startup Gates (A–E):** Formal authorization points controlling process introduction. FAT/SAT records are required inputs to specific gates — a safety-critical SAT that is incomplete or contains unresolved critical punch items will block gate passage.
+
+This standard governs *how* to execute and document FAT/SAT tests. The Startup and Commissioning Standard governs *when* those results are assessed against gate criteria and *what* authority is required to proceed. Neither standard duplicates the other; they operate sequentially.
+
+### 10.5 Traceability Chain
 
 The complete traceability chain from hazard identification through ongoing operation:
 
@@ -1485,7 +1494,7 @@ graph LR
     PT -.->|test results<br/>feed back| FMEA
 ```
 
-### 10.5 Test Lifecycle
+### 10.6 Test Lifecycle
 
 ```mermaid
 graph TB

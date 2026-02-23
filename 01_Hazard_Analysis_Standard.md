@@ -58,7 +58,7 @@ Principles:
 - Hazard identification precedes design — HAZOP findings drive the safety design, not the reverse.
 - SIL targets are determined analytically through LOPA, not assigned by convention or assumption.
 - Each safety function has a single, traceable path from hazard scenario to implemented drawing sheet.
-- Numbering conventions align with the Drawing Standard to enable self-documenting cross-references.
+- Numbering conventions align with the Drawing Standard to enable self-documenting cross-references. The HA itself does not depend on sheet numbering — sheet references become relevant only once implementation exists and the HA entry is linked to its implementing drawing sheets.
 - The ALARP principle governs all risk decisions — risks shall be reduced to a level that is As Low As Reasonably Practicable.
 
 ---
@@ -851,7 +851,7 @@ The HA document identifies safety functions as an output of the LOPA study. For 
 | Required PFD | Required PFD from LOPA calculation |
 | Status | SRS status: `pending SRS` → `SRS issued` → `In Service` |
 
-**The HA is not the owner of the full safety function specification.** The HA records that a safety function is required, assigns its SIL target, and flags it as `SF-PRES-001 (pending SRS)`. The full functional requirements (setpoints, voting logic, response time, architecture, reliability calculations, proof test interval) are defined in the SRS entry for that function. See the SRS Standard (07_SRS_Standard) for the complete SF entry methodology.
+**The HA is not the owner of the full safety function specification.** The HA records that a safety function is required, assigns its SIL target, and flags it as `SF-PRES-001 (pending SRS)`. The full functional requirements (setpoints, voting logic, response time, architecture, reliability calculations, proof test interval) are defined in the SRS entry for that function. See the SRS Standard (02_SRS_Standard) for the complete SF entry methodology.
 
 **Worked Example — HA Safety Function Identification Output:**
 

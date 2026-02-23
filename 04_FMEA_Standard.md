@@ -734,7 +734,7 @@ SFF = 0.850 (85.0%)
 
 ## 8. Proof Test Requirements Derived from FMEA
 
-> **Note on SIL Verification Calculations:** PFDavg formulas, architectural constraint verification, and common cause failure (CCF) / beta factor analysis have been relocated to the **SRS Standard (07_SRS_Standard)**. These are design-intent calculations performed when specifying the safety function — they belong in the SRS, not in the FMEA. The FMEA uses the SRS-specified failure rate targets and T_I values to verify that selected hardware achieves the required SIL. See the SRS Standard Section 6 for the full calculation methodology.
+> **Note on SIL Verification Calculations:** PFDavg formulas, architectural constraint verification, and common cause failure (CCF) / beta factor analysis have been relocated to the **SRS Standard (02_SRS_Standard)**. These are design-intent calculations performed when specifying the safety function — they belong in the SRS, not in the FMEA. The FMEA uses the SRS-specified failure rate targets and T_I values to verify that selected hardware achieves the required SIL. See the SRS Standard Section 6 for the full calculation methodology.
 
 ### 8.1 Proof Test Identification
 
