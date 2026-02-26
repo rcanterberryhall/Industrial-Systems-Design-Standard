@@ -220,7 +220,7 @@ Final startup authorization (PSSR) shall confirm:
 - All required startup gates have been passed
 - All temporary safeguards removed or formally accepted
 - All required SAT items complete
-- Proof test procedures defined and scheduled
+- Proof test procedures defined and scheduled (where the FMEA identifies inherent DU failure modes)
 
 PSSR is the final operational release gate.
 

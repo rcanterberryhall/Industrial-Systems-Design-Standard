@@ -1,0 +1,202 @@
+{
+  "main": {
+    "id": "834e2061ff819b56",
+    "type": "split",
+    "children": [
+      {
+        "id": "a0dfaa34e9b471b6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f2b2759701a1b8a8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "03_SRS_Standard.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "03_SRS_Standard"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d5a4549a0f89353a",
+    "type": "split",
+    "children": [
+      {
+        "id": "88962fa1e04985d8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "806af210585e504c",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "4275afa6c6c130af",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "248865233b1edfe3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "1c0b12f32ba87815",
+    "type": "split",
+    "children": [
+      {
+        "id": "ad96f8d4e4c58f6d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "736419c53a18f855",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "03_SRS_Standard.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for 03_SRS_Standard"
+            }
+          },
+          {
+            "id": "4c657f8444e0a48d",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "03_SRS_Standard.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from 03_SRS_Standard"
+            }
+          },
+          {
+            "id": "05f91aed6f2113aa",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "49bbc477ef0287c2",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "5314c07f290ca8fa",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "03_SRS_Standard.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of 03_SRS_Standard"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "f2b2759701a1b8a8",
+  "lastOpenFiles": [
+    "02_Hazard_Analysis_Standard.md",
+    "10_Worked_Example_Drawing_Package.md.tmp.372151.1772125940208",
+    "10_Worked_Example_Drawing_Package.md.tmp.372151.1772125896946",
+    "10_Worked_Example_Drawing_Package.md.tmp.372151.1772125857748",
+    "10_Worked_Example_Drawing_Package.md.tmp.372151.1772125843289",
+    "10_Worked_Example_Drawing_Package.md.tmp.372151.1772125822602",
+    "06_Industrial_Control_Software_Architecture_Standard.md.tmp.372151.1772125786131",
+    "05_FMEA_Standard.md.tmp.372151.1772125750873",
+    "05_FMEA_Standard.md.tmp.372151.1772125729992",
+    "05_FMEA_Standard.md.tmp.372151.1772125708976",
+    "05_FMEA_Standard.md.tmp.372151.1772125690890",
+    "01_Functional_Requirements_Standard.md",
+    "00_Safety_Documentation_Standard.md"
+  ]
+}

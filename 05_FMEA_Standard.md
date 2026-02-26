@@ -152,6 +152,9 @@ Additional principles:
 | Safety Instrumented Function | SIF | A specific safety function implemented by a SIS, consisting of sensors, logic solver, and final elements |
 | Safety Function | SF-XXX-NNN | Identifier for a specific safety function per the HA Standard (e.g., SF-PRES-001) |
 
+<
+> Can we use the greek letters for lambda and beta instead? <
+<>
 ---
 
 ## 4. Numbering and Identification
@@ -268,9 +271,11 @@ The FMEA scope section lists all sheets and devices whose failures are observed 
 
 ```
 FMEA 201.1 — Scope
-  Safety Function: SF-PRES-001 (Overpressure Protection, SIL 3)
-  Hazard Analysis: HA-PRES-001
-  Detection Sheet: 201
+  Safety Function:     SF-PRES-001 (Overpressure Protection)
+  Governing Standard:  IEC 62061 — Path: SIL
+  Integrity Target:    SIL 3 (PFDavg < 1.0E-03)
+  Hazard Analysis:     HA-PRES-001
+  Detection Sheet:     201
 
   Input Channels:
     Ch1 → +300-B301.1 (Pressure Tx #1, Sheet 301) via CBL-301-01
@@ -385,15 +390,18 @@ graph LR
     S9 --> S10[Step 10<br/>Document<br/>Recommendations]
 ```
 
-### 6.2 Step 1: Identify the Safety Function and SIL Target
+### 6.2 Step 1: Identify the Safety Function, Governing Standard, and Integrity Target
 
-From the SRS entry for this safety function (which was derived from the HA and LOPA):
+From the SRS entry for this safety function (which was derived from the HA and risk assessment):
 
 - **Safety Function ID:** SF-PRES-001 (SRS entry in SRS-RefineryXYZ)
 - **Description:** On detection of high pressure in Vessel XYZ (2oo3 voting), de-energize safety relay +200-K201.1 to close shutdown valve XV-201 within 3 seconds.
+- **Governing Standard:** IEC 62061 — **Path: SIL**
 - **SIL Target:** SIL 3 (from LOPA, documented in HA entry HA-PRES-001, specified in SRS entry SF-PRES-001)
 - **Demand Mode:** Low demand (< 1 demand per year)
 - **Required PFDavg:** < 1.0E-03 (SIL 3 per SRS)
+
+The governing standard and path tag (SIL or PL) determine which verification method applies at Step 9 and whether proof testing (Section 8) is required.
 - **Proof Test Interval:** 6 months (T_I = 4,380 hr, per SRS)
 - **Process Safety Time:** 10 seconds
 
@@ -501,17 +509,19 @@ For each failure mode, obtain the failure rate from the most authoritative sourc
 
 ### 6.7 Step 6: Calculate Diagnostic Coverage for Each Failure Mode
 
-Diagnostic coverage (DC) is the fraction of each dangerous failure mode's rate that is detected by automatic diagnostics:
+**SIL path:** Diagnostic coverage (DC) is the fraction of each dangerous failure mode's rate that is detected by automatic diagnostics:
 
 ```
 DC = lambda_DD / (lambda_DD + lambda_DU)
 ```
 
-Sources for DC values:
+Sources for DC values (SIL path):
 
 - Device Safety Manual (SIL-certified devices provide DC per failure mode)
 - IEC 61508-2 Table A.1 through A.14 (generic DC values by diagnostic technique)
 - IEC 61508-7 Annex A through E
+
+**PL path:** On the PL path, individual DC values per failure mode are not calculated in isolation. Instead, the system-level DCavg is determined from the diagnostic architecture and compared against the ISO 13849-1 DCavg thresholds (None / Low / Medium / High). The DCavg, combined with the Category and MTTFd, determines the achieved PL per SRS Standard Section 6B. The column structure of the FMEA worksheet remains the same; however, the DC% column captures the diagnostic technique applied to each failure mode, which feeds into the DCavg determination.
 
 **Common diagnostic techniques and typical DC values (IEC 61508-2):**
 
@@ -545,13 +555,21 @@ Using the classified failure rates from the worksheet:
 3. Calculate PFDavg for each subsystem using the appropriate architecture formula (see SRS Standard Section 6)
 4. Calculate overall SIF PFDavg
 
-### 6.10 Step 9: Verify Against SIL Target
+### 6.10 Step 9: Verify Against Integrity Target
 
-Compare calculated values against:
+The verification step depends on the governing standard (Path) declared in the FMEA header:
 
-1. **PFDavg target** for the required SIL (see SRS Standard Section 6.2)
-2. **Architectural constraints** per IEC 61508-2 Route 1H (see SRS Standard Section 6.4)
-3. **Both checks must pass** for the SIL to be claimed
+**SIL path verification:**
+1. **PFDavg target** — calculated PFDavg < required PFDavg for the SIL target (see SRS Standard Section 6A.2)
+2. **Architectural constraints** — SFF and HFT per IEC 61508-2 Route 1H (see SRS Standard Section 6A.4)
+3. Both checks must pass for the SIL to be claimed
+
+**PL path verification:**
+1. **Achieved PL** — look up Category + MTTFd + DCavg in ISO 13849-1 Table K.1 (see SRS Standard Section 6B.2)
+2. Achieved PL ≥ PLr → PASS
+3. CCF score ≥ 65 points (ISO 13849-1 Annex F) for Category 3 or 4 architectures
+
+The PL path has no PFDavg calculation and no Route 1H architectural constraint check. The verification is entirely table-based.
 
 ### 6.11 Step 10: Document Recommendations
 
@@ -572,16 +590,33 @@ The FMEA worksheet shall include the following columns. The header block identif
 
 **Header Block:**
 ```
-FMEA Document:    FMEA 201.1
-Safety Function:  SF-PRES-001 — Overpressure Protection, Vessel XYZ
-SIL Target:       SIL 3
-HA Reference:     HA-PRES-001
-Architecture:     Sensor: 2oo3 | Logic: 1oo1 | Final Element: 1oo1
-Drawing Sheets:   201, 310, 311, 312
-Prepared By:      [Name]                    Date: [Date]
-Reviewed By:      [Name]                    Date: [Date]
-Approved By:      [Name]                    Date: [Date]
+FMEA Document:       FMEA 201.1
+Safety Function:     SF-PRES-001 — Overpressure Protection, Vessel XYZ
+Governing Standard:  IEC 62061                 Path: SIL
+Integrity Target:    SIL 3 (PFDavg < 1.0E-03)
+HA Reference:        HA-PRES-001
+Architecture:        Sensor: 2oo3 | Logic: 1oo1 | Final Element: 1oo1
+Drawing Sheets:      201, 310, 311, 312
+Prepared By:         [Name]                    Date: [Date]
+Reviewed By:         [Name]                    Date: [Date]
+Approved By:         [Name]                    Date: [Date]
 ```
+
+For a PL path safety function, the header takes the following form:
+```
+FMEA Document:       FMEA 401.1
+Safety Function:     SF-GUARD-001 — Machine Guard Interlock
+Governing Standard:  ISO 13849                 Path: PL
+Integrity Target:    PLd
+HA Reference:        HA-GUARD-001
+Architecture:        Category 3 | MTTFd High | DCavg Medium
+Drawing Sheets:      401
+Prepared By:         [Name]                    Date: [Date]
+Reviewed By:         [Name]                    Date: [Date]
+Approved By:         [Name]                    Date: [Date]
+```
+
+The `Path: SIL` or `Path: PL` notation in the header drives the verification method and determines whether Section 8 proof testing applies to this FMEA.
 
 **Worksheet Columns:**
 
@@ -734,6 +769,14 @@ SFF = 0.850 (85.0%)
 ---
 
 ## 8. Proof Test Requirements Derived from FMEA
+
+**Proof testing applies to the SIL path only.** On the SIL path, dangerous undetected (DU) failure modes accumulate over the proof test interval T_I, and PFDavg grows proportionally. Proof testing reveals these failures and resets the probability. Where inherent DU failure modes remain after architectural design, a proof test procedure must be derived from the FMEA.
+
+**Proof testing does not apply to the PL path.** For safety functions governed by ISO 13849 (Path: PL), integrity is verified through the architecture Category, MTTFd, and DCavg — established at design time and confirmed at installation and after modification. There is no time-varying T_I to calculate or maintain. A design with Category 3 or 4 architecture and appropriate MTTFd and DCavg does not require periodic proof testing in the T_I sense. (Periodic functional validation may be performed as good practice, but it does not feed into a PFHd calculation.)
+
+**For SIL path functions:** Proof testing is not a standard deliverable of every FMEA. Proof testing is required **only** where the FMEA identifies inherent DU failure modes — dangerous undetected failures that cannot be eliminated by any architectural means. The design objective throughout PD and DD is to maximize diagnostic coverage and eliminate DU through feedback contacts, comparison checks, diagnostic outputs, and other architectural measures. Only inherent DU — failures where the physics of the failure mode makes real-time detection impractical — justifies a proof test requirement. A design with no inherent DU requires no proof testing.
+
+Where inherent DU failure modes remain, this section defines how proof test procedures are derived from the FMEA.
 
 > **Note on SIL Verification Calculations:** PFDavg formulas, architectural constraint verification, and common cause failure (CCF) / beta factor analysis have been relocated to the **SRS Standard (03_SRS_Standard)**. These are design-intent calculations performed when specifying the safety function — they belong in the SRS, not in the FMEA. The FMEA uses the SRS-specified failure rate targets and T_I values to verify that selected hardware achieves the required SIL. See the SRS Standard Section 6 for the full calculation methodology.
 
@@ -1114,10 +1157,11 @@ The FMEA is not a one-way document. Results may require changes to upstream and 
 - If the FMEA identifies that additional redundancy is needed (e.g., final element requires HFT=1), the drawing must be updated to include the additional hardware.
 - If the FMEA identifies that additional diagnostics are needed (e.g., contact feedback monitoring), the drawing must show the diagnostic circuits.
 
-**FMEA to Proof Test (downstream):**
-- Every DU failure mode in the FMEA must have a corresponding proof test action in PT-[Sheet].
-- The proof test interval is derived from the FMEA PFDavg calculation.
-- Changes to the FMEA (new failure modes, revised rates) require review of the proof test procedure.
+**FMEA to Proof Test (downstream, where inherent DU exists):**
+- Every **inherent** DU failure mode in the FMEA must have a corresponding proof test action in PT-[Sheet]. Designable DU must be resolved by architectural change, not by proof testing.
+- Where proof testing is required, the proof test interval is constrained by the FMEA PFDavg calculation.
+- Changes to the FMEA (new failure modes, revised rates) require review of any associated proof test procedure.
+- If the FMEA identifies no inherent DU failure modes, no proof test procedure is required — this is the preferred outcome.
 
 **FMEA to SAT (downstream):**
 - The SAT verifies that the as-built system matches the FMEA assumptions (correct devices installed, diagnostics functioning, architecture as designed).

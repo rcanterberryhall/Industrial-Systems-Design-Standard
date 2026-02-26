@@ -33,26 +33,25 @@ This methodology defines an integrated lifecycle for industrial systems that uni
 - Structured Startup & Commissioning Gates
 - Proof Testing and Operational Governance
 
-It treats commissioning as part of design.
-It treats FMEA as a design instrument.
-It treats drawings as the navigation spine of implementation and verification — not the origin of safety intent.
-It treats determinism as non-negotiable in control-producing logic.
+It treats commissioning as a designed process.
+It treats FMEA as a design .
+It treats drawings as the navigation spine of implementation and verification.
 
-Functional intent originates upstream: **FR → HA → SRS → FMEA**. This chain defines what the system must do, what hazards threaten that function, what safety integrity is required, and what architecture achieves it — independent of any drawing. Drawings are where that intent is implemented. Once implementation exists, drawing sheet numbers become the navigation key that links FMEA entries, test procedures, software modules, and proof tests into a single traceable system.
+This will serve as a system design and implementation roadmap.
+
+**FR → HA → SRS → FMEA**.
 
 ---
 
 ## Core Principles
 
-1. **Function defines intent — safety protects it.**
-2. **Constraints bound the design space.**
-3. **Hazards drive requirements.**
-4. **Requirements drive architecture.**
-5. **Architecture determines detection capability.**
-6. **FMEA drives diagnostic strategy and proof testing.**
-7. **Commissioning validates architecture in structured stages.**
-8. **Hardware and software are co-designed.**
-9. **Actuation must be deterministic.**
+1. **The system is defined by its requirements.**
+2. **Requirements drive design. - FRS and SRS**
+3. **Documentation is structured and traceable.**
+4. **FMEA drives reliability through iterative design improvement.**
+5. **Commissioning is designed - how it works is just as important as how we make it work.**
+6. **Hardware and software are interdependent and must be co-designed.**
+7. **Commissioning is not a discovery process.**
 
 These principles are enforced through lifecycle gates, structured documentation, and traceable numbering systems.
 
@@ -62,14 +61,14 @@ These principles are enforced through lifecycle gates, structured documentation,
 
 This framework introduces practical engineering mechanisms rarely integrated into a single methodology:
 
-- Explicit functional requirements and design constraints as the upstream anchor for hazard analysis and safety requirements. Constraints (regulatory, physical, interface, operational, design standard) are captured alongside requirements — not discovered during construction.
+- Explicit functional requirements and design constraints as the upstream anchor for hazard analysis and safety requirements. Constraints (regulatory, physical, interface, operational, design standard) are captured alongside requirements.
 - Drawing sheet numbers as the implementation and verification traceability backbone — linking FMEA entries, FAT/SAT procedures, software modules, and proof tests. Functional and safety requirements originate upstream in the FR, HA, and SRS, independent of sheet structure.
 - Explicit CD → PD → DD lifecycle integration with PDR, CDR, and DDR review gates.
-- Architecture-level FMEA during Preliminary Design — not after construction.
+- Architecture-level FMEA during Preliminary Design.
 - Deterministic gateway requirements for all motion-producing logic.
-- Startup Gates aligned with bottom-up technical validation levels.
-- Explicit handling of Dangerous Undetected (DU) failures and proof test derivation.
-- Clear separation of preventive maintenance from safety proof testing.
+- Startup Gates aligned with bottom-up technical validation levels. FAT / SAT are part of the Startup Gate not just after the fact verification.
+- Explicit handling of Dangerous Undetected (DU) failures — design objective is to eliminate DU through architecture; proof testing is a last resort for inherent DU.
+
 
 The result is a lifecycle that is both technically rigorous and field-practical.
 
@@ -109,9 +108,7 @@ The objective is industrial systems that are:
 - Commissioned without rework loops  
 - Defensible under audit  
 
-This is not a checklist.
-
-It is an operating system for industrial engineering.
+The documentation process exists for the benefit of the engineer. It drives better design. It should never be an arbitrary box to check.
 
 ---
 

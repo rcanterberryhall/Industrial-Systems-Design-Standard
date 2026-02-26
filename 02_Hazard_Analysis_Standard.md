@@ -27,9 +27,9 @@
 
 ### 1.1 Purpose
 
-This standard defines a consistent methodology for identifying hazards, assessing risks, and determining the required Safety Integrity Level (SIL) for safety instrumented functions in industrial process systems. It establishes the conventions for conducting Hazard and Operability Studies (HAZOP) and Layer of Protection Analysis (LOPA) and defines how the outputs of these studies integrate with the electrical drawing package and other safety lifecycle documentation.
+This standard defines a consistent methodology for identifying hazards, assessing risks, and determining the required integrity level for safety functions in industrial systems. Integrity level is expressed as a Safety Integrity Level (SIL) for functions governed by IEC 61508 / IEC 61511 / IEC 62061, or as a Performance Level (PL) for functions governed by ISO 13849 (machine safety). It establishes the conventions for conducting Hazard and Operability Studies (HAZOP), Layer of Protection Analysis (LOPA) for SIL determination, and risk graph analysis per ISO 13849-1 Annex A for PL determination. The outputs of these studies integrate with the electrical drawing package and other safety lifecycle documentation.
 
-The standard ensures that hazard analysis is performed systematically, that safety functions are identified and assigned appropriate SIL targets, and that traceability is maintained from the hazard scenario through to the implemented safety system on the drawings.
+The standard ensures that hazard analysis is performed systematically, that safety functions are identified and assigned appropriate integrity targets (SIL or PL), that the governing standard is declared per safety function, and that traceability is maintained from the hazard scenario through to the implemented safety system on the drawings.
 
 ### 1.2 Scope
 
@@ -51,7 +51,7 @@ This standard does **not** define:
 
 ### 1.3 Design Philosophy
 
-**The hazard analysis is the origin of all safety requirements.** Every safety function, every SIL target, every FMEA, every proof test, and every safety-critical drawing traces back to a hazard scenario identified and documented per this standard.
+**The hazard analysis is the origin of all safety requirements.** Every safety function, every SIL target, every FMEA, and every safety-critical drawing traces back to a hazard scenario identified and documented per this standard. Where inherent dangerous undetected (DU) failures remain after architectural design, proof test requirements also trace back to the originating hazard.
 
 **Hazards are risks to the process function.** The process function is defined in the Functional Requirements Standard (`01_Functional_Requirements_Standard`). Each HAZOP node's "Design Intent" statement should trace to one or more functional requirement entries (FR-XXX-NNN). A hazard is meaningful only in the context of a defined intended function.
 
@@ -71,6 +71,9 @@ Principles:
 |----------|-------|-------------|
 | IEC 61511 | Functional safety — Safety instrumented systems for the process industry sector | Primary standard for SIS lifecycle, SIL determination, LOPA methodology |
 | IEC 61508 | Functional safety of electrical/electronic/programmable electronic safety-related systems | Parent standard for functional safety, SIL definitions, hardware fault tolerance |
+| IEC 62061 | Safety of machinery — Functional safety of safety-related control systems | SIL-based functional safety for machinery. Governing standard option for machine safety functions. |
+| ISO 13849-1 | Safety of machinery — Safety-related parts of control systems — Part 1: General principles for design | PL framework, risk graph method (Annex A) for PLr determination, Categories, MTTFd, DCavg |
+| ISO 13849-2 | Safety of machinery — Safety-related parts of control systems — Part 2: Validation | Validation of PL path safety functions |
 | IEC 61882 | Hazard and operability studies (HAZOP studies) — Application guide | HAZOP methodology, guidewords, study preparation, documentation |
 | IEC 31010 | Risk management — Risk assessment techniques | General risk assessment framework |
 | Industrial Systems Drawing Standard | Device, Wire, and Drawing Numbering Convention | Drawing numbering, device tagging, title block conventions, HA cross-reference format |
@@ -113,6 +116,13 @@ Principles:
 | **Safety Integrity Level (SIL)** | A discrete level (1 through 4) corresponding to a range of probability of failure on demand for a safety function. SIL 1 is the lowest; SIL 4 is the highest. |
 | **Tolerable risk** | The maximum level of risk that is acceptable to the organization, typically defined by corporate risk criteria or regulatory requirements. |
 | **TMEL** | Target Mitigated Event Likelihood. The maximum tolerable frequency of a specific consequence, derived from corporate or regulatory risk criteria. |
+| **Performance Level (PL)** | A discrete level (PLa through PLe) used to specify the ability of a safety-related part of a control system to perform a safety function under foreseeable conditions, per ISO 13849-1. PLe is the highest. |
+| **Required Performance Level (PLr)** | The PL required for a safety function, determined by the risk graph method per ISO 13849-1 Annex A. |
+| **Category (B, 1, 2, 3, 4)** | Architecture category per ISO 13849-1, describing the structural and diagnostic requirements of the safety-related control system. Category 4 is the most capable. |
+| **MTTFd** | Mean Time To dangerous Failure (per channel). Expressed as Low (< 10 years), Medium (10–30 years), High (30–100 years), or Very High (> 100 years) per ISO 13849-1. |
+| **DCavg** | Average Diagnostic Coverage per ISO 13849-1. Classified as None (< 60%), Low (60–90%), Medium (90–99%), or High (≥ 99%). |
+| **PFHd** | Probability of Dangerous Failure per Hour. The ISO 13849 metric for high-demand / continuous mode safety functions; also used to express achieved PL as a numerical value. |
+| **Governing Standard** | The standard that applies to a given safety function, declared at the HA level. Values: `IEC 62061`, `IEC 61511`, `IEC 61508`, `ISO 13849`. Determines whether the SIL or PL pathway is used downstream. |
 
 ### 3.1 SIL Definitions (Low Demand Mode, per IEC 61508/61511)
 
@@ -124,7 +134,19 @@ Principles:
 
 **Note:** SIL 4 is not addressed in IEC 61511 for the process industry. If a LOPA study indicates a requirement for SIL 4, the design shall be revisited to reduce the inherent risk or add non-SIS protection layers.
 
-### 3.2 Minimum Hardware Fault Tolerance (per IEC 61511)
+### 3.2 PL Definitions (per ISO 13849-1)
+
+| PL | PFHd Range (per hour) | Approximate SIL Equivalence (informative) |
+|----|----------------------|------------------------------------------|
+| PLa | ≥ 10⁻⁵ to < 10⁻⁴ | — (below SIL 1) |
+| PLb | ≥ 3×10⁻⁶ to < 10⁻⁵ | — (below SIL 1) |
+| PLc | ≥ 10⁻⁶ to < 3×10⁻⁶ | ≈ SIL 1 |
+| PLd | ≥ 10⁻⁷ to < 10⁻⁶ | ≈ SIL 2 |
+| PLe | ≥ 10⁻⁸ to < 10⁻⁷ | ≈ SIL 3 |
+
+**Important:** The SIL/PL equivalence above is informative only. SIL and PL are not interchangeable without full calculation under their respective standards. They address partially overlapping but distinct risk assessment frameworks, and a numerical equivalence does not constitute cross-certification.
+
+### 3.3 Minimum Hardware Fault Tolerance (per IEC 61511)
 
 | SIL | Minimum HFT (Type A) | Minimum HFT (Type B) | Typical Architecture |
 |-----|----------------------|----------------------|---------------------|
@@ -190,19 +212,29 @@ Principles:
 | MECH | Mechanical | Rotating equipment, vibration, overspeed |
 | ELEC | Electrical | Electrical safety, arc flash, ground fault |
 | ENV | Environmental | Environmental release, containment failure |
+| GUARD | Machine guarding | Access door interlocks, light curtains, two-hand control, enabling device functions (ISO 13849 PL path) |
 
 **Adding new codes:** New system abbreviation codes may be added for project-specific needs. The code shall be 3–4 uppercase letters, mnemonic, and documented on the project Standard Definitions sheet.
 
-### 4.4 SIL Target Assignment Rules
+### 4.4 Integrity Target Assignment Rules
 
-SIL targets shall be determined through LOPA (Section 6), not assigned by assumption. The following rules govern SIL assignment:
+Integrity targets shall be determined analytically through LOPA (SIL path) or risk graph (PL path), not assigned by assumption. The following rules govern integrity target assignment:
+
+**SIL path (IEC 61511 / IEC 62061):**
 
 1. **SIL 1** is the minimum for any safety instrumented function identified through HAZOP/LOPA.
 2. **SIL 3** is the maximum addressed by this standard per IEC 61511 process sector practice.
 3. If LOPA indicates no SIL requirement, the function may be implemented as a non-safety control function or alarm, documented accordingly.
 4. If LOPA indicates a SIL 4 requirement, the design shall be reviewed to reduce inherent risk, add non-SIS IPLs, or re-evaluate consequence severity. SIL 4 is not permitted under IEC 61511.
-5. SIL targets shall be documented in the HA safety function identification output (Section 7.4) with full LOPA traceability, and carried forward to the SRS entry (SF-XXX-NNN) for complete specification.
-6. The SIL target determines the minimum architectural requirements (HFT), diagnostic coverage, and proof test interval for the implementing system per IEC 61511.
+5. SIL targets shall be documented in the HA safety function identification output (Section 7.4) with full LOPA traceability and the governing standard identified, then carried forward to the SRS entry (SF-XXX-NNN) for complete specification.
+6. The SIL target determines the minimum architectural requirements (HFT) and diagnostic coverage for the implementing system per IEC 61511. Where inherent DU failure modes remain, the SIL target also constrains the maximum allowable proof test interval.
+
+**PL path (ISO 13849):**
+
+1. The PLr is determined by the ISO 13849-1 Annex A risk graph. Parameters S, F, and P are assessed for each safety function, and the graph output is the PLr.
+2. PLr assignments range from PLa (lowest) to PLe (highest).
+3. PLr shall be documented in the HA safety function identification output (Section 7.4) with the risk graph parameters recorded, and the governing standard identified as `ISO 13849`.
+4. The PLr determines the required architecture Category, MTTFd, and DCavg for the implementing system per ISO 13849-1. Proof test intervals are not calculated on the PL path — integrity is verified through architecture Category, MTTFd, and DCavg as described in the SRS Standard Section 6B.
 
 ---
 
@@ -499,13 +531,40 @@ P&ID Reference: P&ID-201 Rev D
 
 ---
 
-## 6. LOPA Methodology
+## 6. Risk Assessment Methods — SIL Path and PL Path
+
+### 6.0 Method Selection
+
+The risk assessment method for determining the required integrity level depends on the governing standard for the safety function:
+
+- **SIL path (IEC 61511 / IEC 62061):** LOPA is the preferred quantitative method for SIL determination. The LOPA study produces a required PFD from which the SIL target is assigned. The full LOPA methodology is described in Sections 6.1–6.11.
+
+- **PL path (ISO 13849):** The risk graph method per ISO 13849-1 Annex A is used to determine the required PLr. The risk graph uses three parameters: **S** (Severity of injury), **F** (Frequency and/or exposure to hazard), and **P** (Possibility of avoiding or limiting harm). These parameters produce a PLr directly.
+
+**ISO 13849 Risk Graph — PLr Determination:**
+
+| Parameter | Option | Description |
+|-----------|--------|-------------|
+| S — Severity | S1 | Slight, reversible injury |
+| | S2 | Severe, irreversible injury or death |
+| F — Frequency | F1 | Infrequent to less frequent exposure |
+| | F2 | Frequent to continuous exposure |
+| P — Avoidance | P1 | Possible under specific conditions |
+| | P2 | Scarcely possible |
+
+The S / F / P combination maps to a PLr of PLa through PLe per ISO 13849-1 Figure A.1. A formal LOPA is not required for the PL path; the risk graph produces the PLr directly. Both methods satisfy ALARP requirements when applied correctly.
+
+**Both methods are valid within this framework.** The choice follows the governing standard declared for the safety function. In a project with mixed SIL and PL safety functions, both methods may appear in the same HA document — each applied to its appropriate safety function.
+
+---
+
+## 6. LOPA Methodology (SIL Path — IEC 61511 / IEC 62061)
 
 ### 6.1 When LOPA Is Required
 
 LOPA shall be performed when:
 
-- A HAZOP study identifies a scenario with risk rank **HIGH** or **VERY HIGH** and a Safety Instrumented Function (SIF) is a candidate safeguard.
+- A HAZOP study identifies a scenario with risk rank **HIGH** or **VERY HIGH** and a Safety Instrumented Function (SIF) governed by IEC 61511 or IEC 62061 (SIL path) is a candidate safeguard.
 - An existing SIF requires SIL verification or revalidation.
 - Management of Change (MOC) affects a safety-critical system and the SIL target must be confirmed.
 
@@ -514,6 +573,7 @@ LOPA is **not required** when:
 - The HAZOP risk rank is LOW or MEDIUM and no SIF is proposed.
 - The hazard can be eliminated through inherent safety design changes (preferred approach).
 - The scenario consequence does not have a safety or environmental component (economic-only scenarios may use other methods).
+- The safety function is governed by ISO 13849 (PL path) — use the risk graph method per Section 6.0 instead.
 
 ### 6.2 LOPA Process Overview
 
@@ -840,35 +900,53 @@ The executive summary shall include:
 
 ### 7.4 Safety Function Identification
 
-The HA document identifies safety functions as an output of the LOPA study. For each safety function, the HA records the following fields within the HA document:
+The HA document identifies safety functions as an output of the risk assessment study (LOPA for SIL path; risk graph for PL path). For each safety function, the HA records the following fields within the HA document:
 
 | Field | Content |
 |-------|---------|
-| SF ID | Safety Function identifier (SF-XXX-NNN) — assigned during LOPA |
+| SF ID | Safety Function identifier (SF-XXX-NNN) — assigned during risk assessment |
 | Description | Brief description of the safety function and the hazard it prevents |
-| SIL Target | Assigned SIL (1, 2, or 3) from LOPA calculation |
+| **Governing Standard** | The standard governing this safety function: `IEC 62061`, `IEC 61511`, `IEC 61508`, or `ISO 13849` |
+| **Integrity Target** | SIL level (SIL 1/2/3) for the SIL path; or PL level (PLa–e) for the PL path |
 | HA Entry Reference | Source HA entry (HA-XXX-NNN) and scenario number |
-| Initiating Cause | Primary initiating event from LOPA |
+| Initiating Cause | Primary initiating event from LOPA (SIL path) or risk graph parameters S/F/P (PL path) |
 | Consequence | Hazardous event being prevented |
-| Required PFD | Required PFD from LOPA calculation |
+| Required PFD / PLr | Required PFD from LOPA (SIL path) or required PLr from risk graph (PL path) |
 | Status | SRS status: `pending SRS` → `SRS issued` → `In Service` |
 
-**The HA is not the owner of the full safety function specification.** The HA records that a safety function is required, assigns its SIL target, and flags it as `SF-PRES-001 (pending SRS)`. The full functional requirements (setpoints, voting logic, response time, architecture, reliability calculations, proof test interval) are defined in the SRS entry for that function. See the SRS Standard (03_SRS_Standard) for the complete SF entry methodology.
+**The Governing Standard field is mandatory for every safety function.** It determines which verification pathway (SIL or PL) flows through the SRS and FMEA for that safety function.
 
-**Worked Example — HA Safety Function Identification Output:**
+**The HA is not the owner of the full safety function specification.** The HA records that a safety function is required, assigns its integrity target and governing standard, and flags it as `SF-XXX-NNN (pending SRS)`. The full functional requirements (setpoints, voting logic, response time, architecture, reliability calculations) are defined in the SRS entry for that function. See the SRS Standard (03_SRS_Standard) for the complete SF entry methodology.
+
+**Worked Example — HA Safety Function Identification Output (SIL path):**
 
 | Field | Value |
 |-------|-------|
 | SF ID | SF-PRES-001 |
 | Description | Overpressure shutdown — high-pressure shutdown for Vessel XYZ |
-| SIL Target | SIL 3 |
+| Governing Standard | IEC 62061 |
+| Integrity Target | SIL 3 |
 | HA Entry Reference | HA-PRES-001, Scenario 1 |
 | Initiating Cause | Blocked outlet (valve XV-105 fails closed or operator error) |
 | Consequence | Vessel rupture, hydrocarbon release, fire/explosion, multiple fatalities |
 | Required PFD | ≤ 1 × 10⁻² (conservatively assigned SIL 3: ≤ 1 × 10⁻³) |
 | Status | SRS issued (SRS-RefineryXYZ Rev A) |
 
-The full SF-PRES-001 definition — including 2oo3 voting architecture, setpoints, PFDavg calculation, proof test interval, and implementing sheet numbers — resides in the SRS entry SF-PRES-001 within the project SRS document.
+**Worked Example — HA Safety Function Identification Output (PL path):**
+
+| Field | Value |
+|-------|-------|
+| SF ID | SF-GUARD-001 |
+| Description | Machine guard interlock — prevent access to hazardous zone during operation |
+| Governing Standard | ISO 13849 |
+| Integrity Target | PLd |
+| HA Entry Reference | HA-GUARD-001, Scenario 1 |
+| Initiating Cause | Risk graph: S2 (severe injury), F2 (frequent exposure), P2 (scarcely avoidable) → PLd |
+| Consequence | Operator contact with moving machinery, severe injury or fatality |
+| Required PLr | PLd (from ISO 13849-1 Annex A risk graph) |
+| Status | SRS issued (SRS-RefineryXYZ Rev A) |
+
+The full SF definitions — including architecture, setpoints, reliability calculations, and implementing sheet numbers — reside in the corresponding SRS entries within the project SRS document.
 
 ### 7.5 Action Item Tracking Format
 
@@ -998,11 +1076,11 @@ The FMEA Standard uses safety functions identified in this standard and specifie
 ### 8.5 How Safety Functions Drive SAT and Proof Test Requirements
 
 - Each safety function generates a Site Acceptance Test: `SAT [Sheet]`.
-- Each safety function generates a Proof Test procedure: `PT-[Sheet]`.
-- The proof test interval is determined during FMEA/SIL verification and documented in the Safety Function Register.
-- SAT validates the safety function at commissioning; proof tests validate it periodically during operation.
+- Where the FMEA identifies inherent DU failure modes that cannot be eliminated by architectural design, a Proof Test procedure is required: `PT-[Sheet]`. A safety function with no inherent DU failure modes requires no proof test — this is the design objective.
+- Where required, the proof test interval is determined during FMEA/SIL verification and documented in the Safety Function Register.
+- SAT validates the safety function at commissioning; proof tests (where required) validate it periodically during operation to reveal any inherent DU failures that may have occurred.
 
-**Example:** SF-PRES-001 on Sheet 201 → SAT 201 (commissioning validation) → PT-201 (6-month proof test).
+**Example:** SF-PRES-001 on Sheet 201 → SAT 201 (commissioning validation) → PT-201 (6-month proof test, required because sensor drift and valve spring fatigue are inherent DU failure modes).
 
 ### 8.6 Complete Traceability Map
 
@@ -1016,7 +1094,7 @@ The following table demonstrates the full traceability for the Overpressure Prot
 | Detailed Design | Electrical Drawings | Sheet 201 (logic), Sheet 301 (field) | Control logic, device wiring |
 | Failure Analysis | FMEA entry FMEA 201.1 | FMEA 201.1 | Hardware failure modes, diagnostic coverage, SIL verification |
 | Commissioning | SAT | SAT 201 | End-to-end functional test |
-| Operation | Proof Test | PT-201 | 6-month periodic validation |
+| Operation | Proof Test (if inherent DU exists) | PT-201 | 6-month validation of inherent DU failure modes |
 | Review | HA Revalidation | HA entry HA-PRES-001 Rev B | 5-year periodic review or triggered review |
 
 ---
@@ -1293,8 +1371,8 @@ Risk Level
 - [ ] Verify all HA references appear in device description fields (Section 5.3 of Drawing Standard)
 - [ ] Verify FMEA scope covers all devices in each safety function
 - [ ] Verify SAT scope covers all safety functions
-- [ ] Verify proof test procedures exist for all safety functions
-- [ ] Verify proof test intervals are documented in Safety Function Register
+- [ ] Verify proof test procedures exist for all safety functions with inherent DU failure modes
+- [ ] Verify proof test intervals are documented in Safety Function Register (where applicable)
 - [ ] Confirm SIL targets are consistent across HA, FMEA, drawings, and SAT
 - [ ] Establish schedule for 5-year periodic revalidation
 

@@ -535,7 +535,7 @@ Sheets implementing safety functions shall additionally include:
 3. **Hazard Analysis reference:** e.g., HA-PRES-001
 4. **Architecture:** e.g., 2oo3 Pressure Voting, HFT=1
 5. **FMEA reference:** e.g., FMEA 201.1
-6. **Proof Test reference and interval:** e.g., PT-201 (6-month interval)
+6. **Proof Test reference and interval (if inherent DU exists):** e.g., PT-201 (6-month interval). If the FMEA identifies no inherent DU failure modes, this field reads "No proof test required — no inherent DU."
 7. **Related sheets:** Cross-references to other sheets in the safety system
 
 The content and lifecycle of these safety documents is defined in the separate Safety Documentation Standard. The FMEA and SAT numbering in that standard uses the sheet numbers defined here as its basis.
@@ -665,7 +665,7 @@ The separate Safety Documentation Standard uses sheet numbers from this drawing 
 |----------------|----------------------|---------|
 | FMEA | `FMEA [Sheet].[Sequence]` | FMEA 201.1 → analyzes system on Sheet 201 |
 | SAT | `SAT [Sheet]` | SAT 201 → validates systems on Sheet 201 |
-| Proof Test | `PT-[Sheet]` | PT-201 → periodic test for Sheet 201 system |
+| Proof Test (where inherent DU exists) | `PT-[Sheet]` | PT-201 → periodic test for Sheet 201 inherent DU failure modes |
 
 This alignment means that seeing "FMEA 201.1" immediately directs the reader to Sheet 201 for the implementation details — maintaining the self-documenting property across the drawing and safety documentation packages.
 

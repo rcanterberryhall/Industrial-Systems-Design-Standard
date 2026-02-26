@@ -44,7 +44,7 @@ This standard covers three testing phases:
 | **Prerequisite Checks** | Before FAT/SAT | Factory or site | Point-to-point wiring verification, insulation testing, power-up checks. These are construction verification, not system testing. |
 | **FAT** | After panel/system assembly, before shipment | Factory/shop | Complete system test — same procedure as SAT. Deviations from SAT (e.g., simulated field devices) documented and justified. |
 | **SAT** | After installation, before process introduction | Site | Complete system test — same procedure as FAT, executed with actual field devices and site conditions. |
-| **Proof Test** | Periodically during operation | Site | Exercise SIF to confirm it still functions correctly; reveals whether DU failures have occurred |
+| **Proof Test** | Periodically during operation (where inherent DU exists) | Site | Exercise SIF to reveal whether inherent DU failures have occurred. Required only for SIFs with inherent DU failure modes identified in the FMEA. |
 
 This standard applies to:
 
@@ -70,7 +70,7 @@ This standard does **not** define:
 
 **The drawing is the source of truth for what to test.** Every test step verifies something shown on a drawing --- a device, a wire, a logic function, a signal path.
 
-**The FMEA is the source of truth for what failure modes to cover.** For safety systems, the FMEA identifies which failure modes are detectable (DD) and which are not (DU). DD failures have a detection method and a system reaction — these are tested during FAT/SAT using the fault injection sequence. DU failures have no detection and no reaction — these are addressed by proof testing, which exercises the safety function to confirm it still works.
+**The FMEA is the source of truth for what failure modes to cover.** For safety systems, the FMEA identifies which failure modes are detectable (DD) and which are not (DU). The design objective is to eliminate DU through architectural means — only inherent DU (where physics prevents real-time detection) should remain. DD failures have a detection method and a system reaction — these are tested during FAT/SAT using the fault injection sequence. Where inherent DU failure modes remain, they are addressed by proof testing during operation.
 
 **Every fault test follows the same sequence.** Establish normal operation, induce the fault, verify the system reaction, confirm the system will not reset while the fault is present, restore the fault, confirm the system does not auto-restart, reset the fault, and verify controlled recovery. This sequence verifies the complete fault lifecycle: detection, reaction, persistence, reset lockout, and recovery.
 
@@ -110,7 +110,7 @@ Principles:
 | **Site Acceptance Test (SAT)** | Formal testing performed at the installation site after field wiring is complete, verifying end-to-end functionality including actual field devices, field wiring, and environmental conditions. |
 | **Loop Check** | Verification per IEC 62382 that a signal path is continuous from field device through wiring, junction boxes, terminal strips, and I/O modules to the logic solver and/or HMI (Human-Machine Interface) --- and back to final elements where applicable. |
 | **Functional Test** | Verification that a system performs its intended control function correctly, including logic execution, alarm generation, and output response. Used for non-safety systems. |
-| **Proof Test** | Periodic exercise of a safety instrumented function during operation to confirm it still works. Reveals whether dangerous undetected (DU) failures have occurred by exercising the function and observing the response. Required by IEC 61511 clause 16. |
+| **Proof Test** | Periodic exercise of a safety instrumented function during operation to reveal whether inherent DU failures have occurred. Required by IEC 61511 Clause 16 only where the FMEA identifies inherent DU failure modes that cannot be eliminated by architectural design. A SIF with no inherent DU requires no proof testing. |
 | **Partial Stroke Test (PST)** | A proof test technique for on/off valves where the valve is moved a fraction of its full stroke (typically 10--20%) to verify mechanical freedom without interrupting the process. Provides partial proof test coverage. |
 | **Bypass** | A deliberate, documented override of a safety function, typically to allow testing or maintenance. The safety function is defeated while the bypass is active. |
 | **Override** | A manual command that forces an output or input to a specific state, regardless of the logic solver's computed output. |
@@ -580,7 +580,7 @@ For each alarm and indication point shown on the drawings:
 
 For each detectable failure mode identified in the FMEA, inject the failure and verify that the system detects it and reacts correctly. Each failure mode injection follows the standard 10-step fault sequence (§6.4.2).
 
-**Important:** Only failure modes that have a detection method and a defined system reaction can be tested during FAT/SAT. Dangerous undetected (DU) failures have no detection and no reaction by definition — they cannot be tested using the fault injection sequence. DU failures are addressed by proof testing, which exercises the safety function to confirm it has not failed (see Section 7).
+**Important:** Only failure modes that have a detection method and a defined system reaction can be tested during FAT/SAT. Inherent DU failures have no detection and no reaction by definition — they cannot be tested using the fault injection sequence. Where the FMEA identifies inherent DU failure modes, these are addressed by proof testing during operation (see Section 7). The design objective is to minimize inherent DU through architectural means, thereby minimizing the need for proof testing.
 
 | FMEA Failure Mode | Classification | Injection Method | Expected Detection | Expected Reaction |
 |-------------------|:-:|------------------|-------------------|-------------------|
@@ -965,13 +965,15 @@ For reference and completeness, the full truth table that SAT 201 verifies:
 
 **Both SAT and proof tests confirm that the safety function can perform its action.** The difference is context: SAT confirms this at commissioning; proof tests confirm this is still true at each T_I interval during operation. Neither can substitute for the other.
 
-### 7.1 Purpose
+### 7.1 Purpose and Design Context
 
-Proof testing is the periodic exercise of a safety instrumented function during operation to confirm that the function still works. This is required by IEC 61511 clause 16.
+Proof testing is the periodic exercise of a safety instrumented function during operation to confirm that the function still works. It is the mitigation for **inherent DU failure modes** — dangerous undetected failures that cannot be eliminated by architectural design because the physics of the failure mode makes real-time detection impractical (e.g., slow sensor drift within tolerance, valve spring fatigue, sensing port blockage).
 
-A dangerous undetected (DU) failure has no detection method and no system reaction — by definition, the system does not know it has failed. The only way to discover whether a DU failure has occurred is to exercise the safety function and observe whether it responds correctly. This is what a proof test does.
+**Proof testing is not inevitable.** The design objective throughout PD and DD is to maximize diagnostic coverage and eliminate DU through architectural means — feedback contacts, comparison checks, diagnostic outputs, heartbeat signals. Only inherent DU, where no architectural solution exists, justifies a proof test requirement. A safety function with no inherent DU failure modes requires no proof testing. This is the preferred design outcome and should be the target.
 
-The purpose of proof testing is to confirm that:
+Where inherent DU failure modes remain, proof testing is the only means to discover whether such a failure has occurred. A DU failure has no detection method and no system reaction — by definition, the system does not know it has failed. The only way to reveal it is to exercise the safety function and observe whether it responds correctly. This is required by IEC 61511 Clause 16 for any SIF with inherent DU.
+
+Where proof testing is required, its purpose is to confirm that:
 
 - The SIF will function on demand — the function is exercised and the correct response is observed
 - The assumed PFDavg in the SRS/FMEA remains valid — the proof test interval has not been exceeded
@@ -979,7 +981,7 @@ The purpose of proof testing is to confirm that:
 
 If the safety function does not respond correctly during a proof test, a DU failure has been revealed. The system must be taken out of service or placed under compensating measures until the failure is corrected.
 
-Without proof testing, DU failures accumulate silently over time, increasing the probability of failure on demand until the SIL target can no longer be met.
+Without proof testing of inherent DU failure modes, these failures accumulate silently over time, increasing the probability of failure on demand until the SIL target can no longer be met.
 
 ### 7.2 Proof Test Interval Determination
 

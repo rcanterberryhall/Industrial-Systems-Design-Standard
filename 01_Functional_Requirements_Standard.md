@@ -2,7 +2,7 @@
 ## Process Functional Requirements and Design Constraints for Industrial Systems
 
 **Status:** Draft
-**Scope:** Definition and documentation of process functional requirements and design constraints for industrial control systems. Defines what the system must do under normal operation (requirements) and what boundaries limit design freedom (constraints). Distinct from safety requirements (what the system must survive).
+**Scope:** Definition and documentation of process functional requirements and design constraints for industrial control systems. Defines what the system must do under normal operation (requirements) and what boundaries limit design freedom (constraints).
 
 ---
 
@@ -32,7 +32,7 @@ This standard defines the methodology for documenting process functional require
 
 **Constraints** capture what boundaries limit design freedom — the regulatory, physical, interface, operational, and design standard limits that the system must comply with regardless of the functional approach chosen.
 
-This document is the complement to the Safety Requirements Specification (SRS). The SRS captures what the system must *survive*; this standard captures what the system must *achieve* and what limits apply to how it achieves it.
+This document is the complement to the Safety Requirements Specification (SRS). The SRS captures what the system must achieve to be safe; this standard captures what the system must do to be functional.
 
 A system that meets its SIL target but fails to perform its process function is a design failure. A system that performs its process function but violates a constraint is equally a design failure. Safety, function, and constraints are co-requirements.
 
@@ -61,15 +61,15 @@ This standard does **not** define:
 
 ### 1.3 Design Philosophy
 
-**Functional requirements are upstream of everything.** Hazards are risks arising from the process function. Safety requirements protect people and equipment from the consequences of those hazards. Architecture implements the process function. Drawings document the implementation. Testing validates the function.
+**Functional requirements are upstream of everything.** Hazards are risks arising from the process function. Safety requirements protect people and equipment from the consequences of those hazards.
 
-Without a clear definition of what the system must do, every downstream activity lacks its anchor. The hazard analysis asks "what can go wrong?" — but "wrong" is only meaningful relative to a defined intended function.
+Without a clear definition of what the system must do, every downstream activity lacks its anchor. 
 
-**Constraints bound the design space.** Before selecting architecture, the design team must know what limits apply — regulatory, physical, interface, and operational. Constraints are not requirements to be optimized; they are boundaries to be respected. Failing to capture a constraint upstream results in rework when the constraint is discovered during detailed design or construction. A constraint discovered after equipment is procured is a change order. A constraint discovered after construction is a rebuild.
+**Constraints bound the design space.** Before selecting architecture, the design team must know what limits apply — regulatory, physical, interface, and operational. Constraints are not requirements to be optimized; they are boundaries to be respected. Failing to capture a constraint upstream results in rework when the constraint is discovered during detailed design or construction. A constraint discovered after equipment is procured is a change order and lost time. A constraint discovered after during commissioning can be a considerable set back.
 
-**P&IDs and theory of operations are the inputs.** Functional requirements are derived from the process design — P&IDs define the physical system, and the theory of operations describes how it is intended to work. This document is where those process-level descriptions are translated into testable, traceable requirements for the control system. A functional requirement without a P&ID reference is disconnected from the process it serves. A theory of operations without traceable FR entries is an unverifiable narrative.
+**Theory of operations are vital design inputs.** Functional requirements are derived from the process design — The theory of operations describes how it is intended to work. This document is where those process-level descriptions are translated into testable, traceable requirements for the control system.  A theory of operations without traceable FR entries is an unverifiable narrative.
 
-**This is not an SRS.** Functional requirements do not carry SIL targets, PFDavg calculations, or proof test intervals. They define process intent and performance expectations. Where a functional requirement generates a safety concern, the hazard analysis identifies the hazard, and the SRS specifies the safety function that protects people and equipment from the consequences.
+**FRS is distinct from SRS.** Functional requirements do not carry SIL targets, PFDavg calculations, or proof test intervals. They define process intent and performance expectations. Where a functional requirement generates a safety concern, the hazard analysis identifies the hazard, and the SRS specifies the safety function that protects people and equipment from the consequences. FRS can have a reliability and uptime component requiring calculation.
 
 **One document per project.** Like the SRS and HA, the functional requirements and constraints document is a single project-level document containing one entry per functional requirement and one entry per constraint.
 
@@ -91,7 +91,7 @@ For the complete list of standards referenced across this framework, see the Saf
 
 ## 3. Relationship to Other Documents
 
-### 2.1 Document Flow
+### 3.1 Document Flow
 
 ```
 P&IDs + Theory of Operations + Plant Standards + Regulatory Codes
@@ -127,7 +127,9 @@ Functional requirements are upstream of hazard analysis. The HAZOP study examine
 
 ### 2.4 Relationship to SRS (`03_SRS_Standard`)
 
-Each safety function (SF-XXX-NNN) in the SRS protects people and equipment from the consequences of hazardous events related to a process function defined here. The SRS entry should reference the FR-XXX-NNN whose failure or deviation gives rise to the hazard. Functional requirements do not replace safety requirements — they provide the context that makes safety requirements meaningful.
+Each safety function (SF-XXX-NNN) in the SRS protects people and equipment from hazardous events. Functional requirements do not replace safety requirements — they provide the process context that makes safety requirements meaningful.
+
+The relationship between FRs and safety functions is not 1:1. Some hazards arise directly from a deviation in a defined process function — these trace cleanly to a specific FR entry. Others arise from equipment failure modes, external events, or environmental conditions that are not process-function deviations. Where a clear process function link exists, the SRS entry should reference the corresponding FR-XXX-NNN. Where no clear link exists, the SRS entry stands on its own, grounded in the hazard analysis.
 
 ### 2.5 Relationship to Drawings (`04_Industrial_Systems_Drawing_Standard`)
 
@@ -145,7 +147,7 @@ Functional FAT/SAT completion and constraint verification are evidence required 
 
 ## 4. Requirements and Constraints — Definitions
 
-### 4.1Functional Requirement (FR)
+### 4.1 Functional Requirement (FR)
 
 A statement of what the system must *do* — a process function it must perform.
 
@@ -157,11 +159,11 @@ Functional requirements are:
 
 Functional requirements answer: *What must this system do, and how well must it do it?*
 
-### 4.2Performance Criteria
+### 4.2 Performance Criteria
 
 Quantitative bounds on how well a functional requirement must be performed — setpoints, tolerances, response times, accuracy, stability. Performance criteria are captured within FR entries as a required field, not as separate entries.
 
-### 4.3Constraint (CON)
+### 4.3 Constraint (CON)
 
 A boundary condition that limits design freedom. Constraints are not functions the system performs — they are imposed limits from outside the system boundary that the design must respect.
 
@@ -175,11 +177,11 @@ Constraints originate from sources external to the control system design:
 | **Operational** | How the facility is operated and maintained | Maintenance access requirements, operator skill levels, spare parts strategy, turnaround schedule, staffing model |
 | **Design Standard** | Owner/operator or EPC mandated practices | PLC platform, HMI standard, wiring practices, panel fabrication standards, vendor preferences, naming conventions |
 
-### 4.4The Distinction
+### 4.4 The Distinction
 
 Requirements define what the system must *achieve*. Constraints define what the system must *comply with*.
 
-A functional requirement can be met by many possible designs. Constraints eliminate designs that violate external limits. Together, requirements and constraints define the feasible design space — the set of architectures that both achieve the function and respect all boundaries.
+A functional requirement can be met by many possible designs. Together, requirements and constraints define the design space.
 
 **Requirements are optimized.** A design should meet performance criteria as effectively as possible.
 
@@ -191,7 +193,7 @@ If a constraint conflicts with a requirement, the conflict must be resolved expl
 
 ## 5. Numbering and Identification
 
-### 6.1Document ID
+### 5.1 Document ID
 
 **Format:** `FR-[Project]`
 
@@ -257,7 +259,7 @@ Additional codes may be added for project-specific needs per HA Standard Section
 
 ## 6. Functional Requirement Entry Format
 
-### 6.1Required Fields per Entry
+### 6.1 Required Fields per Entry
 
 Each FR-XXX-NNN entry within the document shall contain:
 
@@ -325,6 +327,8 @@ Each functional requirement shall define behavior for applicable operating modes
 | **Degraded** | Operation with reduced capability (e.g., single sensor, backup equipment) |
 | **Emergency** | Response to abnormal conditions (handoff to safety systems) |
 
+**Operating modes will be specific to individual projects**
+
 ---
 
 ## 7. Constraint Entry Format
@@ -371,7 +375,7 @@ Most constraints are verified by inspection or analysis, not by functional testi
 
 ## 8. Worked Example
 
-### 9.1Functional Requirement — FR-PRES-001: Vessel XYZ Pressure Control
+### 8.1 Functional Requirement — FR-PRES-001: Vessel XYZ Pressure Control
 
 ```
 FR-PRES-001: Vessel XYZ Pressure Control
@@ -440,7 +444,7 @@ Related Safety Function:
 
 **Relationship to safety:** FR-PRES-001 defines the process function. When this function fails (pressure exceeds control range), the hazard analysis (HA-PRES-001) identifies the overpressure risk to people and equipment. The SRS entry SF-PRES-001 specifies the safety function that protects people and equipment from the consequences of that hazard. The functional requirement defines the context — the safety function defines the protection.
 
-### 9.2Constraints
+### 8.2 Constraints
 
 ```
 CON-PRES-001: Area Classification — Vessel XYZ
@@ -530,7 +534,7 @@ Verification Method: Inspection (I) — equipment datasheet review
   against temperature rating requirement
 ```
 
-### 9.3How Constraints Shape the Design
+### 8.3 How Constraints Shape the Design
 
 The constraints above directly affect the implementation of FR-PRES-001:
 
@@ -544,11 +548,11 @@ None of these constraints change *what* the system must do (FR-PRES-001). They c
 
 ## 9. Functional FAT/SAT and Constraint Verification
 
-### 9.1Functional FAT/SAT — Purpose
+### 9.1 Functional FAT/SAT — Purpose
 
 Functional FAT/SAT proves that the system performs its intended process function under normal conditions. This is distinct from safety FAT/SAT, which proves that safety functions operate correctly under fault conditions.
 
-### 9.2Functional FAT/SAT — Scope
+### 9.2 Functional FAT/SAT — Scope
 
 Functional FAT/SAT validates:
 
@@ -557,7 +561,7 @@ Functional FAT/SAT validates:
 - Interface requirements are met (correct signals, correct ranges)
 - Availability mechanisms work (backup switchover, degraded mode operation)
 
-### 9.3Functional FAT/SAT — Format
+### 9.3 Functional FAT/SAT — Format
 
 No prescribed format is mandated. Functional FAT/SAT procedures are project-specific and may use whatever test methodology is appropriate for the system. However, all functional FAT/SAT procedures must:
 
@@ -566,7 +570,7 @@ No prescribed format is mandated. Functional FAT/SAT procedures are project-spec
 - **Produce records** — test results must be documented and retained as commissioning evidence
 - **Be completed before or alongside safety testing** — functional testing should precede or accompany safety FAT/SAT, not follow it
 
-### 9.4Functional FAT/SAT — Numbering
+### 9.4 Functional FAT/SAT — Numbering
 
 **Format:** `FFAT-[Sheet]`
 
@@ -574,7 +578,7 @@ Functional FAT/SAT procedures are numbered by the primary implementing sheet, pr
 
 **Example:** `FFAT-150` — Functional FAT/SAT for the control system on Sheet 150.
 
-### 9.5Constraint Verification
+### 9.5 Constraint Verification
 
 Constraints are verified separately from functional requirements. Constraint verification typically uses inspection, analysis, or demonstration — not functional testing.
 
@@ -588,18 +592,18 @@ Constraints are verified separately from functional requirements. Constraint ver
 
 Constraint verification may occur at any project phase — some constraints (e.g., PLC platform) are verified at procurement, others (e.g., area classification compliance) at installation, others (e.g., ambient temperature rating) at equipment selection.
 
-### 9.6Comparison — Functional FAT/SAT vs. Safety FAT/SAT vs. Constraint Verification
+### 9.6 Comparison — Functional FAT/SAT vs. Safety FAT/SAT vs. Constraint Verification
 
-| Aspect | Functional FAT/SAT | Safety FAT/SAT | Constraint Verification |
-|--------|-------------------|----------------|------------------------|
-| Purpose | Prove the system does what it should | Prove the system survives what it must | Prove the design respects all boundaries |
-| Reference | FR-XXX-NNN entries | SF-XXX-NNN entries via FMEA | CON-XXX-NNN entries |
+| Aspect | Functional FAT/SAT | Safety FAT/SAT                      | Constraint Verification |
+|--------|-------------------|-------------------------------------|------------------------|
+| Purpose | Prove the system does what it should | Prove the system is safe            | Prove the design respects all boundaries |
+| Reference | FR-XXX-NNN entries | SF-XXX-NNN entries via FMEA         | CON-XXX-NNN entries |
 | Test conditions | Normal operation, mode transitions | Fault injection, failure simulation | Inspection, analysis, demonstration |
 | Pass criteria | Performance within FR tolerances | Fault detection, safe state achieved | Compliance with constraint statement |
-| Requirement | Project-defined | IEC 61511 mandated for SIS | Project-defined |
-| Standard | This document | `07_SAT_FAT_Standard` | This document |
+| Requirement | Project-defined | IEC 61511 mandated for SIS          | Project-defined |
+| Standard | This document | `07_SAT_FAT_Standard`               | This document |
 
-### 9.7Results as Commissioning Evidence
+### 9.7 Results as Commissioning Evidence
 
 Functional FAT/SAT results and constraint verification records are required evidence for commissioning gate passage. A system that passes safety validation but fails functional validation or has unresolved constraint non-compliances is not ready for operation. Both functional and safety test results, along with constraint verification records, shall be available at the Operational Readiness Review and referenced in PSSR documentation.
 
@@ -607,13 +611,15 @@ Functional FAT/SAT results and constraint verification records are required evid
 
 ## 10. CD / PD / DD Maturity
 
-### 10.1Concept Design (CD)
+### 10.1 Concept Design (CD)
 
 At CD, the document defines:
 
 **Functional Requirements:**
-- P&ID references for each system (P&IDs must be at minimum Issued for Design)
+- P&ID references or preliminary process flow diagrams — at least one process reference must exist for each system
 - Theory of operations — operating narrative or control philosophy for each system
+
+Note: P&IDs and the theory of operations may be developed in either order. In some projects, the control philosophy (THEOP) precedes the P&ID and informs its development. In others, the P&ID is issued first and the THEOP is derived from it. At CD, both must exist in sufficient detail to define what each system must do and how it is intended to work.
 - Process function and performance criteria for each system
 - Operating mode requirements (derived from the theory of operations)
 - Preliminary availability targets
@@ -630,7 +636,7 @@ At CD, the document defines:
 
 Regulatory and interface constraints **must** be captured before architecture selection. Selecting architecture without knowing constraints risks choosing a design that cannot comply.
 
-### 10.2Preliminary Design (PD)
+### 10.2 Preliminary Design (PD)
 
 At PD, requirements and constraints are validated against the proposed architecture:
 
@@ -649,7 +655,7 @@ At PD, requirements and constraints are validated against the proposed architect
 
 **PD exit criterion:** Does the proposed architecture achieve the functional requirements within the constraint boundaries?
 
-### 10.3Detailed Design (DD)
+### 10.3 Detailed Design (DD)
 
 At DD, verification procedures are derived from requirements and constraints:
 
@@ -671,7 +677,7 @@ At DD, verification procedures are derived from requirements and constraints:
 
 ## 11. Change Management
 
-### 11.1Revision Triggers
+### 11.1 Revision Triggers
 
 The functional requirements and constraints document shall be reviewed and revised when:
 
@@ -689,7 +695,7 @@ The functional requirements and constraints document shall be reviewed and revis
 | Commissioning findings | Update FR entries if functional FAT/SAT reveals requirements that are unachievable or incomplete; update CON entries if constraint verification reveals non-compliance |
 | Periodic revalidation | Review all FR and CON entries at intervals aligned with HA revalidation (5 years maximum) |
 
-### 11.2Impact on Downstream Documents
+### 11.2 Impact on Downstream Documents
 
 Changes to functional requirements or constraints may cascade to:
 
@@ -700,7 +706,7 @@ Changes to functional requirements or constraints may cascade to:
 - **Functional FAT/SAT** — test procedures and acceptance criteria must be updated
 - **Constraint Verification** — verification methods and evidence must be updated
 
-### 11.3Revision Control
+### 11.3 Revision Control
 
 The functional requirements and constraints document uses letter revision designations (Rev A, Rev B, etc.), consistent with the HA and SRS revision conventions.
 

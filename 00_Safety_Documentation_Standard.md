@@ -18,7 +18,7 @@ This framework defines an integrated engineering lifecycle for industrial system
 - Software Architecture
 - FAT / SAT (Functional and Safety)
 - Startup & Commissioning
-- Proof Testing
+- Proof Testing (for residual inherent DU only)
 - Operational Governance
 
 The methodology is built on seven core principles:
@@ -46,7 +46,7 @@ PD → CDR
 DD → DDR  
 FAT/SAT → Operational Readiness Review  
 Startup → PSSR  
-Operation → Proof Test Cycle  
+Operation → Proof Test Cycle (where inherent DU exists)
 
 ## 2.1 PDR – Preliminary Design Review (End of Concept Design)
 
@@ -57,7 +57,7 @@ Verifies:
 - Safety Functions identified
 - Initial SRS drafted
 - High-level architecture defined
-- SIL targets assigned
+- Integrity targets (SIL or PL as applicable per safety function) assigned, with governing standard identified for each safety function
 
 Purpose:
 Confirm the concept can meet functional and safety requirements within identified constraints.
@@ -72,9 +72,10 @@ Verifies:
 - Safe states and reset philosophy defined
 - Startup gate model defined
 - Software architecture defined
+- Architecture achieves integrity target — PFDavg < SIL target (SIL path) or achieved PL ≥ PLr (PL path)
 
 Purpose:
-Confirm the architecture can achieve functional requirements, safety targets, and SIL intent within all design constraints.
+Confirm the architecture can achieve functional requirements, safety targets, and integrity intent within all design constraints.
 
 ## 2.3 DDR – Detailed Design Review (End of Detail Design)
 
@@ -109,6 +110,21 @@ Verifies:
 
 ---
 
+# 2A. Dual-Standard Coexistence
+
+A single project may contain safety functions governed by different standards. A process interlock protecting against overpressure may be governed by IEC 62061 (SIL path), while a machine guard protecting an access door may be governed by ISO 13849 (PL path). This is normal industrial practice, and the framework accommodates both pathways within a single lifecycle.
+
+**The governing standard is declared at the HA level, per safety function.** Each HA entry carries a `Governing Standard` field (e.g., `IEC 62061`, `ISO 13849`) and an `Integrity Target` field (e.g., `SIL 2`, `PLd`). These fields flow through the SRS and FMEA wherever the verification math diverges by standard.
+
+**The lifecycle methodology is common to both pathways.** The engineering phases (CD/PD/DD), review gates (PDR/CDR/DDR/PSSR), traceability model, FMEA philosophy, and commissioning structure do not change based on the governing standard. Only the technical integrity verification diverges:
+
+- **SIL path** (IEC 61508 / IEC 61511 / IEC 62061): quantified in SIL level, PFDavg / PFH, HFT, Route 1H/2H
+- **PL path** (ISO 13849): quantified in PLa–e, PFHd, architecture Categories (B–4), MTTFd, DCavg
+
+The SRS contains Section 6A (SIL path calculations) and Section 6B (PL path calculations). Each SF entry in the SRS uses the section appropriate to its governing standard. FMEA entries inherit the governing standard from the SF they implement, and verification follows the corresponding pathway.
+
+---
+
 # 3. Normative and Informative References
 
 This framework implements and integrates recognized international standards. It does not invent methodology — it provides a structured, integrated implementation of established practice.
@@ -117,10 +133,11 @@ The following table lists all standards referenced across the framework, organiz
 
 ## 3.1 Primary Functional Safety
 
-| Standard | Title | Framework Application |
-|----------|-------|----------------------|
-| IEC 61511 (Parts 1-3) | Functional safety — Safety instrumented systems for the process industry sector | Primary standard. This framework implements Clauses 8–17 across all documents. |
-| IEC 61508 (Parts 1-7) | Functional safety of E/E/PE safety-related systems | Parent standard. SIL framework, PFDavg calculation methods, architectural constraints, software safety requirements. |
+| Standard              | Title                                                                           | Framework Application                                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| IEC 61511 (Parts 1-3) | Functional safety — Safety instrumented systems for the process industry sector | Primary standard. This framework implements Clauses 8–17 across all documents.                                               |
+| IEC 61508 (Parts 1-7) | Functional safety of E/E/PE safety-related systems                              | Parent standard. SIL framework, PFDavg calculation methods, architectural constraints, software safety requirements.         |
+| IEC 62061             | Safety of machinery — Functional safety of safety-related control systems       | SIL-based functional safety for machinery applications. Used when the governing standard for a safety function is IEC 62061. |
 
 ## 3.2 Hazard Analysis and Risk Assessment
 
@@ -187,7 +204,14 @@ The following table lists all standards referenced across the framework, organiz
 |----------|-------|----------------------|
 | IEC 62443 | Industrial communication networks — Network and system security | Security considerations for networked control and safety systems |
 
-## 3.11 IEC 61511 Clause Mapping
+## 3.11 Machine Safety — Performance Level (PL)
+
+| Standard | Title | Framework Application |
+|----------|-------|----------------------|
+| ISO 13849-1 | Safety of machinery — Safety-related parts of control systems — Part 1: General principles for design | PL framework, architecture Categories (B–4), MTTFd, DCavg, achieved PL determination. Used in `02_Hazard_Analysis_Standard`, `03_SRS_Standard`, and `05_FMEA_Standard` for safety functions on the PL path. |
+| ISO 13849-2 | Safety of machinery — Safety-related parts of control systems — Part 2: Validation | Validation methodology for PL path safety functions. |
+
+## 3.13 IEC 61511 Clause Mapping
 
 This framework is structured to align with IEC 61511 (Part 1) without reproducing standard text. The following mapping provides audit traceability between the methodology and recognized functional safety practice.
 
@@ -202,7 +226,7 @@ This framework is structured to align with IEC 61511 (Part 1) without reproducin
 | FAT / SAT | `07_SAT_FAT_Standard` | §14 – Installation, Commissioning and Validation |
 | Startup & Commissioning / PSSR | `08_Startup_and_Commissioning_Standard` | §15 – SIS Safety Validation |
 | Operation & Maintenance | (operational governance) | §16 – Operation and Maintenance |
-| Proof Testing | `07_SAT_FAT_Standard` (proof test section) | §16.3 – Proof Testing |
+| Proof Testing (where inherent DU exists) | `07_SAT_FAT_Standard` (proof test section) | §16.3 – Proof Testing |
 | Modification Management | (change management sections across all documents) | §17 – Management of Change |
 
 ---
@@ -252,7 +276,7 @@ If a document does none of these, it does not belong in the phase.
 | Functional Requirements | Process function and performance criteria defined; operating modes identified | Validated against proposed architecture; functional FAT/SAT scope defined | Frozen — functional FAT/SAT procedures derived from FR entries |
 | Constraints | All constraint types identified and documented (regulatory, physical, interface, operational, design standard) | Validated against proposed architecture; conflicts resolved | Frozen — constraint verification methods defined; procurement verified against constraints |
 | Hazard Analysis | Complete — HAZOP, SFs, SIL targets; no drawing references | Stable — referenced by SRS and FMEA; no substantive changes expected | Frozen — changes require formal MOC |
-| SRS | Intent defined — functional requirement, SIL target, preliminary response requirement | Architecture defined — proposed voting, preliminary PFDavg, beta assumptions, proof test interval | Verified — final hardware selected, final PFDavg confirmed, SIL formally demonstrated |
+| SRS | Intent defined — functional requirement, integrity target (SIL or PL), preliminary response requirement | Architecture defined — proposed voting, preliminary PFDavg or PFHd, beta/CCF assumptions, proof test interval (SIL path) | Verified — final hardware selected, integrity target verified: final PFDavg (SIL path) or achieved PL (PL path) confirmed |
 | FMEA | Concept sketch — high-level architecture risk, obvious single-point failures; no math | Architecture-level — all detectable vs. undetectable paths identified; designable DU eliminated; architecture iterated until viable | Detailed — device-specific failure rates, vendor data, MTTR, proof test coverage; no designable DU permitted |
 | Drawings | Block diagrams — functional intent only; no device tags, no wiring | Architecture-level — device tags assigned, feedback loops and diagnostics provisioned, still flexible | Fully detailed — final wiring, terminal numbers, wire numbers, SF and FR references in title blocks |
 | Software | Not yet present | Module structure defined, deterministic gateway rules established, object model defined | Full implementation, deterministic enforcement active, full test surfaces exposed |
@@ -284,7 +308,7 @@ Regulatory and interface constraints must be captured before architecture select
 ### Hazard Analysis at CD — `02_Hazard_Analysis_Standard`
 
 - HAZOP complete
-- Safety functions identified with SIL targets
+- Safety functions identified with integrity targets (SIL or PL, with governing standard identified)
 - `HA-XXX-NNN` entries produced
 - `SF-XXX-NNN` identifiers assigned
 - No drawing sheet references — implementation does not yet exist
@@ -294,11 +318,12 @@ Regulatory and interface constraints must be captured before architecture select
 Functional intent only. The CD-maturity SRS answers: *what must this function achieve?*
 
 - Functional requirement stated (what the safety function must do)
-- SIL target
-- Preliminary proof test interval (T_I)
+- Integrity target (SIL level for SIL path, or PLr for PL path)
+- Governing standard for this safety function
+- Preliminary proof test interval (T_I) — SIL path only
 - No hardware selection
 - No detailed architecture
-- No PFDavg math beyond high-level feasibility check
+- No PFDavg or PFHd math beyond high-level feasibility check
 
 ### FMEA at CD — `05_FMEA_Standard`
 
@@ -321,7 +346,7 @@ At PDR the team can state:
 - What each system must do (functional requirements defined)
 - What constraints bound the design (constraints documented)
 - What hazards exist and what risk reduction is required
-- What SIL target is assigned to each safety function
+- What integrity target (SIL or PL) is assigned to each safety function, with governing standard identified
 - What each safety function must do
 - That a plausible architecture exists
 
@@ -356,14 +381,14 @@ Functional requirements are validated against the proposed architecture:
 
 ### SRS at PD — `03_SRS_Standard`
 
-The SRS owns the math at PD. If the architecture does not achieve SIL, the SRS drives the architecture change.
+The SRS owns the math at PD. If the architecture does not achieve the integrity target, the SRS drives the architecture change.
 
-- Architecture selected (e.g., 2oo3 voting)
-- Target T_I confirmed
-- Preliminary PFDavg calculation
-- Beta factor (CCF) assumptions
-- Hardware fault tolerance (HFT) validation
-- Architectural constraint checks (Route 1H / Route 2H)
+- Architecture selected (e.g., 2oo3 voting for SIL path; Category 3 for PL path)
+- Target T_I confirmed — SIL path only
+- Preliminary PFDavg calculation (SIL path) or PFHd / achieved PL determination (PL path)
+- Beta factor (CCF) assumptions — SIL path; CCF scoring per ISO 13849-1 Annex F — PL path
+- Hardware fault tolerance (HFT) validation — SIL path; Category + MTTFd + DCavg determination — PL path
+- Architectural constraint checks (Route 1H / Route 2H) — SIL path
 
 ### Architecture-Level FMEA at PD — `05_FMEA_Standard`
 
@@ -396,12 +421,12 @@ At PD the FMEA must produce:
 
 ### PD Exit Gate — CDR
 
-**Gate question:** Does this architecture achieve the SIL target, and is the diagnostic strategy complete?
+**Gate question:** Does this architecture achieve the integrity target, and is the diagnostic strategy complete?
 
 CDR exit criteria:
 
 - **All designable DU resolved. Remaining DU justified as inherent.**
-- Architecture mathematically achieves SIL target (preliminary PFDavg < target)
+- Architecture mathematically achieves integrity target — preliminary PFDavg < SIL target (SIL path) or achieved PL ≥ PLr (PL path)
 - Every DD failure mode has a defined detection mechanism and system reaction
 - Reset philosophy defined
 - Safe state defined for each safety function
@@ -430,9 +455,9 @@ DD is refinement, not architecture. No new architectural decisions are made in D
 ### SRS at DD — `03_SRS_Standard`
 
 - Final hardware selected
-- Final PFDavg calculation using device-specific failure rate data
-- Final T_I confirmed
-- Formal SIL demonstration — PFDavg < target
+- Final PFDavg calculation using device-specific failure rate data (SIL path), or confirmed achieved PL from Category + MTTFd + DCavg (PL path)
+- Final T_I confirmed — SIL path only
+- Formal integrity demonstration — PFDavg < SIL target (SIL path) or achieved PL ≥ PLr (PL path)
 
 ### FMEA at DD — `05_FMEA_Standard`
 
@@ -443,7 +468,7 @@ DD is refinement, not architecture. No new architectural decisions are made in D
 
 **No designable DU is permitted at DD.** A DU that surfaces at DD that could have been eliminated by architectural change is a CDR failure — it must be escalated, not accepted.
 
-Proof test procedures are derived from the DD FMEA. Each DU failure mode maps to one or more proof test steps in the PT procedure.
+Where inherent DU failure modes remain, proof test procedures are derived from the DD FMEA. Each inherent DU failure mode maps to one or more proof test steps in the PT procedure. A design with no inherent DU requires no proof testing — this is the design objective.
 
 ### Drawings at DD — `04_Industrial_Systems_Drawing_Standard`
 
@@ -483,9 +508,9 @@ Procedures are complete before construction begins.
 
 DDR exit criteria:
 
-- PFDavg < SIL target confirmed with device-specific data
+- Integrity target confirmed: PFDavg < SIL target (SIL path) or achieved PL ≥ PLr (PL path), verified with device-specific data
 - All DU classified as inherent — no designable DU remaining
-- Proof test procedures derived and coverage assumptions validated
+- Proof test procedures derived for any remaining inherent DU failure modes (if none exist, no proof test is required)
 - Safety FAT/SAT procedures complete and traceable to FMEA and drawings
 - Functional FAT/SAT procedures complete and traceable to FR entries
 - No unresolved diagnostic gaps
@@ -503,4 +528,82 @@ Commissioning is the answer to: *was the design built correctly?* The design pha
 
 ---
 
+# 6. Traceability Numbering and Cross-Reference Model
+
+## 6.1 Principle
+
+Three distinct classes of identifiers are used across this framework, each answering a different traceability question:
+
+| Identifier Class | Examples | Question Answered |
+|-----------------|---------|------------------|
+| Requirement and Safety Function IDs | FR-PRES-001, SF-PRES-001, HA-PRES-001 | Why does this system exist? |
+| Device Tags | PT-201A, CV-101, K-101 | Where is the device? |
+| Drawing Sheet Numbers | Sheet 201, Sheet 320 | Where is the implementation documented? |
+
+These are not interchangeable. Each serves a distinct traceability purpose.
+
+## 6.2 Requirement IDs on Drawings — Upstream Traceability (Why)
+
+Hazard Analysis identifiers (HA-XXX-NNN), Safety Function identifiers (SF-XXX-NNN), and Functional Requirement identifiers (FR-XXX-NNN) appear in drawing title blocks and notes to answer: *why does this system exist?*
+
+- **FR-XXX-NNN** in a drawing title block: identifies the functional requirement this sheet implements
+- **SF-XXX-NNN** in a drawing title block: identifies the safety function this sheet implements
+- **HA-XXX-NNN** in notes or title blocks: links implementation to the originating hazard scenario
+
+These references are upstream traceability. They connect implementation to intent. A reviewer reading a drawing should be able to follow the chain from the drawing sheet to the requirement or hazard that justified its design.
+
+Drawing sheets implement requirements. Requirements do not originate in drawings — they originate in the HA, SRS, and FR documents upstream.
+
+## 6.3 Device Tags in FMEA — Implementation Traceability (Where)
+
+Device tags (PT-201A, CV-101, K-101) appear in FMEA entries to answer: *where would the engineer look — in the plant or in the drawing set — to find the failing component?*
+
+FMEA entries reference the device tag rather than the sheet number because failure modes belong to devices. The same device may appear on multiple drawing sheets (loop diagram, wiring diagram, control logic, panel layout). The device tag uniquely identifies the physical component regardless of which sheet it appears on.
+
+From a device tag, an engineer can:
+
+- Locate the physical device in the plant using the instrument index or panel schedule
+- Find all drawing sheets that reference that device
+- Identify the FAT/SAT test steps that exercise that device
+
+## 6.4 Drawing Sheet Numbers — Verification Scope (Where Implementation Lives)
+
+Drawing sheet numbers define the scope of FMEA analysis and FAT/SAT testing.
+
+**In FMEA:** Each FMEA entry is associated with the drawing sheet that contains the relevant control or safety logic. The sheet is the organizational unit that groups related devices, logic, and wiring into an analyzable and testable scope.
+
+**In SAT/FAT:** Safety FAT/SAT procedures reference the sheet(s) they validate. Functional FAT/SAT procedures are numbered by sheet (`FFAT-[Sheet]`). The sheet number defines the test boundary.
+
+The traceability chain is:
+
+```
+Why does it exist?      → FR-XXX-NNN or SF-XXX-NNN (requirement / safety function)
+        │
+        ▼
+Where is it designed?   → Drawing Sheet Number (implementation scope)
+        │
+        ▼
+What devices are used?  → Device Tags (PT-201A, CV-101)
+        │
+        ▼
+What can fail?          → FMEA entry (device tag + sheet reference + failure mode)
+        │
+        ▼
+How is it tested?       → FAT/SAT procedure (sheet reference + device tag)
+```
+
+## 6.5 Cross-Reference Summary
+
+| Reference Appears In | Identifier Used | Traceability Purpose |
+|--------------------|----------------|---------------------|
+| Drawing title blocks | FR-XXX-NNN or SF-XXX-NNN | Why this sheet exists — upstream requirement |
+| FMEA entries | Device tag | The physical device experiencing the failure mode |
+| FMEA entries | Sheet number | The implementation scope of the FMEA entry |
+| SAT/FAT procedures | Sheet number | The scope of the test |
+| SAT/FAT procedures | Device tag | The specific device under test |
+| SAT/FAT procedures | FR-XXX-NNN or SF-XXX-NNN | The requirement validated by the test |
+
+---
+
 # End Safety Documentation Standard
+

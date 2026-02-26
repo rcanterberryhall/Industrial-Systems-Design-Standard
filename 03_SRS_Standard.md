@@ -60,7 +60,7 @@ This standard does **not** cover:
 
 **One document, many entries.** The SRS is not a per-function document — it is a project-level register. HA entry `HA-PRES-001` and SRS entry `SF-PRES-001` are entries within their respective project documents, not standalone files. This matters for document control: one revision history, one approval cycle, one document register entry per project.
 
-**The SRS is the authority for proof test intervals.** The proof test interval (T_I) appears in the SRS, in the FMEA (as a calculation input), in the drawing title block, and in the proof test procedure. If these ever disagree, the SRS value governs. Changes to T_I require an SRS revision followed by FMEA recalculation.
+**Where proof testing is required, the SRS is the authority for proof test intervals.** Proof testing is required only where the FMEA identifies inherent DU failure modes — failures that cannot be eliminated by architectural design. The design objective is to minimize inherent DU through diagnostic coverage, thereby minimizing or eliminating the need for proof testing. Where proof testing is required, the proof test interval (T_I) appears in the SRS, in the FMEA (as a calculation input), in the drawing title block, and in the proof test procedure. If these ever disagree, the SRS value governs. Changes to T_I require an SRS revision followed by FMEA recalculation.
 
 ---
 
@@ -96,6 +96,12 @@ Terms used in this standard are consistent with the FMEA Standard definitions. K
 | Safe Failure Fraction | SFF | Fraction of total failure rate that is safe or dangerous-detected: SFF = (lambda_SD + lambda_SU + lambda_DD) / (lambda_total). |
 | Hardware Fault Tolerance | HFT | Number of hardware faults tolerable before the safety function is lost. HFT=1 means two simultaneous faults are needed to cause loss. |
 | Safety Integrity Level | SIL | Discrete level (1–3 per IEC 61511) representing required SIF reliability. |
+| Performance Level | PL | Discrete level (PLa–e per ISO 13849-1) representing the ability of a safety-related control system to perform a safety function. PLe is the highest. |
+| Required Performance Level | PLr | The PL required for a safety function, determined by risk graph per ISO 13849-1 Annex A. |
+| Mean Time to dangerous Failure | MTTFd | Average time to dangerous failure per channel (ISO 13849-1). Classified as Low (< 10 yr), Medium (10–30 yr), High (30–100 yr). |
+| Average Diagnostic Coverage | DCavg | Fraction of dangerous failures detected by diagnostics, averaged across the system (ISO 13849-1). None < 60%, Low 60–90%, Medium 90–99%, High ≥ 99%. |
+| Category | — | Architecture category per ISO 13849-1 (B, 1, 2, 3, 4), combining structural topology with requirements for MTTFd and DCavg. |
+| Probability of Dangerous Failure per Hour (ISO 13849) | PFHd | The ISO 13849 metric expressing achieved PL as a numerical rate. Used for verification in Section 6B. |
 
 ### 3.1 SIL Definitions (Low Demand Mode, per IEC 61508/61511)
 
@@ -162,9 +168,9 @@ Each SF-XXX-NNN entry within the SRS document shall contain all of the following
 
 | Section | Content Required |
 |---------|-----------------|
-| **Header** | SF ID (SF-XXX-NNN), SF name, SIL target, source HA entry (HA-XXX-NNN), revision |
+| **Header** | SF ID (SF-XXX-NNN), SF name, Governing Standard, Integrity Target (SIL level or PL level), source HA entry (HA-XXX-NNN), revision |
 | **Functional Requirements** | Trip setpoint(s), voting logic description, required response time (sensor to final element action), reset mode (manual/auto), bypass conditions |
-| **Integrity Requirements** | SIL target, required PFDavg, proof test interval (T_I), required diagnostic coverage, maximum MTTR assumption |
+| **Integrity Requirements** | SIL target and required PFDavg, or PL target (PLr) and required PFHd — per governing standard; proof test interval (T_I) if SIL path and inherent DU exists; required diagnostic coverage; maximum MTTR assumption (SIL path) or MTTFd / DCavg / Category (PL path) |
 | **Architecture** | Sensor subsystem (voting, device count, HFT), logic solver (redundancy, HFT), final element (redundancy, HFT), physical separation requirements |
 | **Interface Requirements** | Sensor tags and sheet references, logic solver location and sheet, final elements with tag and sheet references |
 | **Bypass Requirements** | Permitted bypass conditions, maximum bypass duration per SIL level, required compensating measures, authorization requirements |
@@ -179,11 +185,12 @@ SF-PRES-001: Overpressure Protection — Refinery Vessel XYZ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Header:
-  SF ID:        SF-PRES-001
-  Description:  High-pressure shutdown for Vessel XYZ
-  SIL Target:   SIL 3
-  Source HA:    HA-PRES-001, Scenario 1
-  Revision:     A
+  SF ID:              SF-PRES-001
+  Description:        High-pressure shutdown for Vessel XYZ
+  Governing Standard: IEC 62061
+  Integrity Target:   SIL 3
+  Source HA:          HA-PRES-001, Scenario 1
+  Revision:           A
 
 Functional Requirements:
   - Monitor vessel pressure via three independent transmitters
@@ -258,9 +265,15 @@ Proof Test Reference: PT-201 (6-month interval)
 
 ## 6. Reliability Calculations
 
+This section contains the authoritative calculation methodology for both safety pathways. **Section 6A** covers the SIL path (IEC 61508 / IEC 61511 / IEC 62061). **Section 6B** covers the PL path (ISO 13849). Each SF entry in the SRS uses the section appropriate to its governing standard. Both sections may appear in the same project document if the project contains mixed SIL and PL safety functions.
+
+---
+
+## 6A. SIL Path — IEC 61508 / IEC 61511 / IEC 62061
+
 This section defines the authoritative calculation methodology for all PFDavg calculations and SIL verification. These calculations are performed during SRS development to confirm that the intended architecture is capable of achieving the SIL target before hardware is detailed. The FMEA then verifies that the actual selected hardware achieves these targets.
 
-### 6.1 PFDavg Formulas by Architecture
+### 6A.1 PFDavg Formulas by Architecture
 
 The following simplified formulas are from IEC 61508-6 for low-demand mode safety functions.
 
@@ -311,7 +324,7 @@ For practical purposes with MTTR << T_I, the dominant term is:
 PFDavg ≈ (1-beta)² × 3 × (lambda_DU)² × (T_I)² / 4 + beta × lambda_DU × T_I / 2
 ```
 
-### 6.2 SIL Target Table (Low Demand Mode)
+### 6A.2 SIL Target Table (Low Demand Mode)
 
 | SIL | PFDavg Range | Risk Reduction Factor |
 |-----|-------------|----------------------|
@@ -320,7 +333,7 @@ PFDavg ≈ (1-beta)² × 3 × (lambda_DU)² × (T_I)² / 4 + beta × lambda_DU �
 | SIL 3 | 1.0E-04 to < 1.0E-03 | 1,000 to 10,000 |
 | SIL 4 | 1.0E-05 to < 1.0E-04 | Not permitted per IEC 61511 |
 
-### 6.3 Worked Example: PFDavg Calculation for SF-PRES-001
+### 6A.3 Worked Example: PFDavg Calculation for SF-PRES-001
 
 **Given parameters:**
 
@@ -339,7 +352,7 @@ PFDavg ≈ (1-beta)² × 3 × (lambda_DU)² × (T_I)² / 4 + beta × lambda_DU �
 | Logic Solver | 1oo1 | 1.09E-07 | 6.42E-07 |
 | Final Element | 1oo1 | 7.50E-08 | 2.25E-07 |
 
-#### 6.3.1 Sensor Subsystem PFDavg (2oo3 Pressure Transmitters)
+#### 6A.3.1 Sensor Subsystem PFDavg (2oo3 Pressure Transmitters)
 
 ```
 PFDavg_sensor = (1 - beta)² × 3 × (lambda_DU)² × (T_I)² / 4
@@ -366,7 +379,7 @@ Calculate each term:
 
 Note: The CCF term (6.19E-05) dominates. This is characteristic of redundant architectures — the beta factor limits achievable PFDavg regardless of channel count.
 
-#### 6.3.2 Logic Solver Subsystem PFDavg (1oo1 Safety PLC)
+#### 6A.3.2 Logic Solver Subsystem PFDavg (1oo1 Safety PLC)
 
 ```
 PFDavg_logic = lambda_DU × T_I / 2 + lambda_DD × MTTR
@@ -375,7 +388,7 @@ PFDavg_logic = 2.39E-04 + 5.14E-06
 PFDavg_logic ≈ 2.44E-04
 ```
 
-#### 6.3.3 Final Element Subsystem PFDavg (1oo1 Safety Relay)
+#### 6A.3.3 Final Element Subsystem PFDavg (1oo1 Safety Relay)
 
 ```
 PFDavg_final = lambda_DU × T_I / 2 + lambda_DD × MTTR
@@ -384,7 +397,7 @@ PFDavg_final = 1.64E-04 + 1.80E-06
 PFDavg_final ≈ 1.66E-04
 ```
 
-#### 6.3.4 Overall SIF PFDavg
+#### 6A.3.4 Overall SIF PFDavg
 
 ```
 PFDavg_SIF = PFDavg_sensor + PFDavg_logic + PFDavg_final
@@ -405,7 +418,7 @@ PFDavg_SIF = 4.76E-04
 
 The logic solver is the dominant contributor, followed closely by the final element. Margin to SIL 3 upper limit: (1.0E-03 − 4.76E-04) / 1.0E-03 = 52.4%.
 
-### 6.4 Architectural Constraints (IEC 61508-2, Route 1H)
+### 6A.4 Architectural Constraints (IEC 61508-2, Route 1H)
 
 IEC 61508-2 Table 2 specifies minimum hardware fault tolerance based on SFF and SIL target. The SFF is calculated from the FMEA failure rate data.
 
@@ -442,9 +455,9 @@ SFF = (lambda_SD + lambda_SU + lambda_DD) / (lambda_SD + lambda_SU + lambda_DD +
 
 The chosen resolution shall be documented in this SRS entry with the revised SFF calculation and verification result.
 
-### 6.5 Proof Test Interval and PFDavg Sensitivity
+### 6A.5 Proof Test Interval and PFDavg Sensitivity
 
-The proof test interval (T_I) directly affects PFDavg. The maximum allowable T_I for each SIF shall be determined by sensitivity analysis during SRS preparation.
+Proof testing is required only where inherent DU failure modes exist — failure modes that cannot be eliminated by any architectural means (e.g., slow sensor drift, valve spring fatigue). The design objective is to maximize diagnostic coverage and eliminate DU through architecture, thereby minimizing or eliminating the need for proof testing. Where inherent DU remains, the proof test interval (T_I) directly affects PFDavg. The maximum allowable T_I for each SIF shall be determined by sensitivity analysis during SRS preparation.
 
 **Sensitivity analysis for SF-PRES-001 overall PFDavg:**
 
@@ -459,9 +472,9 @@ The proof test interval (T_I) directly affects PFDavg. The maximum allowable T_I
 
 **Any change to the proof test interval requires an SRS revision and FMEA recalculation.**
 
-### 6.6 Common Cause Failure Analysis
+### 6A.6 Common Cause Failure Analysis
 
-#### 6.6.1 Beta Factor Model (IEC 61508-6, Annex D)
+#### 6A.6.1 Beta Factor Model (IEC 61508-6, Annex D)
 
 Common cause failures affect all redundant channels simultaneously. The beta factor represents the fraction of dangerous undetected failures that are common cause:
 
@@ -477,7 +490,7 @@ lambda_DD_common      = beta_D × lambda_DD
 lambda_DD_independent = (1 - beta_D) × lambda_DD
 ```
 
-#### 6.6.2 Beta Factor Scoring (IEC 61508-6, Annex D)
+#### 6A.6.2 Beta Factor Scoring (IEC 61508-6, Annex D)
 
 The beta factor is determined by scoring the following categories. Each category has subfactors scored as 0 (poor practice) or the indicated value (good practice):
 
@@ -504,7 +517,7 @@ The beta factor is determined by scoring the following categories. Each category
 | 15 – 17 | 1% | 0.5% |
 | 18 – 20 | 0.5% | 0.5% |
 
-#### 6.6.3 Beta Factor Scoring for SF-PRES-001
+#### 6A.6.3 Beta Factor Scoring for SF-PRES-001
 
 **System: 2oo3 Pressure Transmitters (identical, non-diverse)**
 
@@ -524,7 +537,7 @@ Score 12.5 falls in the 10–14 range for non-diverse redundancy: **scored beta 
 
 A conservative value of **beta = 5%** is used in the worked example above to account for the identical transmitter type and shared process connection. If diversity measures are added (staggered testing, diverse process connections), the scored beta of 2% may be applied with documented justification.
 
-#### 6.6.4 Impact of CCF on 2oo3 PFDavg
+#### 6A.6.4 Impact of CCF on 2oo3 PFDavg
 
 ```
 PFDavg_2oo3 = Independent term + CCF term
@@ -541,6 +554,136 @@ CCF term         = beta × lambda_DU × T_I / 2
 | 10% | 3.55E-06 | 1.24E-04 | 1.27E-04 | 97.2% |
 
 **Key insight:** Even at beta = 1%, the CCF term dominates the 2oo3 PFDavg. Adding more redundant channels reduces the independent term but does not reduce the CCF term. The most effective way to improve PFDavg in redundant architectures is to reduce the beta factor through diversity, physical separation, and staggered maintenance.
+
+---
+
+## 6B. PL Path — ISO 13849
+
+This section defines the calculation methodology for safety functions governed by ISO 13849. It applies to safety functions whose HA entry carries `Governing Standard = ISO 13849`. For SIL path functions, use Section 6A.
+
+### 6B.1 Key Parameters
+
+The achieved PL is determined by three system-level parameters:
+
+**Architecture Category (B, 1, 2, 3, 4):**
+
+| Category | Description | Typical Application |
+|----------|-------------|---------------------|
+| B | Single channel, no diagnostic, basic requirements for component quality | PLa–PLb only |
+| 1 | Single channel, components well-tried, higher MTTFd | Up to PLc |
+| 2 | Single channel with periodic test function, test by separate circuit | Up to PLd (with suitable MTTFd and DCavg) |
+| 3 | Dual channel, each channel single fault does not cause loss of safety function, partial diagnostic | PLc–PLd |
+| 4 | Dual channel with high diagnostic coverage; single fault detected immediately or before next demand | PLd–PLe |
+
+**MTTFd per channel:**
+
+| MTTFd Class | Range |
+|-------------|-------|
+| Low | < 10 years |
+| Medium | 10 to < 30 years |
+| High | 30 to ≤ 100 years |
+
+**DCavg (Average Diagnostic Coverage):**
+
+| DCavg Class | Range |
+|-------------|-------|
+| None | < 60% |
+| Low | 60% to < 90% |
+| Medium | 90% to < 99% |
+| High | ≥ 99% |
+
+### 6B.2 Achieved PL Determination
+
+The achieved PL is determined by looking up the Category + MTTFd + DCavg combination in ISO 13849-1 Table K.1. The following summary covers the most common combinations:
+
+| Category | MTTFd | DCavg | Achieved PL |
+|----------|-------|-------|-------------|
+| B | Low | None | PLa |
+| B | Medium | None | PLb |
+| 1 | High | None | PLc |
+| 2 | Low | Low | PLb |
+| 2 | Medium | Low | PLc |
+| 2 | High | Medium | PLd |
+| 3 | Low | Low | PLc |
+| 3 | Medium | Medium | PLd |
+| 3 | High | Medium | PLd |
+| 4 | High | High | PLe |
+
+**Verification:** Achieved PL ≥ PLr → PASS. If achieved PL < PLr, the architecture must be upgraded.
+
+### 6B.3 PFHd Calculation
+
+For numerical verification or comparison, the achieved PL can be expressed as PFHd. ISO 13849-1 provides calculation methods based on the architecture Category:
+
+- **Category B / 1 (single channel, no or negligible diagnostics):**
+  ```
+  PFHd ≈ λ_D × (B10d/0.1)   (for electromechanical components)
+  ```
+
+- **Category 2 (single channel + test function):**
+  ```
+  PFHd ≈ (1 - DCavg) × λ_D,channel + λ_D,test / n_test
+  ```
+
+- **Category 3 / 4 (dual channel):**
+  ```
+  PFHd = (1 - DCavg²) × λ_D,channel² × T_CE  (Category 3)
+  PFHd = (1 - DCavg) × λ_D,channel             (Category 4, simplified)
+  ```
+
+Where T_CE is the mean time between proof tests or mission time. For Category 4, a single dangerous failure is detected immediately, so the PFHd is dominated by the undetected fraction.
+
+In practice, the table-based verification (Section 6B.2) is the primary method. PFHd calculation is used for borderline cases or when a numerical PFHd value is required for cross-system comparison.
+
+### 6B.4 Common Cause Failure (CCF) — ISO 13849-1 Annex F
+
+For dual-channel architectures (Category 3 or 4), common cause failure shall be assessed per the scoring method in ISO 13849-1 Annex F. The CCF scoring evaluates:
+
+- Separation / segregation of channels
+- Diversity of components
+- Protection against overvoltage, overcurrent, contamination
+- Competency of personnel
+
+A minimum score of 65 points (out of 100) is required to maintain the Category 3 or 4 classification. If the CCF score is below 65, the architecture shall be treated as Category 1 regardless of the physical topology.
+
+### 6B.5 Proof Test — Not Applicable on PL Path
+
+**No proof test interval (T_I) is defined for safety functions on the PL path.**
+
+On the PL path, integrity is verified through the combination of architecture Category, MTTFd, and DCavg — all of which are established at design time and validated at installation. There is no time-varying proof test interval to calculate or maintain. Dangerous failures are either detected by the diagnostic coverage (and trigger a defined system response) or are inherently unlikely given the high MTTFd.
+
+This is a fundamental structural difference from the SIL path:
+- **SIL path:** Dangerous undetected failures accumulate over the proof test interval T_I; PFDavg grows with time
+- **PL path:** Architecture ensures dangerous failures are detected (Category 3/4) or are rare (high MTTFd); no accumulation model over T_I
+
+Periodic validation testing of PL functions is good practice and may be required by operational or regulatory requirements, but it does not feed into a PFHd calculation the way proof testing feeds into PFDavg on the SIL path.
+
+### 6B.6 Worked Example: SF-GUARD-001 (PLd)
+
+**Safety Function:** Machine guard interlock — prevent access to hazardous zone during machine operation
+**Governing Standard:** ISO 13849
+**Required PL (PLr):** PLd (from risk graph: S2, F2, P2 → PLd)
+
+**Architecture selected:** Category 3
+
+| Parameter | Value | Basis |
+|-----------|-------|-------|
+| Category | 3 | Dual-channel input (two guard switches), redundant monitoring by safety relay |
+| MTTFd per channel | High (≥ 30 years) | Safety-rated door switch, manufacturer data |
+| DCavg | Medium (90–99%) | Cross-monitoring of two channels by safety relay |
+| CCF score | ≥ 65 | Channels physically separated, different mounting points, common safety relay (accepted — single component) |
+
+**Achieved PL:** Category 3 + MTTFd High + DCavg Medium → **PLd** per ISO 13849-1 Table K.1
+
+**Verification:** Achieved PL = PLd ≥ PLr = PLd → **PASS**
+
+**PFHd (informative):** ≈ 5×10⁻⁷ per hour (within PLd range: 10⁻⁷ to < 10⁻⁶)
+
+**Implementing architecture:**
+- Two independent guard door switches (different mounting positions on the same door)
+- Safety relay with cross-monitoring of both input channels
+- De-energize-to-enable: machine motion permitted only when both channels show door closed
+- No proof test interval. Validation at installation and after any modification.
 
 ---
 
@@ -592,11 +735,13 @@ If any other document disagrees with the SRS on a safety requirement, the SRS go
 
 ### 8.1 When the SRS Is Created
 
-The SRS document is initiated after the LOPA study identifies safety functions and assigns SIL targets. The creation sequence is:
+The SRS document is initiated after the risk assessment study identifies safety functions and assigns integrity targets. The creation sequence is:
 
 1. HAZOP study completes → hazard entries documented
-2. LOPA study completes → SF-XXX-NNN identifiers assigned, SIL targets set
-3. **SRS entry created** → functional and integrity requirements defined, architecture selected, reliability calculations performed
+2. Risk assessment study completes:
+   - SIL path: LOPA → SF-XXX-NNN identifiers assigned, SIL targets set
+   - PL path: ISO 13849 risk graph → SF-XXX-NNN identifiers assigned, PLr determined
+3. **SRS entry created** → functional and integrity requirements defined, governing standard declared, architecture selected, reliability calculations performed (Section 6A for SIL path; Section 6B for PL path)
 4. Electrical drawings produced → implement the architecture specified in the SRS
 5. FMEA produced → verifies the actual hardware achieves the SRS targets
 

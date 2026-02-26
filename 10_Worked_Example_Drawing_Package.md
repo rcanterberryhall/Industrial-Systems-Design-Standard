@@ -1,13 +1,28 @@
-# Drawing Package Map — Overpressure Protection SF-PRES-001
+# Drawing Package Map — Mixed SIL + PL Project
+## Refinery Vessel XYZ Overpressure Protection + Machine Guard Interlock
 
-## Project Header
+This worked example demonstrates a single project containing two safety functions governed by different standards. SF-PRES-001 is on the SIL path (IEC 62061). SF-GUARD-001 is on the PL path (ISO 13849). The lifecycle methodology, traceability model, and document structure are common to both.
+
+---
+
+## Project Safety Function Register
+
+| SF ID | Description | Governing Standard | Path | Integrity Target | HA Reference |
+|---|---|---|---|---|---|
+| SF-PRES-001 | Overpressure protection — Vessel XYZ high-pressure shutdown | IEC 62061 | SIL | SIL 3 (PFDavg < 1.0E-03) | HA-PRES-001 |
+| SF-GUARD-001 | Machine guard interlock — prevent access to hazardous zone during machine operation | ISO 13849 | PL | PLd | HA-GUARD-001 |
+
+---
+
+## SF-PRES-001 — SIL Path Header
 
 | Field | Value |
 |---|---|
 | **Functional Requirement** | FR-PRES-001 — Vessel XYZ Pressure Control |
 | **Safety Function** | SF-PRES-001 — Overpressure Protection (protects people and equipment when FR-PRES-001 fails) |
+| **Governing Standard** | IEC 62061 — **Path: SIL** |
 | **Hazard Analysis** | HA-PRES-001 |
-| **SIL Target** | SIL 3 (PFDavg < 1.0E-03) |
+| **Integrity Target** | SIL 3 (PFDavg < 1.0E-03) |
 | **Architecture** | 2oo3 sensor voting, 1oo1 logic solver, 1oo1 final element |
 | **FMEA Reference** | FMEA 201.1 |
 | **Proof Test** | PT-201 (6-month interval) |
@@ -26,6 +41,7 @@
 | 202 | Safety System Power Distribution | +200 | 24VDC PSU G202.1, main fuse F202.1, field supply fuse F202.2 | SIL 3 · SF-PRES-001 |
 | 301 | Pressure Transmitters | +300 | B301.1, B301.2, B301.3 — 3× 4-20mA HART, field wiring to +200 | SIL 3 · SF-PRES-001 |
 | 302 | Shutdown Valve XV-201 | +300 | Solenoid Y302.1, closed-position switch S302.1, field wiring from K201.1 | SIL 3 · SF-PRES-001 |
+| 401 | Machine Guard Interlock Logic | +400 | Safety relay K401.1, guard door switches S401.1 and S401.2, machine enable output | PLd · SF-GUARD-001 · HA-GUARD-001 · FMEA 401.1 |
 
 ---
 
@@ -73,6 +89,9 @@ graph LR
 | +300-B301.3 | Pressure transmitter, 4-20mA HART, SIL 2 rated | PxTx-4-20mA-HART | 1 | 301 | +300 | PT-201C | FMEA 201.1 |
 | +300-Y302.1 | Solenoid valve, 24VDC, fail-closed, SIL 3 rated | Sol-Valve-24V-FC | 1 | 302 | +300 | XV-201 | FMEA 201.1 |
 | +300-S302.1 | Limit switch, closed-position indication, SPDT | Limit-Sw-SPDT | 1 | 302 | +300 | ZSC-201 | FMEA 201.1 |
+| +400-K401.1 | Safety relay, Category 3 rated, dual-channel input monitoring, 24VDC coil | Safety-Relay-Cat3 | 1 | 401 | +400 | — | FMEA 401.1 |
+| +400-S401.1 | Guard door switch, Channel 1, safety-rated, positive-opening mechanism | Door-Sw-Safety | 1 | 401 | +400 | ZSC-GUARD-A | FMEA 401.1 |
+| +400-S401.2 | Guard door switch, Channel 2, safety-rated, positive-opening mechanism | Door-Sw-Safety | 1 | 401 | +400 | ZSC-GUARD-B | FMEA 401.1 |
 
 ---
 
@@ -207,45 +226,158 @@ Wire naming convention: `[Sheet]-[Column].[Sequence]` per Drawing Standard §3.
 
 ---
 
+## SF-GUARD-001 — PL Path Entry
+
+### SF-GUARD-001 Header
+
+| Field | Value |
+|---|---|
+| **Safety Function ID** | SF-GUARD-001 |
+| **Description** | Prevent access to hazardous zone during machine operation — guard door interlock |
+| **Governing Standard** | ISO 13849 — **Path: PL** |
+| **Hazard Analysis** | HA-GUARD-001 |
+| **Required PL (PLr)** | PLd |
+| **Risk Graph Parameters** | S2 (severe/irreversible injury), F2 (frequent exposure), P2 (scarcely avoidable) → PLd per ISO 13849-1 Annex A |
+| **Architecture** | Category 3 — dual-channel guard door switch inputs, cross-monitored by safety relay |
+| **MTTFd per channel** | High (≥ 30 years) — per door switch manufacturer safety data |
+| **DCavg** | Medium (90–99%) — cross-channel monitoring by safety relay |
+| **Achieved PL** | PLd — confirmed by ISO 13849-1 Table K.1 (Category 3 + MTTFd High + DCavg Medium) |
+| **CCF Score** | ≥ 65 (ISO 13849-1 Annex F) — channels physically separated, different mounting positions |
+| **Proof Test** | Not applicable — architecture-based verification (PL path) |
+| **FMEA Reference** | FMEA 401.1 |
+| **Implementing Sheet** | Sheet 401 |
+| **De-energize to Safe** | Yes — machine motion enabled only when both channels show door closed |
+
+### SF-GUARD-001 Safety Function Block Diagram
+
+```mermaid
+graph LR
+    subgraph "+400 — Guard Interlock Cabinet"
+        S1["+400-S401.1<br/>Guard Door Switch Ch1<br/>ZSC-GUARD-A"]
+        S2["+400-S401.2<br/>Guard Door Switch Ch2<br/>ZSC-GUARD-B"]
+        K1["+400-K401.1<br/>Safety Relay<br/>Category 3"]
+    end
+
+    subgraph "Machine Control"
+        EN[Machine Enable<br/>Output]
+    end
+
+    S1 -->|Ch1 NC contact| K1
+    S2 -->|Ch2 NC contact| K1
+    K1 -->|Safety output| EN
+```
+
+**Logic:** Both door switch channels must show door closed (both NC contacts closed) → safety relay K401.1 enables machine motion output. If either channel opens (door opened or switch fault), safety relay de-energizes → machine enable removed. Cross-channel monitoring by K401.1 detects discrepancies between channels (one closed, one open = fault state → safe state demanded).
+
+### SF-GUARD-001 SRS Entry Summary (Section 6B Verification)
+
+| Parameter | Value | Basis |
+|---|---|---|
+| Category | 3 | Dual-channel input, cross-monitoring by safety relay K401.1 |
+| MTTFd per channel | High (≥ 30 years) | Door switch manufacturer data: MTTFd = 35 years |
+| DCavg | Medium (90–99%) | K401.1 cross-monitoring: DC = 92% per manufacturer spec |
+| CCF score | 72 points | Channels separated by 200 mm, different mounting brackets, same switch type (−5 for non-diversity), documented procedures (+10), training (+7) |
+| Achieved PL | PLd | ISO 13849-1 Table K.1: Category 3 + High MTTFd + Medium DCavg → PLd |
+| Verification | PLd ≥ PLd (PLr) → **PASS** | — |
+| Proof test interval | Not applicable | PL path: architecture-based verification replaces proof test interval |
+
+### FMEA 401.1 — SF-GUARD-001 Summary
+
+**FMEA Header:**
+```
+FMEA Document:       FMEA 401.1
+Safety Function:     SF-GUARD-001 — Machine Guard Interlock
+Governing Standard:  ISO 13849                 Path: PL
+Integrity Target:    PLd
+HA Reference:        HA-GUARD-001
+Architecture:        Category 3 | MTTFd High | DCavg Medium
+Drawing Sheets:      401
+```
+
+**Key failure modes:**
+
+| Item | Device | Failure Mode | Classification | Detection Method | DC% | Effect on SF |
+|---|---|---|---|---|---|---|
+| S401.1.1 | +400-S401.1 | Contact fails to open (Ch1 stuck closed) | D | Cross-channel monitoring by K401.1 | 92% | Ch1 stuck closed — K401.1 detects discrepancy when Ch2 opens; fault state demanded → safe state |
+| S401.1.2 | +400-S401.1 | Contact fails open (Ch1 stuck open) | S | K401.1 output monitoring | 90% | Ch1 stuck open — K401.1 removes enable immediately; spurious trip |
+| S401.2.1 | +400-S401.2 | Contact fails to open (Ch2 stuck closed) | D | Cross-channel monitoring by K401.1 | 92% | Same as S401.1.1, mirror failure for Ch2 |
+| S401.2.2 | +400-S401.2 | Contact fails open (Ch2 stuck open) | S | K401.1 output monitoring | 90% | Same as S401.1.2, mirror failure for Ch2 |
+| K401.1.1 | +400-K401.1 | Internal fault (one input channel lost) | D | K401.1 self-monitoring, output drops | 95% | Safety relay detects loss of one monitored channel; removes enable |
+| K401.1.2 | +400-K401.1 | Output contact weld (cannot remove enable) | D | K401.1 internal monitoring | 90% | Enable stuck on — K401.1 detects output contact weld; fault indicator active |
+
+**Verification:** All dangerous failure modes have DC ≥ 90%, contributing to DCavg = Medium (90–99%). Combined with Category 3 and MTTFd High → achieved PL = PLd ≥ PLr = PLd. **PASS.**
+
+**Proof testing:** Not applicable (PL path). No proof test interval derived from this FMEA. Integrity maintained by architecture Category 3, high MTTFd components, and automatic cross-channel monitoring.
+
+---
+
 ## Cross-Reference Summary
 
-Every document in the safety lifecycle references back to this drawing package through sheet numbers and device tags.
+Every document in the safety lifecycle references back to this drawing package through sheet numbers and device tags. This project contains two safety functions with different governing standards; each traces through its respective pathway.
 
 | Document | Reference ID | Provides | Uses from This Package |
 |---|---|---|---|
-| Hazard Analysis | HA-PRES-001 | SIL target, required safety function | — (upstream) |
-| Safety Function Spec | SF-PRES-001 | Architecture, voting, trip setpoint | — (upstream) |
-| **This Drawing Package** | **Sheets 201, 202, 301, 302** | **Device tags, wiring, I/O, terminals** | **Implements SF-PRES-001** |
-| FMEA | FMEA 201.1 | Failure classification (DD/DU), PFDavg, SFF | Device list, sheet numbers, detection points |
-| Proof Test Procedure | PT-201 | 10-step fault test sequence, 6-month interval | I/O list (inject points), wire pairs, terminal IDs |
-| FAT Report | FAT-201 | Factory test results, punch list | Sheet 201 logic, I/O assignments, wire schedule |
-| SAT Report | SAT-201 | Site commissioning results | Cable schedule, terminal strips, field wiring |
+| Hazard Analysis | HA-PRES-001 | SIL target (SIL 3), governing standard (IEC 62061) | — (upstream) |
+| Hazard Analysis | HA-GUARD-001 | PLr (PLd), governing standard (ISO 13849) | — (upstream) |
+| Safety Function Spec (SIL) | SF-PRES-001 | Architecture, voting, trip setpoint, PFDavg calc (Section 6A) | — (upstream) |
+| Safety Function Spec (PL) | SF-GUARD-001 | Architecture, Category, MTTFd, DCavg, achieved PL calc (Section 6B) | — (upstream) |
+| **This Drawing Package** | **Sheets 201, 202, 301, 302** | **Device tags, wiring, I/O, terminals** | **Implements SF-PRES-001 (SIL path)** |
+| **This Drawing Package** | **Sheet 401** | **Device tags, wiring, guard interlock logic** | **Implements SF-GUARD-001 (PL path)** |
+| FMEA (SIL path) | FMEA 201.1 | Failure classification (DD/DU), PFDavg, SFF | Device list, sheets 201–302, detection points |
+| FMEA (PL path) | FMEA 401.1 | Failure classification, DCavg, achieved PL verification | Device list, sheet 401, detection points |
+| Proof Test Procedure (SIL path only) | PT-201 | 10-step fault test sequence, 6-month interval | I/O list (inject points), wire pairs, terminal IDs |
+| Proof Test | SF-GUARD-001 | Not applicable — PL path, architecture-based verification | — |
+| FAT Report | FAT-201, FAT-401 | Factory test results | Sheet logic, I/O assignments |
+| SAT Report | SAT-201, SAT-401 | Site commissioning results | Cable schedule, terminal strips, field wiring |
 
-### Traceability Chain
+### Traceability Chain — SF-PRES-001 (SIL Path)
 
 ```
 FR-PRES-001          Functional requirement defines process function
     ↓
-HA-PRES-001          Hazard Analysis identifies risks arising from the function
+HA-PRES-001          Hazard Analysis identifies overpressure risk
+                     Governing Standard: IEC 62061 | Integrity Target: SIL 3
     ↓
-SF-PRES-001          Safety function defined (SIL 3, 2oo3) — protects people and equipment
+SF-PRES-001          SRS entry: SIL path, Section 6A
+                     PFDavg < 1.0E-03, 2oo3 voting, T_I = 6 months
     ↓
 Sheets 201–302       Electrical design implements the function
     ↓
-FMEA 201.1           Verifies design meets SIL 3 target
+FMEA 201.1           Path: SIL — Verifies PFDavg meets SIL 3 target
     ↓
-PT-201               Proof test derived from FMEA DU failure modes
+PT-201               Proof test derived from FMEA inherent DU failure modes (6-month interval)
     ↓
-FFAT-150 / SAT-201   Validates functional and safety performance
+FAT-201 / SAT-201    Validates functional and safety performance
     ↓
 PT-201 execution     Ongoing proof testing every 6 months
 ```
 
+### Traceability Chain — SF-GUARD-001 (PL Path)
+
+```
+HA-GUARD-001         Hazard Analysis identifies machine access risk
+                     Governing Standard: ISO 13849 | Integrity Target: PLd
+                     Risk graph: S2, F2, P2 → PLd
+    ↓
+SF-GUARD-001         SRS entry: PL path, Section 6B
+                     Category 3, MTTFd High, DCavg Medium → Achieved PLd
+    ↓
+Sheet 401            Electrical design implements the guard interlock
+    ↓
+FMEA 401.1           Path: PL — Verifies achieved PL ≥ PLd (no PFDavg calculation)
+    ↓
+FAT-401 / SAT-401    Validates guard interlock function
+    ↓
+No proof test interval   Architecture-based verification; functional validation at
+                          installation and after modification
+```
+
 ### Sheet-to-Document Cross-Reference
 
-| Sheet | FMEA Items | PT-201 Steps | FAT Tests | SAT Tests |
+| Sheet | FMEA Items | PT Steps | FAT Tests | SAT Tests |
 |---|---|---|---|---|
-| 201 | Logic solver failures, relay failures, voting errors | Steps 5–8 (voting, relay trip, de-energize, reset) | Logic simulation, I/O forcing | End-to-end trip test |
-| 202 | PSU failures, fuse failures | Step 1 (pre-test verification) | Power supply load test | Supply voltage at terminals |
-| 301 | Transmitter failures (×3), cable faults | Steps 2–4 (inject signals per channel) | Simulated input sweep | Live process reading verification |
-| 302 | Solenoid failures, position switch failures | Steps 7, 10 (valve stroke, position confirm) | Solenoid energize/de-energize | Full valve stroke test |
+| 201 | Logic solver failures, relay failures, voting errors (SIL path) | PT-201 Steps 5–8 (voting, relay trip, de-energize, reset) | Logic simulation, I/O forcing | End-to-end trip test |
+| 202 | PSU failures, fuse failures (SIL path) | PT-201 Step 1 (pre-test verification) | Power supply load test | Supply voltage at terminals |
+| 301 | Transmitter failures (×3), cable faults (SIL path) | PT-201 Steps 2–4 (inject signals per channel) | Simulated input sweep | Live process reading verification |
+| 302 | Solenoid failures, position switch failures (SIL path) | PT-201 Steps 7, 10 (valve stroke, position confirm) | Solenoid energize/de-energize | Full valve stroke test |
+| 401 | Door switch failures, safety relay failures (PL path) | No proof test — architecture verification only | Guard open/close, output state verification, fault injection (channel discrepancy) | Guard interlock function test, cross-channel fault test |
