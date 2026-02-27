@@ -1690,3 +1690,67 @@ After every test session, **before the system is returned to service**, the foll
 
 ---
 
+
+
+###From FRS section
+
+## 9. Functional FAT/SAT and Constraint Verification
+
+### 9.1 Functional FAT/SAT — Purpose
+
+Functional FAT/SAT proves that the system performs its intended process function under normal conditions. This is distinct from safety FAT/SAT, which proves that safety functions operate correctly under fault conditions.
+
+### 9.2 Functional FAT/SAT — Scope
+
+Functional FAT/SAT validates:
+
+- Process control functions operate within specified performance criteria
+- All operating modes (normal, startup, shutdown, degraded) behave as defined
+- Interface requirements are met (correct signals, correct ranges)
+- Availability mechanisms work (backup switchover, degraded mode operation)
+
+### 9.3 Functional FAT/SAT — Format
+
+No prescribed format is mandated. Functional FAT/SAT procedures are project-specific and may use whatever test methodology is appropriate for the system. However, all functional FAT/SAT procedures must:
+
+- **Trace to FR entries** — every test step must reference the FR-XXX-NNN it validates
+- **Define pass/fail criteria** — derived from the performance criteria in the FR entry
+- **Produce records** — test results must be documented and retained as commissioning evidence
+- **Be completed before or alongside safety testing** — functional testing should precede or accompany safety FAT/SAT, not follow it
+
+### 9.4 Functional FAT/SAT — Numbering
+
+**Format:** `FFAT-[Sheet]`
+
+Functional FAT/SAT procedures are numbered by the primary implementing sheet, prefixed with `FFAT` to distinguish from safety FAT/SAT (`SAT`).
+
+**Example:** `FFAT-150` — Functional FAT/SAT for the control system on Sheet 150.
+
+### 9.5 Constraint Verification
+
+Constraints are verified separately from functional requirements. Constraint verification typically uses inspection, analysis, or demonstration — not functional testing.
+
+**Constraint verification records shall document:**
+
+- CON-XXX-NNN reference
+- Verification method used (I, A, T, or D)
+- Evidence of compliance (datasheet reference, calculation, inspection record)
+- Verified by / date
+- Status (compliant / non-compliant / deviation approved)
+
+Constraint verification may occur at any project phase — some constraints (e.g., PLC platform) are verified at procurement, others (e.g., area classification compliance) at installation, others (e.g., ambient temperature rating) at equipment selection.
+
+### 9.6 Comparison — Functional FAT/SAT vs. Safety FAT/SAT vs. Constraint Verification
+
+| Aspect | Functional FAT/SAT | Safety FAT/SAT                      | Constraint Verification |
+|--------|-------------------|-------------------------------------|------------------------|
+| Purpose | Prove the system does what it should | Prove the system is safe            | Prove the design respects all boundaries |
+| Reference | FR-XXX-NNN entries | SF-XXX-NNN entries via FMEA         | CON-XXX-NNN entries |
+| Test conditions | Normal operation, mode transitions | Fault injection, failure simulation | Inspection, analysis, demonstration |
+| Pass criteria | Performance within FR tolerances | Fault detection, safe state achieved | Compliance with constraint statement |
+| Requirement | Project-defined | IEC 61511 mandated for SIS          | Project-defined |
+| Standard | This document | `07_SAT_FAT_Standard`               | This document |
+
+### 9.7 Results as Commissioning Evidence
+
+Functional FAT/SAT results and constraint verification records are required evidence for commissioning gate passage. A system that passes safety validation but fails functional validation or has unresolved constraint non-compliances is not ready for operation. Both functional and safety test results, along with constraint verification records, shall be available at the Operational Readiness Review and referenced in PSSR documentation.

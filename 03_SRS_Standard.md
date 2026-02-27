@@ -46,7 +46,7 @@ This standard applies to:
 - PFDavg and SIL verification calculations supporting each SF entry
 - Common cause failure (CCF) analysis and beta factor scoring
 - Architectural constraint verification per IEC 61508-2
-- Proof test interval determination
+- Proof test interval determination (if needed)
 
 This standard does **not** cover:
 
@@ -58,9 +58,7 @@ This standard does **not** cover:
 
 **The SRS owns the maths.** Failure rate calculations, PFDavg formulas, architectural constraint checks, and beta factor scoring are design-intent activities. They define what the design must achieve before any hardware is selected or analyzed. Placing them in the SRS — not the FMEA — keeps the intent separate from the verification. The FMEA checks whether the physical hardware matches the SRS targets; it does not define those targets.
 
-**One document, many entries.** The SRS is not a per-function document — it is a project-level register. HA entry `HA-PRES-001` and SRS entry `SF-PRES-001` are entries within their respective project documents, not standalone files. This matters for document control: one revision history, one approval cycle, one document register entry per project.
-
-**Where proof testing is required, the SRS is the authority for proof test intervals.** Proof testing is required only where the FMEA identifies inherent DU failure modes — failures that cannot be eliminated by architectural design. The design objective is to minimize inherent DU through diagnostic coverage, thereby minimizing or eliminating the need for proof testing. Where proof testing is required, the proof test interval (T_I) appears in the SRS, in the FMEA (as a calculation input), in the drawing title block, and in the proof test procedure. If these ever disagree, the SRS value governs. Changes to T_I require an SRS revision followed by FMEA recalculation.
+**Where proof testing is required, the SRS is the authority for proof test intervals.** Proof testing is required only where the FMEA identifies inherent DU failure modes — failures that cannot be eliminated by architectural design. The design objective is to minimize inherent DU through diagnostic coverage, thereby minimizing or eliminating the need for proof testing. Where proof testing is required, the proof test interval (T_I) appears in the SRS, in the FMEA (as a calculation input), in the drawing title block, and in the proof test procedure. If these ever disagree, the SRS value governs. Changes to T_I require an SRS revision followed by FMEA update.
 
 ---
 

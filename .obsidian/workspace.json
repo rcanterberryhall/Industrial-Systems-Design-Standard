@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "03_SRS_Standard.md",
+                "file": "01_Functional_Requirements_Standard.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "03_SRS_Standard"
+              "title": "01_Functional_Requirements_Standard"
             }
           }
         ]
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200
   },
   "right": {
     "id": "1c0b12f32ba87815",
@@ -185,6 +185,10 @@
   },
   "active": "f2b2759701a1b8a8",
   "lastOpenFiles": [
+    "07_SAT_FAT_Standard.md",
+    "01_Functional_Requirements_Standard.md",
+    "00_Safety_Documentation_Standard.md",
+    "03_SRS_Standard.md",
     "02_Hazard_Analysis_Standard.md",
     "10_Worked_Example_Drawing_Package.md.tmp.372151.1772125940208",
     "10_Worked_Example_Drawing_Package.md.tmp.372151.1772125896946",
@@ -195,8 +199,6 @@
     "05_FMEA_Standard.md.tmp.372151.1772125750873",
     "05_FMEA_Standard.md.tmp.372151.1772125729992",
     "05_FMEA_Standard.md.tmp.372151.1772125708976",
-    "05_FMEA_Standard.md.tmp.372151.1772125690890",
-    "01_Functional_Requirements_Standard.md",
-    "00_Safety_Documentation_Standard.md"
+    "05_FMEA_Standard.md.tmp.372151.1772125690890"
   ]
 }
